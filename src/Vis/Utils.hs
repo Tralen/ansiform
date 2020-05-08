@@ -33,17 +33,17 @@ repeatChar n c = replicate n c
 headMaybe :: [a] -> Maybe a
 headMaybe xs = case xs of [] -> Nothing; _ -> Just (head xs)
 
--- Int specialized version of head so it doesn't fail.
-headInt :: [Int] -> Int
-headInt xs = case xs of [] -> 0; _ -> head xs
+-- Num specialized version of head so it doesn't fail.
+headNum :: Num a => [a] -> a
+headNum xs = case xs of [] -> 0; _ -> head xs
 
 -- Version of last that returns a maybe. Still doesn't work for infinite lists.
 lastMaybe :: [a] -> Maybe a
 lastMaybe xs = case xs of [] -> Nothing; _ -> Just (last xs)
 
--- Int specialized version of head so it doesn't fail.
-lastInt :: [Int] -> Int
-lastInt xs = case xs of [] -> 0; _ -> last xs
+-- Num specialized version of head so it doesn't fail.
+lastNum :: Num a => [a] -> a
+lastNum xs = case xs of [] -> 0; _ -> last xs
 
 
 -- Reverses and concats a list simultaneously, used to avoid appending.
@@ -97,10 +97,9 @@ splitPoint wl w = sumTest 0 0 wl
             where c = fromMaybe 0 $ headMaybe cs
                   curSum = s + c
 
+-- Monads
+--------------------------------------------------------------------------------
 
--- Old implementation, useful for testing.
-splitPoint' :: [Int] -> Int -> Int
-splitPoint' wl w = headInt $ fmap length $ take 1 $ groupBy' (<=)
-                $ scanl1 (\m n -> rem (m+n) w) wl
-
-
+-- Shorthand for returning unit.
+return_ :: Monad m => m ()
+return_ = return ()

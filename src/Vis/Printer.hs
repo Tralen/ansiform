@@ -15,18 +15,18 @@ import           Vis.Utils
 --------------------------------------------------------------------------------
 -- A printer is a function, from Settings to IO, that prints on the screen.
 --    It is expected that a Printer will print at least one line.
-newtype VisPrinter = VisPrinter (VisSettings -> IO ())
+newtype VisPrinter = VisPrinter (VisSettings -> IO VisNumber)
 
-visPrinter :: (VisSettings -> IO ()) -> VisPrinter
+visPrinter :: (VisSettings -> IO VisNumber) -> VisPrinter
 visPrinter sio = VisPrinter sio
 
-runPrinter :: VisSettings -> VisPrinter -> IO ()
+runPrinter :: VisSettings -> VisPrinter -> IO VisNumber
 runPrinter s (VisPrinter sio) = sio s
 
-runPrinter' :: VisWidth -> VisMinSpace -> VisPrinter -> IO ()
+runPrinter' :: VisWidth -> VisMinSpace -> VisPrinter -> IO VisNumber
 runPrinter' w m (VisPrinter sio) = sio $ visSettings w m
 
-runPrinter'' :: VisMinSpace -> VisPrinter -> IO ()
+runPrinter'' :: VisMinSpace -> VisPrinter -> IO VisNumber
 runPrinter'' m (VisPrinter sio) = termW >>= \w -> sio $ visSettings (visNumber w) m
 
 -- Basic Printing

@@ -73,6 +73,7 @@ exCommands = printerLineCenter 4 exLine
 exCommands' :: VisPrinter
 exCommands' = printerLineCenter 4 exLine'
 
+
 -- Rules Examples
 --------------------------------------------------------------------------------
 exRule :: VisRule
@@ -93,8 +94,8 @@ exRuleSolid = ruleSolid red'
 exItem :: VisItem
 exItem = itemSimple "Person Name" (solid cyan)
 
-exBlockSimple :: VisBlock
-exBlockSimple = blockSimple "Another Name" styleDefault
+exBlock :: VisBlock
+exBlock = blockSimple "Another Name" styleDefault
 
 exBlockVal :: VisBlock
 exBlockVal = blockVal "Property" "12" red

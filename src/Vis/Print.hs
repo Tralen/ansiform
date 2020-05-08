@@ -2,6 +2,7 @@ module Vis.Print where
 
 -- INTERNAL --
 --------------------------------------------------------------------------------
+import           Control.Monad
 import           Data.Char
 import           Data.List
 import           Data.List.Split
@@ -20,12 +21,12 @@ import           Vis.Utils
 --------------------------------------------------------------------------------
 
 -- Prints a number of empty lines.
-printEmpty :: VisNumber -> IO ()
-printEmpty n = vis0 >> sequence_ (putStrLn <$> replicate (unn n) "")
+printEmpty :: VisNumber -> IO VisNumber
+printEmpty n = vis0 >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
 
 -- Prints the end of line character.
-printEnd :: IO ()
-printEnd = vis0 >> putStr "\n"
+printEnd :: IO VisNumber
+printEnd = vis0 >> putStr "\n" >> return 1
 
 -- Prints a VisItem with the proper visual style.
 printItem :: VisItem -> IO ()
@@ -36,19 +37,23 @@ printBlock :: VisBlock -> IO ()
 printBlock b = mapM_ printItem (unBlock b)
 
 -- Prints a VisBlock, left aligned, with proper indentation and line ending.
-printLeft :: VisOffset -> VisBlock -> IO ()
+printLeft :: VisOffset -> VisBlock -> IO VisNumber
 printLeft o b = ind o >> printBlock b >> printEnd
+
+-- Function to execute the printing functions that sums the line counts.
+printCounter :: (a -> IO VisNumber) -> [a] -> IO VisNumber
+printCounter f = foldM (\ns l -> f l >>= return . (+) ns) 0
 
 
 -- Rules & Solid Printing
 --------------------------------------------------------------------------------
 
 -- Prints a horizontal rule with an offset on both sides.
-printRule :: VisOffset -> VisRule -> VisSettings -> IO ()
+printRule :: VisOffset -> VisRule -> VisSettings -> IO VisNumber
 printRule o r (w,_) = ind o >> printItem (visRuleItem r (w - o*2)) >> printEnd
 
 -- Prints a line filled with spaces with the background color given.
-printSolid :: VisOffset -> VisColor -> VisSettings -> IO ()
+printSolid :: VisOffset -> VisColor -> VisSettings -> IO VisNumber
 printSolid o c s = printRule o (ruleSolid c) s
 
 
@@ -57,13 +62,13 @@ printSolid o c s = printRule o (ruleSolid c) s
 --------------------------------------------------------------------------------
 
 -- Prints a line of VisBlocks, left aligned.
-printLineLeft :: VisOffset -> [VisBlock] -> VisSettings -> IO ()
+printLineLeft :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
 printLineLeft o bs (_,m) = ind o >> mapM_ mainPrinter bs >> printEnd
         where 
            mainPrinter vb = printBlock vb >> ind' m
 
 -- Prints a line of VisBlocks, right aligned.
-printLineRight :: VisOffset -> [VisBlock] -> VisSettings -> IO ()
+printLineRight :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
 printLineRight o bs s@(w,m) = printLineLeft finalOffset bs s
        where
           m' = unn m
@@ -73,7 +78,7 @@ printLineRight o bs s@(w,m) = printLineLeft finalOffset bs s
 
 -- Prints a list of VisBlocks in a single line, with center alignment.
 -- Indentation level is given by the offset.
-printLineCenter :: VisOffset -> [VisBlock] -> VisSettings -> IO ()
+printLineCenter :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
 printLineCenter o bs (w,_) = mapM_ printText (zip bs [0..]) >> printEnd
      where 
         w' = unn w; o' = unn o
@@ -97,7 +102,7 @@ printLineCenter o bs (w,_) = mapM_ printText (zip bs [0..]) >> printEnd
                itemOffset x = quot itemWidth (halfItems + 1) * x
 
 
-type VisLineFunction = (VisOffset -> [VisBlock] -> VisSettings -> IO ())
+type VisLineFunction = (VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber)
 
 
 -- Solid Text Printing
@@ -105,8 +110,8 @@ type VisLineFunction = (VisOffset -> [VisBlock] -> VisSettings -> IO ())
 
 -- Prints a list of VisBlocks in a single line, with a solid background.
 --   The padding between background and text can be given as another offset.
-printSolidLine :: VisOffset -> VisOffset -> VisColor -> [VisBlock]
-               -> VisLineFunction -> VisSettings -> IO ()
+printSolidLine :: VisOffset -> VisPadding -> VisColor -> [VisBlock]
+               -> VisLineFunction -> VisSettings -> IO VisNumber
 printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
           where bs' = fmap (blockSetBG c) bs
 
@@ -115,14 +120,14 @@ printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
 --------------------------------------------------------------------------------
 
 -- Prints a list of VisBlocks as a single Column, with the given offset.
-printColumn :: VisOffset -> [VisBlock] -> IO ()
-printColumn o bs = mapM_ (printLeft o) bs
+printColumn :: VisOffset -> [VisBlock] -> IO VisNumber
+printColumn o bs = printCounter (printLeft o) bs
 
 
 -- Prints a list of VisBlocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
-printList :: VisOffset -> VisNumber -> [VisBlock] -> VisSettings -> IO ()
-printList o l bs (w,m) = sequence_ $ mainPrinter (new (unn l)) bs
+printList :: VisOffset -> VisNumber -> [VisBlock] -> VisSettings -> IO VisNumber
+printList o l bs (w,m) = fmap headNum . sequence $ mainPrinter (new (unn l)) bs
      where 
         w' = unn w ; o' = unn o ; m' = unn m
         maxWidth = blockTextMax bs + m'
@@ -136,16 +141,16 @@ printList o l bs (w,m) = sequence_ $ mainPrinter (new (unn l)) bs
                                 | otherwise = quot numItems l''
                 numItems = length bs
         
-        mainPrinter :: Int -> [VisBlock] -> [IO ()]
+        mainPrinter :: Int -> [VisBlock] -> [IO VisNumber]
         mainPrinter newL bs' = fmap printListColumn (zip splitCols [0..])
              where
                 splitCols = chunksOf newL bs'
                 
-                printListColumn :: ([VisBlock], Int) -> IO ()
+                printListColumn :: ([VisBlock], Int) -> IO VisNumber
                 printListColumn (b,i)
                        | i == 0 = printCol
                        | i == length splitCols - 1 = 
-                            cursorUp newL >> printCol >> cursorDown (newL - length b)
+                            cursorUp newL >> printCol >>= \n -> cursorDown (newL - length b) >> return n
                        | otherwise = cursorUp newL >> printCol
                      where printCol = printColumn currentOffset b
                            currentOffset = visNumber (i * maxWidth + o')
@@ -153,7 +158,7 @@ printList o l bs (w,m) = sequence_ $ mainPrinter (new (unn l)) bs
 
 -- Version that allows to specify the number of columns.
 -- By nature of the List printer, it won't allow more columns than can fit.
-printList' :: VisOffset -> VisNumber -> [VisBlock] -> VisSettings -> IO ()
+printList' :: VisOffset -> VisNumber -> [VisBlock] -> VisSettings -> IO VisNumber
 printList' o l bs s = printList o desiredLines bs s
           where desiredLines = visNumber $ quot (length bs) newL + 1
                 newL | l == 0 = 1
@@ -164,19 +169,19 @@ printList' o l bs s = printList o desiredLines bs s
 --------------------------------------------------------------------------------
 
 -- Prints a single VisGroup as a column, with the given offset.
-printGroup :: VisOffset -> VisGroup -> IO ()
+printGroup :: VisOffset -> VisGroup -> IO VisNumber
 printGroup o g = printColumn o (unGroup g)
 
 
 -- Main function for printing groups and tables, used by the specialized versions.
 --    Configured by the arguments:
 --       VisOffset -> Offset from both sides.
---       VisOffset -> Padding between text and background.
+--       VisPadding -> Padding between text and background.
 --       VisNumber -> Sets the number of rows printed, rest is discarded, 0 is max.
 --       Bool -> Sets the alignment to be evenly spaced if True, or max per row.
 --       Bool -> Table mode: zebra background and repeating index column.
-printGroups :: VisOffset -> VisOffset -> VisNumber -> Bool
-            -> Bool -> [VisGroup] -> VisSettings -> IO ()
+printGroups :: VisOffset -> VisPadding -> VisNumber -> Bool
+            -> Bool -> [VisGroup] -> VisSettings -> IO VisNumber
 printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
     where
        w' = unn w ; m' = unn m ; n' = unn n
@@ -190,14 +195,16 @@ printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
 
        initGroup = take 1 gs
        initWidth = take 1 chosenWidthList
-       mainPrinter = printLoop gs chosenWidthList 0
+       mainPrinter = printLoop gs chosenWidthList 0 0
          where
-            printLoop :: [VisGroup] -> [Int] -> Int ->  IO ()
-            printLoop rm wl ri
-                    | null rm || (ri >= n' && n' /= 0) = return ()
+            printLoop :: [VisGroup] -> [Int] -> Int -> VisNumber -> IO VisNumber
+            printLoop rm wl ri nls
+                    | null rm || (ri >= n' && n' /= 0) = return (nls + visNumber ri - 1)
                     | otherwise = executePrint >> restartLoop
               where                 
-                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1)
+                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (nls + visNumber rowLength)
+
+                 executePrint :: IO ()
                  executePrint
                         | bTable = printZebraBG o rowLength s >> cursorUp rowLength
                                 >> printContent
@@ -227,7 +234,7 @@ printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
                  splitPointList = splitPoint chosenWidthList finalWidth
 
                        
-                 printEach :: (VisGroup,Int,Int) -> IO () 
+                 printEach :: (VisGroup,Int,Int) -> IO ()
                  printEach (g,wg,i)
                       | i + 1 == rowColumns = printGroupChangeBG
                                            >> cursorDown (rowLength - curLength)
@@ -239,7 +246,7 @@ printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
                       curLength = length (unGroup g)
                       printGroup' g' = printGroup (visNumber colOffset) g'
                       printSpacing
-                           | lastRow = return () | otherwise = printEmpty 1
+                           | lastRow = return_ | otherwise = printEmpty 1 >> return_
 
                       setBG :: VisGroup -> VisGroup
                       setBG g' | bTable = visGroup' $ changeBlocks <$> zip (unGroup g') [0..]
@@ -255,12 +262,12 @@ printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
 -- Prints a list of VisBlocks as a continuous paragraph.
 --     VisOffset -> Indentaion of the entire paragraph.
 --     VisOffset -> Additional indentation for the first paragraph line.
---     VisOffset -> Padding between text and background.
+--     VisPadding -> Padding between text and background.
 --     Bool -> Sets the Background to solid grey.
-printParagraph :: VisOffset -> VisOffset -> VisOffset -> Bool
-                       -> VisParagraph -> VisSettings -> IO ()
-printParagraph o o1 p bZebra vbs s@(w,_) =
-               mapM_ printEachBlock $ blockPublish (w' - offset' * 2) (unn o1) vbs
+printParagraph :: VisOffset -> VisOffset -> VisPadding -> Bool
+                       -> VisParagraph -> VisSettings -> IO VisNumber
+printParagraph o o1 p bZebra vbs s@(w,_) = printCounter printEachBlock 
+                                         $ blockPublish (w' - offset' * 2) (unn o1) vbs
     where
       w' = unn w
       offset' = unn o + unn p
@@ -279,16 +286,16 @@ printParagraph o o1 p bZebra vbs s@(w,_) =
 --   Additional configuration can be given below.
 --     VisOffset -> Indentaion of the entire paragraphs.
 --     VisOffset -> Additional indentation for the first line of each paragraph.
---     VisOffset -> Padding between text and background.
+--     VisPadding -> Padding between text and background.
 --     Bool -> Controls background alternation.
 --     Function -> Predicate to test which paragraphs should have solid background.
-printSequence :: VisOffset -> VisOffset -> VisOffset -> Bool -> (Int -> Bool)
-             -> [VisParagraph] -> VisSettings -> IO ()
-printSequence o o1 p bZebra fInt vbss s = mapM_ printEach (zip vbss [0..])
+printSequence :: VisOffset -> VisOffset -> VisPadding -> Bool -> (Int -> Bool)
+             -> [VisParagraph] -> VisSettings -> IO VisNumber
+printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..])
     where 
       printEach (vbs,i)
           | i == length vbss - 1 = printParagraph' predZebra
-          | otherwise = printParagraph' predZebra >> printSeparation
+          | otherwise = printParagraph' predZebra >>= \n -> printSeparation >>= \n' -> return (n+n')
         where 
           predZebra = bZebra && fInt i
           printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs s

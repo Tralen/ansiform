@@ -6,7 +6,7 @@ import           Vis.Printer   as All
 import           Vis.Section   as All
 import           Vis.Style     as All
 
- -- REMOVER --
+ -- REMOVE --
 import           Vis.Content   as All
 import           Vis.Example   as All
 import           Vis.Number    as All
@@ -19,6 +19,7 @@ import           Vis.Utils     as All
 -- TODO:
 --   Transformar os Settings em um tipo de fato,
 --     considerar colocar o settings do GroupAverage ali.
---   Criar tipos/alias para Parágrafo e Lista?
+--   Rename Content to Block and Builder to Content.
+--   Make so that VisItem doesn't accept non-printable chars.
 
 

@@ -1,6 +1,9 @@
 # Revision history for Vis
 
 
+## 0.2.0.0 -- 2020-05-07
+* Major change so VisPrinter returns the number of lines printed.
+
 ## 0.1.1.0 -- 2020-05-07
 * Restarted project, most functionality implemented.
 
