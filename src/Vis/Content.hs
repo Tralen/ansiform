@@ -1,4 +1,4 @@
-module Vis.Content ( module Vis.Builder
+module Vis.Content ( module Vis.Content
                    , Item.VisItem, Item.VisBlock, Item.VisRule
                    , Item.VisGroup, Item.VisTable
                    , Item.VisParagraph, Item.VisArticle

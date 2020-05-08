@@ -19,7 +19,7 @@ import           Vis.Utils     as All
 -- TODO:
 --   Transformar os Settings em um tipo de fato,
 --     considerar colocar o settings do GroupAverage ali.
---   Rename Content to Block and Builder to Content. h
 --   Make so that VisItem doesn't accept non-printable chars.
+--   Consider using Style.Internal module names.
 
 
