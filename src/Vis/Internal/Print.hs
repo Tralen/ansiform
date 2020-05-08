@@ -17,7 +17,6 @@ import           Vis.Style
 
 
 
-
 -- Basic Printing
 --------------------------------------------------------------------------------
 
@@ -51,7 +50,8 @@ printCounter f = foldM (\ns l -> f l >>= return . (+) ns) 0
 
 -- Prints a horizontal rule with an offset on both sides.
 printRule :: VisOffset -> VisRule -> VisSettings -> IO VisNumber
-printRule o r (w,_) = ind o >> printItem (visRuleItem r (w - o*2)) >> printEnd
+printRule o r s = ind o >> printItem (visRuleItem r (w - o*2)) >> printEnd
+              where w = unWidth s
 
 -- Prints a line filled with spaces with the background color given.
 printSolid :: VisOffset -> VisColor -> VisSettings -> IO VisNumber
@@ -64,15 +64,16 @@ printSolid o c s = printRule o (ruleSolid c) s
 
 -- Prints a line of VisBlocks, left aligned.
 printLineLeft :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
-printLineLeft o bs (_,m) = ind o >> mapM_ mainPrinter bs >> printEnd
+printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd
         where 
+           m = unMinSpace s
            mainPrinter vb = printBlock vb >> ind' m
 
 -- Prints a line of VisBlocks, right aligned.
 printLineRight :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
-printLineRight o bs s@(w,m) = printLineLeft finalOffset bs s
+printLineRight o bs s = printLineLeft finalOffset bs s
        where
-          m' = unn m
+          w = unWidth s ; m =  unMinSpace s ; m' = unn m
           finalOffset = w - o - totalWidth + m
           totalWidth = visNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
@@ -80,9 +81,9 @@ printLineRight o bs s@(w,m) = printLineLeft finalOffset bs s
 -- Prints a list of VisBlocks in a single line, with center alignment.
 -- Indentation level is given by the offset.
 printLineCenter :: VisOffset -> [VisBlock] -> VisSettings -> IO VisNumber
-printLineCenter o bs (w,_) = mapM_ printText (zip bs [0..]) >> printEnd
+printLineCenter o bs s = mapM_ printText (zip bs [0..]) >> printEnd
      where 
-        w' = unn w; o' = unn o
+        w' = unn $ unWidth s ; o' = unn o
         numItems = length bs
         halfItems = quot numItems 2
         screenInd = quot w' numItems
@@ -128,8 +129,9 @@ printColumn o bs = printCounter (printLeft o) bs
 -- Prints a list of VisBlocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
 printList :: VisOffset -> VisNumber -> [VisBlock] -> VisSettings -> IO VisNumber
-printList o l bs (w,m) = fmap headNum . sequence $ mainPrinter (new (unn l)) bs
+printList o l bs s = fmap headNum . sequence $ mainPrinter (new (unn l)) bs
      where 
+        w = unWidth s; m = unMinSpace s
         w' = unn w ; o' = unn o ; m' = unn m
         maxWidth = blockTextMax bs + m'
 
@@ -183,8 +185,9 @@ printGroup o g = printColumn o (unGroup g)
 --       Bool -> Table mode: zebra background and repeating index column.
 printGroups :: VisOffset -> VisPadding -> VisNumber -> Bool
             -> Bool -> [VisGroup] -> VisSettings -> IO VisNumber
-printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
+printGroups o p n bSpace bTable gs s = mainPrinter
     where
+       w = unWidth s; m = unMinSpace s
        w' = unn w ; m' = unn m ; n' = unn n
        offset = unn o + unn p
        finalWidth = w' - offset*2 + m'
@@ -267,10 +270,10 @@ printGroups o p n bSpace bTable gs s@(w,m) = mainPrinter
 --     Bool -> Sets the Background to solid grey.
 printParagraph :: VisOffset -> VisOffset -> VisPadding -> Bool
                        -> VisParagraph -> VisSettings -> IO VisNumber
-printParagraph o o1 p bZebra vbs s@(w,_) = printCounter printEachBlock 
+printParagraph o o1 p bZebra vbs s = printCounter printEachBlock 
                                          $ blockPublish (w' - offset' * 2) (unn o1) vbs
     where
-      w' = unn w
+      w = unWidth s; w' = unn w
       offset' = unn o + unn p
       offset = visNumber offset'
       printEachBlock vb

@@ -5,11 +5,10 @@ module Vis.Internal.Number where
 
 -- A VisNumber is capped at 0, so it is always positive.
 newtype VisNumber = VisNumber Int
-                    deriving (Show, Eq, Ord)
+                    deriving (Eq, Ord)
 
 
 type VisWidth = VisNumber
-type VisMinSpace = VisNumber
 type VisPadding = VisNumber
 type VisOffset = VisNumber
 
@@ -22,6 +21,9 @@ instance Num VisNumber where
     negate n = 0
     abs n = n
     signum n | n <= 0 = 0 | otherwise = 1 
+
+instance Show VisNumber where
+    show (VisNumber n) = show n
 
 
 visNumber :: Int -> VisNumber

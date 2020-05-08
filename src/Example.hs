@@ -26,15 +26,15 @@ exBody_3 = sectionBody' 1 exRule' [ exBodyTable ]
 
 
 exFooter_1 :: VisSection
-exFooter_1 = sectionBody' 1 exRule'' [ exInstrunction_1 ]
+exFooter_1 = sectionBody' 1 exRule'' [ exInstruction_1 ]
 
 exFooter_2 :: VisSection
-exFooter_2 = sectionBody' 1 exRule'' [ exInstrunction_2
+exFooter_2 = sectionBody' 1 exRule'' [ exInstruction_2
                                      , printerEmpty 1
                                      , exCommands ]
 
 exFooter_3 :: VisSection
-exFooter_3 = sectionBody' 1 exRule'' [ exInstrunction_2
+exFooter_3 = sectionBody' 1 exRule'' [ exInstruction_2
                                      , printerEmpty 1
                                      , exCommands' ]
 
@@ -61,11 +61,11 @@ exBodyTable :: VisPrinter
 exBodyTable = printerTable 8 1 exTableBlocks
 
 
-exInstrunction_1 :: VisPrinter
-exInstrunction_1 = printerLeft 2 (blockSimple "Choose an option above: " styleDefault)
+exInstruction_1 :: VisPrinter
+exInstruction_1 = printerLeft 2 (blockSimple "Choose an option above: " styleDefault)
 
-exInstrunction_2 :: VisPrinter
-exInstrunction_2 = printerLeft 2 (blockSimple "Choose one of the options: " styleDefault)
+exInstruction_2 :: VisPrinter
+exInstruction_2 = printerLeft 2 (blockSimple "Choose one of the options: " styleDefault)
 
 exCommands :: VisPrinter
 exCommands = printerLineCenter 4 exLine

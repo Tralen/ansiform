@@ -38,7 +38,13 @@ SetColor                    ConsoleLayer ColorIntensity Color
 -- Colors
 --------------------------------------------------------------------------------
 data VisColor = VisColorDefault | VisColor ColorIntensity Color
-                deriving (Show, Eq)
+                deriving (Eq)
+
+instance Show VisColor where
+    show VisColorDefault = "ColorDefault"
+    show (VisColor Dull c) = show c
+    show (VisColor Vivid c) = show c ++ "'"  
+
 
 -- Wrapper and Default
 visColor :: ColorIntensity -> Color -> VisColor
@@ -67,7 +73,19 @@ isColorDefault vc = case vc of VisColorDefault -> True ; _ -> False
 --------------------------------------------------------------------------------
 --                                            Bold             Italic Underline
 data VisFormat = VisFormatDefault | VisFormat ConsoleIntensity Bool   Underlining
-                 deriving (Show, Eq)
+                 deriving (Eq)
+
+instance Show VisFormat where
+    show VisFormatDefault = "FormatDefault"
+    show (VisFormat BoldIntensity False NoUnderline) = "Bold"
+    show (VisFormat NormalIntensity True NoUnderline) = "Italic"
+    show (VisFormat NormalIntensity False SingleUnderline) = "Underline"
+    show (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
+    show (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
+    show (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
+    show (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
+    show _ = "Regular"
+
 
 -- Wrapper and Default
 visFormat :: ConsoleIntensity -> Bool -> Underlining -> VisFormat 
@@ -109,7 +127,11 @@ isUnderline vf = case unUnderline vf of SingleUnderline -> True; _ -> False
 -- Visual Styles
 --------------------------------------------------------------------------------
 data VisStyle = VisZero | VisStyle VisColor VisColor VisFormat
-                deriving (Show, Eq)
+                deriving (Eq)
+
+instance Show VisStyle where
+  show VisZero = "Reset"
+  show (VisStyle fc bg f) = "{" ++ show fc ++ " " ++ show bg ++ " " ++ show f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
 vis :: MonadIO m => VisStyle -> m ()

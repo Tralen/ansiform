@@ -13,6 +13,9 @@ import           Vis.Printer
 -- A VisSection is a list of VisPrinters.
 newtype VisSection = VisSection [VisPrinter]
 
+instance Show VisSection where
+    show (VisSection ps) = "VisSection " ++ (concat $ fmap (("\n  "++) . show) ps)
+
 -- A VisSection is a function that prints a list of VisPrinters, using the settings.
 newtype VisSectionF = VisSectionF (VisSettings -> IO ())
 
@@ -28,7 +31,7 @@ unSection (VisSection ps) = ps
 
 
 runSection :: VisSettings -> VisSection -> IO ()
-runSection s = mapM_ (runPrinter s ) . unSection
+runSection s = mapM_ (runPrinter s) . unSection
 
 runSection' :: VisNumber -> VisNumber -> VisSection -> IO ()
 runSection' w m = mapM_ (runPrinter' w m ) . unSection

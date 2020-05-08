@@ -6,7 +6,7 @@ import           Data.List
 import           Data.List.Split
 import           Data.Maybe
 import           Vis.Internal.Number
-import           Vis.Internal.Settings -- REMOVE when GroupCFG is done.
+import           Vis.Internal.Settings
 import           Vis.Internal.Style
 import           Vis.Internal.Utils
 
@@ -14,22 +14,37 @@ import           Vis.Internal.Utils
 -- Content Types
 --------------------------------------------------------------------------------
 -- Combination of text and a VisStyle for that text.
+--   It should have no non-printable characters.
 newtype VisItem = VisItem (String,VisStyle)
-                deriving (Show, Eq)
+                deriving (Eq)
+
+instance Show VisItem where
+  show (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show v  
 
 -- List of VisItems to be printed as a block. 
---   It should have no empty items, to avoid setting the styles unnecessarely.
+--   It should have no empty items, to avoid setting styles unnecessarely.
 --   It is treated as a block and can only be separated by paragraph formatting.
 newtype VisBlock = VisBlock [VisItem]
-                deriving (Show, Eq)
+                deriving (Eq)
+
+instance Show VisBlock where
+    show (VisBlock is) = "VisBlock " ++ (concat $ fmap (("\n     "++) . show) is)
+
 
 -- List of VisBlocks that start with a title for that list.
 newtype VisGroup = VisGroup [VisBlock]
-                 deriving (Show, Eq)
+                 deriving (Eq)
+
+instance Show VisGroup where
+    show (VisGroup bs) = "VisGroup " ++ (concat $ fmap (("\n    "++) . show) bs)
+
 
 -- List of VisGroups where each group has the same length.
 newtype VisTable = VisTable [VisGroup]
-                 deriving (Show, Eq)
+                 deriving (Eq)
+
+instance Show VisTable where
+    show (VisTable gs) = "VisTable " ++ (concat $ fmap (("\n   "++) . show) gs)
 
 
 -- A VisParagraph is just a suggestive name for a list of VisBlocks.
@@ -278,9 +293,10 @@ itemSplit w vi = ( visItem (fst processText) vs
 
 -- Reduces the length of groups in a list of VisGroups so that they don't exceed
 --   the average length too much, based on the excess configuration constant.
-groupAverage :: [VisGroup] -> [VisGroup]
-groupAverage gs = foldr groupProcess [] gs
+groupAverage :: VisSettings -> [VisGroup] -> [VisGroup]
+groupAverage s gs = foldr groupProcess [] gs
     where 
+       gof = unGroupOverflow s
        groupProcess g a
            | grpLength > tgtLength = fmap visGroup' headerBlocks ++ a
            | otherwise = g : a
@@ -288,7 +304,7 @@ groupAverage gs = foldr groupProcess [] gs
                 headerBlocks = take 1 splitBlocks ++ fmap (blockEmpty :) (drop 1 splitBlocks)
                 splitBlocks = splitPlaces (tgtLength + 1 : repeat tgtLength) blocks
                 blocks = unGroup g
-       tgtLength = avgLength + div avgLength groupExcessCfg
+       tgtLength = avgLength + div avgLength (groupOverflowRatio gof)
        avgLength = average $ fmap (length . unGroup) gs
 
 
@@ -335,7 +351,10 @@ isTableBalanced h rs = and $ fmap (\r -> headLength == length r) rs
 -- Rules && Solid
 --------------------------------------------------------------------------------
 newtype VisRule = VisRule (Char, VisStyle)
-                  deriving (Show, Eq)
+                  deriving (Eq)
+
+instance Show VisRule where
+    show (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ show v
 
 unRuleChar :: VisRule -> Char
 unRuleChar (VisRule (c,_)) = c
