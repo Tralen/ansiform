@@ -1,11 +1,11 @@
-module Vis.Example where
+module Example where
 
 --------------------------------------------------------------------------------
+import           Vis.Internal.Utils
 import           Vis.Content
 import           Vis.Printer
 import           Vis.Section
 import           Vis.Style
-import           Vis.Utils
 
 
 

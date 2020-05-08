@@ -1,9 +1,9 @@
 module Vis.Style ( module Vis.Style
-                 , Terminal.VisColor, Terminal.VisFormat, Terminal.VisStyle
+                 , Internal.VisColor, Internal.VisFormat, Internal.VisStyle
                  ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Terminal as Terminal
+import           Vis.Internal.Style as Internal
 
 
 -- Colors

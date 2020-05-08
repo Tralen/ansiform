@@ -1,7 +1,6 @@
-module Vis.Number where
+module Vis.Internal.Number where
 
 
--- INTERNAL --
 --------------------------------------------------------------------------------
 
 -- A VisNumber is capped at 0, so it is always positive.

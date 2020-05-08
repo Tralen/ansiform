@@ -1,13 +1,11 @@
 module Vis.Section where
 
 --------------------------------------------------------------------------------
+import           Vis.Internal.Number
+import           Vis.Internal.Settings
+import           Vis.Internal.Terminal
 import           Vis.Content
-import           Vis.Number
 import           Vis.Printer
-import           Vis.Settings
-import           Vis.Style
-import           Vis.Terminal
-import           Vis.Utils
 
 
 -- Section Type

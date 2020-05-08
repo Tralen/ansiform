@@ -2,8 +2,7 @@ module Vis.Page where
 
 --------------------------------------------------------------------------------
 import           Vis.Section
-import           Vis.Settings
-import           Vis.Terminal
+import           Vis.Internal.Settings
 
 
 -- Page Type

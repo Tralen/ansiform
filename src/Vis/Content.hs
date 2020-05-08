@@ -1,13 +1,13 @@
 module Vis.Content ( module Vis.Content
-                   , Item.VisItem, Item.VisBlock, Item.VisRule
-                   , Item.VisGroup, Item.VisTable
-                   , Item.VisParagraph, Item.VisArticle
-                   , Item.itemSimple
-                   , Item.blockSimple ) where
+                   , Internal.VisItem, Internal.VisBlock, Internal.VisRule
+                   , Internal.VisGroup, Internal.VisTable
+                   , Internal.VisParagraph, Internal.VisArticle
+                   , Internal.itemSimple
+                   , Internal.blockSimple ) where
 
 --------------------------------------------------------------------------------
 import           Data.List
-import           Vis.Item as Item
+import           Vis.Internal.Content as Internal
 import           Vis.Style
 
 

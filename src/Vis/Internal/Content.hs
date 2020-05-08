@@ -1,18 +1,17 @@
-module Vis.Item where
+module Vis.Internal.Content where
 
--- INTERNAL --
 --------------------------------------------------------------------------------
 import           Data.Char
 import           Data.List
 import           Data.List.Split
 import           Data.Maybe
-import           Vis.Number
-import           Vis.Settings
-import           Vis.Terminal
-import           Vis.Utils
+import           Vis.Internal.Number
+import           Vis.Internal.Settings -- REMOVE when GroupCFG is done.
+import           Vis.Internal.Style
+import           Vis.Internal.Utils
 
 
--- Visual Elements
+-- Content Types
 --------------------------------------------------------------------------------
 -- Combination of text and a VisStyle for that text.
 newtype VisItem = VisItem (String,VisStyle)
@@ -42,14 +41,14 @@ type VisArticle = [VisParagraph]
 -- Wrappers
 --------------------------------------------------------------------------------
 visItem :: String -> VisStyle -> VisItem
-visItem s v = VisItem (s,v)
+visItem s v = VisItem (itemTextClean s, v)
 
 visItemList :: [(String, VisStyle)] -> [VisItem]
 visItemList = fmap (uncurry visItem)
 
 -- VisBlock builder, removes empty items beforehand.
 visBlock :: [VisItem] -> VisBlock
-visBlock = VisBlock . itemsClean
+visBlock = VisBlock . itemsEmptyFilter
 
 visBlockList :: [[VisItem]] -> [VisBlock]
 visBlockList = fmap visBlock
@@ -123,14 +122,14 @@ groupEmpty = visGroup' [blockEmpty]
 -- Utilities
 --------------------------------------------------------------------------------
 
--- Removes empty Items from a VisBlock. It should never be used.
-blockClean :: VisBlock -> VisBlock
-blockClean = visBlock . unBlock
+-- Removes non-printable characters from the text of a visItem.
+itemTextClean :: String -> String
+itemTextClean = filter isPrint
 
 -- Removes empty Items from a list of VisItems.
 --    Enforces the VisBlock invariant, when used to build them.
-itemsClean :: [VisItem] -> [VisItem]
-itemsClean = filter (not . isItemNull)
+itemsEmptyFilter :: [VisItem] -> [VisItem]
+itemsEmptyFilter = filter (not . isItemNull)
   
 -- Checks if a VisBlock is empty.
 isBlockNull :: VisBlock -> Bool

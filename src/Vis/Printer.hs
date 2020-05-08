@@ -1,14 +1,13 @@
 module Vis.Printer where
 
 --------------------------------------------------------------------------------
+import           Vis.Internal.Content
+import           Vis.Internal.Number
+import           Vis.Internal.Print
+import           Vis.Internal.Settings
+import           Vis.Internal.Terminal
 import           Vis.Content
-import           Vis.Item
-import           Vis.Number
-import           Vis.Print
-import           Vis.Settings
 import           Vis.Style
-import           Vis.Terminal
-import           Vis.Utils
 
 
 -- Printer Type

@@ -1,19 +1,20 @@
-module Vis.Print where
+module Vis.Internal.Print where
 
--- INTERNAL --
 --------------------------------------------------------------------------------
 import           Control.Monad
 import           Data.Char
 import           Data.List
 import           Data.List.Split
 import           Data.Maybe (fromMaybe)
+import           Vis.Internal.Content
+import           Vis.Internal.Number
+import           Vis.Internal.Settings
+import           Vis.Internal.Style
+import           Vis.Internal.Terminal
+import           Vis.Internal.Utils
 import           Vis.Content
-import           Vis.Item
-import           Vis.Number
-import           Vis.Settings
 import           Vis.Style
-import           Vis.Terminal
-import           Vis.Utils
+
 
 
 

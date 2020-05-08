@@ -1,7 +1,7 @@
-module Vis.Settings where
+module Vis.Internal.Settings where
 
 --------------------------------------------------------------------------------
-import           Vis.Number
+import           Vis.Internal.Number
 
 
 -- Settings type
@@ -25,3 +25,5 @@ groupExcessCfg = 4
 
 -- setMinSpace n s = visSettings (unWidth s) n (unGroupFlow s)
 -- setGroupFlow 
+
+

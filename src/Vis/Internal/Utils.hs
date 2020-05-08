@@ -1,6 +1,5 @@
-module Vis.Utils where
+module Vis.Internal.Utils where
 
--- INTERNAL --
 --------------------------------------------------------------------------------
 import           Data.List
 import           Data.Maybe (fromMaybe)
