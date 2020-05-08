@@ -7,8 +7,8 @@ import           Data.Char
 import           Data.List
 import           Data.List.Split
 import           Data.Maybe (fromMaybe)
-import           Vis.Builder
 import           Vis.Content
+import           Vis.Item
 import           Vis.Number
 import           Vis.Settings
 import           Vis.Style

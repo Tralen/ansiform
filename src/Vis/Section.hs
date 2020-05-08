@@ -1,7 +1,7 @@
 module Vis.Section where
 
 --------------------------------------------------------------------------------
-import           Vis.Builder
+import           Vis.Content
 import           Vis.Number
 import           Vis.Printer
 import           Vis.Settings

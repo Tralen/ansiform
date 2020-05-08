@@ -1,7 +1,7 @@
 module Vis.Example where
 
 --------------------------------------------------------------------------------
-import           Vis.Builder
+import           Vis.Content
 import           Vis.Printer
 import           Vis.Section
 import           Vis.Style

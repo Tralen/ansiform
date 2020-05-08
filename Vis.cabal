@@ -14,8 +14,8 @@ cabal-version:       >= 2.0
 
 library
   exposed-modules:     Vis
-  other-modules:       Vis.Builder
-                     , Vis.Content
+  other-modules:       Vis.Content
+                     , Vis.Item
                      , Vis.Number
                      , Vis.Page
                      , Vis.Print

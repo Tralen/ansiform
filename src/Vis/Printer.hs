@@ -1,8 +1,8 @@
 module Vis.Printer where
 
 --------------------------------------------------------------------------------
-import           Vis.Builder
 import           Vis.Content
+import           Vis.Item
 import           Vis.Number
 import           Vis.Print
 import           Vis.Settings
