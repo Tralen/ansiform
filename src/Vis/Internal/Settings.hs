@@ -38,15 +38,15 @@ unWidth (VisSettings (w,_,_,_)) = w
 unMinSpace :: VisSettings -> VisWidth
 unMinSpace (VisSettings (_,m,_,_)) = m
 
-unGroupOverflow :: VisSettings -> VisWidth
+unGroupOverflow :: VisSettings -> VisNumber
 unGroupOverflow (VisSettings (_,_,g,_)) = g
 
-unVerbose :: VisSettings -> VisWidth
-unVerbose (VisSettings (_,_,v,_)) = v
+unVerbose :: VisSettings -> Bool
+unVerbose (VisSettings (_,_,_,v)) = v
 
 -- Default
-defaultSettings :: VisSettings
-defaultSettings = visSettings 80 2 25 True
+defaultSettings :: IO VisSettings
+defaultSettings = termW >>= \w -> return $ visSettings (visNumber w) 2 25 True
 
 
 -- Support Functions

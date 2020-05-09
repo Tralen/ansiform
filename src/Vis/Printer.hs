@@ -12,37 +12,44 @@ import           Vis.Style
 
 -- Printer Type
 --------------------------------------------------------------------------------
--- A printer is a function, from Settings to IO, that prints on the screen.
+-- A printer is a function, from Settings to IO VisNumber, that prints on the screen.
 --    It is expected that a Printer will print at least one line.
+--    The Printer should return the number of lines printed as an IO VisNumber.
 --    An String is passed to make the VisPrinter showable.
 newtype VisPrinter = VisPrinter (String, (VisSettings -> IO VisNumber))
 
 instance Show VisPrinter where
     show (VisPrinter (nm,_)) = "VisPrinter " ++ nm
 
-
+-- Wrapper
 visPrinter :: String -> (VisSettings -> IO VisNumber) -> VisPrinter
 visPrinter nm sio = VisPrinter (nm,sio)
 
 
 -- Functions to generate a VisPrinter with its content as part of the name.
 namePrinter :: Show a => String -> a -> (VisSettings -> IO VisNumber) -> VisPrinter
-namePrinter nm ct vf = visPrinter ("<" ++ nm ++ ">" ++ " " ++ show ct) vf
+namePrinter nm ct vf = visPrinter (namePrefix nm ++ show ct) vf
 
 namePrinterList :: Show a => String -> [a] -> (VisSettings -> IO VisNumber) -> VisPrinter
 namePrinterList nm ct vf = visPrinter
-    ("<" ++ nm ++ ">" ++ " " ++ (concat (fmap (("\n   "++) . show) ct))) vf
+    (namePrefix nm ++ (concat (fmap (("\n   "++) . show) ct))) vf
+
+namePrefix :: String -> String
+namePrefix nm = "<" ++ nm ++ ">" ++ " "
 
 
 -- Functions to execute the printer by passing the settings.
-runPrinter :: VisSettings -> VisPrinter -> IO VisNumber
-runPrinter s (VisPrinter (_,sio)) = sio s
+runPrinter :: IO VisSettings -> VisPrinter -> IO VisNumber
+runPrinter s (VisPrinter (_,sio)) = s >>= sio
 
-runPrinter' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
-runPrinter' w m (VisPrinter (_,sio)) = sio $ setWidth w $ setMinSpace m $ defaultSettings
+-- Uses default settings.
+runPrinter' :: VisPrinter -> IO VisNumber
+runPrinter' (VisPrinter (_,sio)) = defaultSettings >>= sio
 
-runPrinter'' :: VisWidth -> VisPrinter -> IO VisNumber
-runPrinter'' m (VisPrinter (_,sio)) = termW >>= \w -> sio $ setWidth (visNumber w) $ defaultSettings
+-- Uses default settings, with given width and minSpace.
+runPrinter'' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
+runPrinter'' w m (VisPrinter (_,sio)) = defaultSettings >>= \dft -> sio $ setWidth w $ setMinSpace m dft
+
 
 -- Basic Printing
 --------------------------------------------------------------------------------

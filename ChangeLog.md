@@ -3,11 +3,12 @@
 
 ## Early Versions
 
-### 0.2.0.4 -- 2020-05-08
+### 0.2.0.5 -- 2020-05-08
 * Made VisItem remove non-printable characters.
 * Creation of Internal folder to separate internal modules.
 * Creation of Show Instances to implement the Verbose mode.
-* Implementation of Settings type.
+* Implementation of Settings type and functions.
+* Improved Section type to calculate the total printed lines.
 
 ### 0.2.0.0 -- 2020-05-07
 * Major change so VisPrinter returns the number of lines printed.

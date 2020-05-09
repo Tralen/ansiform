@@ -13,8 +13,8 @@ import           Vis.Internal  as All
 
 
 -- TODO:
---   Transformar os Settings em um tipo de fato,
---     considerar colocar o settings do GroupAverage ali.
+--   Implement Verbose mode.
+--   Consider moving the Printer and Section type to internal modules.
 --   Migration to Text.
 --   Migration to Seq.
 

@@ -1,6 +1,7 @@
 module Vis.Section where
 
 --------------------------------------------------------------------------------
+import           Control.Monad
 import           Vis.Internal.Number
 import           Vis.Internal.Settings
 import           Vis.Internal.Terminal
@@ -16,41 +17,36 @@ newtype VisSection = VisSection [VisPrinter]
 instance Show VisSection where
     show (VisSection ps) = "VisSection " ++ (concat $ fmap (("\n  "++) . show) ps)
 
--- A VisSection is a function that prints a list of VisPrinters, using the settings.
-newtype VisSectionF = VisSectionF (VisSettings -> IO ())
 
-
+-- Wrappers
 visSection :: [VisPrinter] -> VisSection
 visSection ps = VisSection ps
 
-visSectionF :: (VisSettings -> IO ()) -> VisSectionF
-visSectionF sio = VisSectionF sio
-
 unSection :: VisSection -> [VisPrinter]
-unSection (VisSection ps) = ps 
+unSection (VisSection ps) = ps
 
 
-runSection :: VisSettings -> VisSection -> IO ()
-runSection s = mapM_ (runPrinter s) . unSection
+-- Functions to run the list of VisPrinters with the given settings.
+runSection :: IO VisSettings -> VisSection -> IO VisNumber
+runSection s = calcSection (runPrinter s)
 
-runSection' :: VisNumber -> VisNumber -> VisSection -> IO ()
-runSection' w m = mapM_ (runPrinter' w m ) . unSection
+-- Uses default settings.
+runSection' :: VisSection -> IO VisNumber
+runSection' = calcSection runPrinter'
 
-runSection'' :: VisNumber -> VisSection -> IO ()
-runSection'' m vs = termW >>= \w -> mapM_ (runPrinter' (visNumber w) m ) $ unSection vs
+-- Uses default settings, with given width and minSpace.
+runSection'' :: VisNumber -> VisNumber -> VisSection -> IO VisNumber
+runSection'' w m = calcSection (runPrinter'' w m)
 
 
-runSectionF :: VisSettings -> VisSectionF -> IO ()
-runSectionF s (VisSectionF sio) = sio s 
+-- Runs the Printers and calculates the total number of lines.
+calcSection :: (VisPrinter -> IO VisNumber) -> VisSection -> IO VisNumber
+calcSection f vs = foldM runCalc 0 $ unSection vs
+   where runCalc acc p = f p >>= \n -> return (acc + n)
+
 
 -- Section Builders
 --------------------------------------------------------------------------------
-
--- Builds a VisSection with a number of empty lines above and below.
-sectionBodyF :: VisNumber -> [VisPrinter] -> VisSectionF
-sectionBodyF n ps = visSectionF $ \s -> mapM_ (runPrinter s) $ [ printerEmpty n ] ++ ps ++ [ printerEmpty n ]
-
-
 
 -- Builds a VisSection with a number of empty lines above and below.
 sectionBody :: VisNumber -> [VisPrinter] -> VisSection
