@@ -13,40 +13,36 @@ newtype VisSettings = VisSettings
             ( VisWidth  -- Current screen width
             , VisWidth  -- Minimum space to be used bettwen blocks.
             , VisNumber -- Percentage that groups are allowed to overflow.
-            , Bool      -- Verbose mode.
             )
 
 instance Show VisSettings where
-    show (VisSettings (w,m,g,v)) = "VisSettings"
+    show (VisSettings (w,m,g)) = "VisSettings"
                                 ++ "\n  Screen Width: " ++ show w
                                 ++ "\n  Minimum Space: " ++ show m
                                 ++ "\n  Group Overflow: " ++ show g ++ "%"
-                                ++ "\n  Verbose Mode: " ++ show v
 
 -- Wrapper
-visSettings :: VisWidth -> VisWidth -> VisNumber -> Bool -> VisSettings
-visSettings w m g v = VisSettings (w, m, g, v)
+visSettings :: VisWidth -> VisWidth -> VisNumber -> VisSettings
+visSettings w m g = VisSettings (w, m, g)
 
 
 -- Unwrappers
-unSettings :: VisSettings -> (VisWidth, VisWidth, VisNumber, Bool)
+unSettings :: VisSettings -> (VisWidth, VisWidth, VisNumber)
 unSettings (VisSettings s) = s
 
 unWidth :: VisSettings -> VisWidth
-unWidth (VisSettings (w,_,_,_)) = w
+unWidth (VisSettings (w,_,_)) = w
 
 unMinSpace :: VisSettings -> VisWidth
-unMinSpace (VisSettings (_,m,_,_)) = m
+unMinSpace (VisSettings (_,m,_)) = m
 
 unGroupOverflow :: VisSettings -> VisNumber
-unGroupOverflow (VisSettings (_,_,g,_)) = g
+unGroupOverflow (VisSettings (_,_,g)) = g
 
-unVerbose :: VisSettings -> Bool
-unVerbose (VisSettings (_,_,_,v)) = v
 
 -- Default
 defaultSettings :: IO VisSettings
-defaultSettings = termW >>= \w -> return $ visSettings (visNumber w) 2 25 True
+defaultSettings = termW >>= \w -> return $ visSettings (visNumber w) 2 25
 
 
 -- Support Functions
@@ -59,16 +55,13 @@ groupOverflowRatio n | n <= 0 = 0 | n >= 100 = 1 | otherwise = div 100 (unn n)
 
 
 setWidth :: VisWidth -> VisSettings -> VisSettings
-setWidth n (VisSettings (_,m,g,v)) = visSettings n m g v
+setWidth n (VisSettings (_,m,g)) = visSettings n m g
 
 setMinSpace :: VisWidth -> VisSettings -> VisSettings
-setMinSpace n (VisSettings (w,_,g,v)) = visSettings w n g v
+setMinSpace n (VisSettings (w,_,g)) = visSettings w n g
 
 setGroupOverflow :: VisNumber -> VisSettings -> VisSettings
-setGroupOverflow n (VisSettings (w,m,_,v)) = visSettings w m n v
-
-setVerbose :: Bool -> VisSettings -> VisSettings
-setVerbose b (VisSettings (w,m,g,_)) = visSettings w m g b
+setGroupOverflow n (VisSettings (w,m,_)) = visSettings w m n
 
 
 

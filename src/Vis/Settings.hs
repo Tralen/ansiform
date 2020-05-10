@@ -19,9 +19,6 @@ groupOverflow :: VisNumber -> VisSettings -> VisSettings
 groupOverflow = setGroupOverflow
 overflow = setGroupOverflow
 
-verbose :: Bool -> VisSettings -> VisSettings
-verbose = setVerbose
-
 -- Function to build the settings in a declarative style.
 settings :: [(VisSettings -> VisSettings)] -> IO VisSettings
 settings fs = defaultSettings >>= \dft -> return $ foldl' (\sets f -> f sets) dft fs 

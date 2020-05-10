@@ -11,6 +11,8 @@ import           Vis.Internal.Style
 import           Vis.Internal.Utils
 
 
+
+
 -- Content Types
 --------------------------------------------------------------------------------
 -- Combination of text and a VisStyle for that text.
@@ -18,40 +20,52 @@ import           Vis.Internal.Utils
 newtype VisItem = VisItem (String,VisStyle)
                 deriving (Eq)
 
-instance Show VisItem where
-  show (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show v  
-
 -- List of VisItems to be printed as a block. 
 --   It should have no empty items, to avoid setting styles unnecessarely.
 --   It is treated as a block and can only be separated by paragraph formatting.
 newtype VisBlock = VisBlock [VisItem]
                 deriving (Eq)
 
-instance Show VisBlock where
-    show (VisBlock is) = "VisBlock " ++ (concat $ fmap (("\n     "++) . show) is)
-
-
 -- List of VisBlocks that start with a title for that list.
 newtype VisGroup = VisGroup [VisBlock]
                  deriving (Eq)
 
-instance Show VisGroup where
-    show (VisGroup bs) = "VisGroup " ++ (concat $ fmap (("\n    "++) . show) bs)
-
-
 -- List of VisGroups where each group has the same length.
 newtype VisTable = VisTable [VisGroup]
                  deriving (Eq)
-
-instance Show VisTable where
-    show (VisTable gs) = "VisTable " ++ (concat $ fmap (("\n   "++) . show) gs)
-
 
 -- A VisParagraph is just a suggestive name for a list of VisBlocks.
 type VisParagraph = [VisBlock]
 
 -- An article is just a list of VisParagraphs.
 type VisArticle = [VisParagraph]
+
+-- Show Instances
+--------------------------------------------------------------------------------
+
+instance Show VisItem where
+  show (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show v  
+  showList is = showContentList (zip is [0..]) 6
+
+instance Show VisBlock where
+   show (VisBlock is) = "VisBlock\n" ++ show is
+   showList bs = showContentList (zip bs [0..]) 4
+
+instance Show VisGroup where
+    show (VisGroup bs) = "VisGroup\n" ++ show bs
+    showList gs = showContentList (zip gs [0..]) 2
+
+instance Show VisTable where
+    show (VisTable gs) = "VisTable\n" ++ show gs
+    showList ts = showContentList (zip ts [0..]) 0
+
+-- Support function to assist in showing list of content types.
+showContentList :: Show a => [(a,Int)] -> Int -> ShowS
+showContentList [] _ = id
+showContentList ((i,0):is) n = (showSpaces n ++) . shows i . showContentList is n
+showContentList ((i,_):is) n = ("\n" ++) . (showSpaces n ++) . shows i . showContentList is n
+
+showSpaces n = replicate n ' '
 
 -- Wrappers
 --------------------------------------------------------------------------------
@@ -157,6 +171,7 @@ isBlockNull vb
 -- Checks if a VisItem is empty.
 isItemNull :: VisItem -> Bool
 isItemNull = null . unItemText
+
 
 -- Calculates the maximum length of the text in a list of VisBlocks.
 blockTextMax :: [VisBlock] -> Int

@@ -2,6 +2,7 @@ module Vis (module All) where
 
 --------------------------------------------------------------------------------
 import           Vis.Content   as All
+import           Vis.Page      as All
 import           Vis.Printer   as All
 import           Vis.Section   as All
 import           Vis.Settings  as All
@@ -13,8 +14,7 @@ import           Vis.Internal  as All
 
 
 -- TODO:
---   Implement Verbose mode.
---   Consider moving the Printer and Section type to internal modules.
+--   Move the Section type to internal module.
 --   Migration to Text.
 --   Migration to Seq.
 

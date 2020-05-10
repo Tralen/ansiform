@@ -1,4 +1,4 @@
-module Vis.Internal.Print where
+module Vis.Internal.Printer where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
@@ -15,6 +15,39 @@ import           Vis.Internal.Utils
 import           Vis.Content
 import           Vis.Style
 
+
+
+-- Printer Type
+--------------------------------------------------------------------------------
+-- A printer is a function, from Settings to IO VisNumber, that prints on the screen.
+--    It is expected that a Printer will print at least one line.
+--    The Printer should return the number of lines printed as an IO VisNumber.
+--    An String is passed to identify the specific printer function used.
+--    The content is passed so the VisPrinter can show what will be printed.
+newtype VisPrinter = VisPrinter (String, (VisSettings -> IO VisNumber))
+
+
+instance Show VisPrinter where
+    show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ "> "
+    showList ps = showContentList (zip ps [0..]) 4
+
+
+-- Wrapper
+visPrinter :: String -> (VisSettings -> IO VisNumber) -> VisPrinter
+visPrinter nm sio = VisPrinter (nm,sio)
+
+
+-- Functions to execute the printer by passing the settings.
+runPrinter :: IO VisSettings -> VisPrinter -> IO VisNumber
+runPrinter s (VisPrinter (_,sio)) = s >>= sio
+
+-- Uses default settings.
+runPrinter' :: VisPrinter -> IO VisNumber
+runPrinter' (VisPrinter (_,sio)) = defaultSettings >>= sio
+
+-- Uses default settings, with given width and minSpace.
+runPrinter'' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
+runPrinter'' w m (VisPrinter (_,sio)) = defaultSettings >>= \dft -> sio $ setWidth w $ setMinSpace m dft
 
 
 -- Basic Printing
