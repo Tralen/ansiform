@@ -23,7 +23,7 @@ import           Vis.Style
 --    It is expected that a Printer will print at least one line.
 --    The Printer should return the number of lines printed as an IO VisNumber.
 --    An String is passed to identify the specific printer function used.
---    The content is passed so the VisPrinter can show what will be printed.
+--    The Printer doesn't show its content since it is restructured on the fly.
 newtype VisPrinter = VisPrinter (String, (VisSettings -> IO VisNumber))
 
 
@@ -31,23 +31,30 @@ instance Show VisPrinter where
     show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ "> "
     showList ps = showContentList (zip ps [0..]) 4
 
+instance Eq VisPrinter where
+    VisPrinter (n1,_) == VisPrinter (n2,_) = n1 == n2
+
 
 -- Wrapper
 visPrinter :: String -> (VisSettings -> IO VisNumber) -> VisPrinter
 visPrinter nm sio = VisPrinter (nm,sio)
 
 
--- Functions to execute the printer by passing the settings.
-runPrinter :: IO VisSettings -> VisPrinter -> IO VisNumber
-runPrinter s (VisPrinter (_,sio)) = s >>= sio
+-- Function to execute the printer by passing the settings.
+runPrinter :: VisSettings -> VisPrinter -> IO VisNumber
+runPrinter s (VisPrinter (_,sio)) = sio s
+
+-- Equivalent to runPrinter, but with settings in IO.
+runPrinterIO :: IO VisSettings -> VisPrinter -> IO VisNumber
+runPrinterIO s (VisPrinter (_,sio)) = s >>= sio
 
 -- Uses default settings.
-runPrinter' :: VisPrinter -> IO VisNumber
-runPrinter' (VisPrinter (_,sio)) = defaultSettings >>= sio
+runPrinterDefault :: VisPrinter -> IO VisNumber
+runPrinterDefault (VisPrinter (_,sio)) = defaultSettings >>= sio
 
 -- Uses default settings, with given width and minSpace.
-runPrinter'' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
-runPrinter'' w m (VisPrinter (_,sio)) = defaultSettings >>= \dft -> sio $ setWidth w $ setMinSpace m dft
+runPrinterDefault' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
+runPrinterDefault' w m (VisPrinter (_,sio)) = defaultSettings >>= \dft -> sio $ setWidth w $ setMinSpace m dft
 
 
 -- Basic Printing

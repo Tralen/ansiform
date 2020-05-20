@@ -1,15 +1,23 @@
-module Vis.Section (module Vis.Section, Internal.VisSection) where
+module Vis.Section ( module Vis.Section
+                   , Internal.VisSection
+                   , Internal.runSection, Internal.runSectionIO
+                   , Internal.runSectionDefault, Internal.runSectionDefault'
+                   ) where
 
 --------------------------------------------------------------------------------
 import           Vis.Internal.Number
+import           Vis.Internal.Settings
 import           Vis.Internal.Section as Internal
 import           Vis.Content
 import           Vis.Printer
 
 
-
 -- Section Builders
 --------------------------------------------------------------------------------
+
+-- Builds the most basic VisSection, with just the list of Printers.
+section :: [VisPrinter] -> VisSection
+section = visSection
 
 -- Builds a VisSection with a number of empty lines above and below.
 sectionBody :: VisNumber -> [VisPrinter] -> VisSection

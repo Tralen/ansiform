@@ -12,6 +12,7 @@ import           Vis.Internal.Settings
 --------------------------------------------------------------------------------
 -- A VisSection is a list of VisPrinters.
 newtype VisSection = VisSection [VisPrinter]
+                     deriving (Eq)
 
 instance Show VisSection where
     show (VisSection ps) = "VisSection\n" ++ show ps
@@ -26,17 +27,24 @@ unSection :: VisSection -> [VisPrinter]
 unSection (VisSection ps) = ps
 
 
--- Functions to run the list of VisPrinters with the given settings.
-runSection :: IO VisSettings -> VisSection -> IO VisNumber
-runSection s = calcSection (runPrinter s)
+-- Section Runners
+--------------------------------------------------------------------------------
+
+-- Function to run the list of VisPrinters with the given settings.
+runSection :: VisSettings -> VisSection -> IO VisNumber
+runSection s = calcSection (runPrinter s) 
+
+-- Version of runSection with settings in IO.
+runSectionIO :: IO VisSettings -> VisSection -> IO VisNumber
+runSectionIO s = calcSection (runPrinterIO s)
 
 -- Uses default settings.
-runSection' :: VisSection -> IO VisNumber
-runSection' = calcSection runPrinter'
+runSectionDefault :: VisSection -> IO VisNumber
+runSectionDefault = calcSection (runPrinterDefault)
 
 -- Uses default settings, with given width and minSpace.
-runSection'' :: VisNumber -> VisNumber -> VisSection -> IO VisNumber
-runSection'' w m = calcSection (runPrinter'' w m)
+runSectionDefault' :: VisNumber -> VisNumber -> VisSection -> IO VisNumber
+runSectionDefault' w m = calcSection (runPrinterDefault' w m)
 
 
 -- Runs the Printers and calculates the total number of lines.

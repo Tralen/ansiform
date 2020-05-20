@@ -2,7 +2,6 @@ module Vis.Content ( module Vis.Content
                    , Internal.VisItem, Internal.VisBlock, Internal.VisRule
                    , Internal.VisGroup, Internal.VisTable
                    , Internal.VisParagraph, Internal.VisArticle
-                   , Internal.itemSimple
                    , Internal.blockSimple ) where
 
 --------------------------------------------------------------------------------
@@ -10,6 +9,15 @@ import           Data.List
 import           Vis.Internal.Content as Internal
 import           Vis.Style
 
+
+-- Basic builders
+--------------------------------------------------------------------------------
+
+item :: String -> VisStyle -> VisItem
+item = visItem
+
+block :: [VisItem] -> VisBlock
+block = visBlock
 
 -- Block Builders
 --------------------------------------------------------------------------------

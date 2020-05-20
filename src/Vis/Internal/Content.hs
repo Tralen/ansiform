@@ -131,10 +131,6 @@ unMaybeTable mt = maybe[groupEmpty] unTable mt
 itemEmpty :: VisItem
 itemEmpty = visItem "" visDefault
 
--- Single useful VisItem.
-itemSimple :: String -> VisStyle -> VisItem
-itemSimple = visItem
-
 -- Trivial VisBlock.
 blockEmpty :: VisBlock
 blockEmpty = visBlock []

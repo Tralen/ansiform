@@ -1,4 +1,6 @@
-module Vis.Settings (module Vis.Settings, Internal.defaultSettings) where
+module Vis.Settings (module Vis.Settings
+                    , Internal.VisSettings , Internal.defaultSettings
+                    ) where
 
 
 --------------------------------------------------------------------------------

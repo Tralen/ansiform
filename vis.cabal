@@ -1,7 +1,7 @@
 name:                vis
-version:             0.2.0.9
+version:             0.2.1.4
 synopsis:            Display formatting for command line interfaces.
-description:         Basic format DSL for building an ANSI command line interface with colors, alignment, columns, tables and more.
+description:         Basic format DSL for building an ANSI command line interface with colors, alignment, tables, paragraphs and more.
 license:             GPL-3
 license-file:        LICENSE
 author:              Tunai Raiol
@@ -14,6 +14,7 @@ cabal-version:       >= 2.0
 
 library
   exposed-modules:     Vis
+
   other-modules:       Vis.Content
                      , Vis.Page
                      , Vis.Printer
@@ -23,16 +24,22 @@ library
                      , Vis.Internal
                      , Vis.Internal.Content
                      , Vis.Internal.Number
+                     , Vis.Internal.Page
                      , Vis.Internal.Printer
+                     , Vis.Internal.Result
                      , Vis.Internal.Section
                      , Vis.Internal.Settings
                      , Vis.Internal.Style
                      , Vis.Internal.Terminal
                      , Vis.Internal.Utils
+
   default-extensions:  GeneralizedNewtypeDeriving
+
   build-depends:       base >= 4.10
                      , ansi-terminal >= 0.8
                      , terminal-size >= 0.3
                      , split >= 0.2
+
   hs-source-dirs:      src
+  
   default-language:    Haskell2010

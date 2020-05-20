@@ -3,11 +3,20 @@ module Example where
 --------------------------------------------------------------------------------
 import           Vis.Internal.Utils
 import           Vis.Content
+import           Vis.Page
 import           Vis.Printer
 import           Vis.Section
 import           Vis.Style
 
 
+-- Page Examples
+--------------------------------------------------------------------------------
+exPage_1 :: VisPage
+exPage_1 = page [exHeader, exBody_1, exFooter_1]
+
+
+exPage_2 :: VisPage
+exPage_2 = page [exHeader, exBody_2, exFooter_2]
 
 -- Section Examples
 --------------------------------------------------------------------------------
@@ -92,7 +101,7 @@ exRuleSolid = ruleSolid red'
 -- Content Examples
 --------------------------------------------------------------------------------
 exItem :: VisItem
-exItem = itemSimple "Person Name" (solid cyan)
+exItem = item "Person Name" (solid cyan)
 
 exBlock :: VisBlock
 exBlock = blockSimple "Another Name" styleDefault

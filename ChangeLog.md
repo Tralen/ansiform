@@ -3,6 +3,13 @@
 
 ## Early Versions
 
+### 0.2.1.4 -- 2020-05-19
+* Exposed the basic builders.
+* Reworked type runners to deal with IO separately.
+* Defined VisState type and top level functionality.
+* Created VisResult type to associate printed line numbers with Sections.
+* Separated VisPage internal functionality.
+
 ### 0.2.0.9 -- 2020-05-09
 * Gave up on verbose mode.
 * Moved VisPrinter type to internal module.

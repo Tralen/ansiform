@@ -1,4 +1,8 @@
-module Vis.Printer (module Vis.Printer, Internal.VisPrinter) where
+module Vis.Printer ( module Vis.Printer
+                   , Internal.VisPrinter, Internal.runPrinter
+                   , Internal.runPrinterIO, Internal.runPrinterDefault
+                   , Internal.runPrinterDefault'
+                   ) where
 
 --------------------------------------------------------------------------------
 import           Vis.Internal.Content

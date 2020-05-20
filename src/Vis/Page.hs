@@ -1,15 +1,23 @@
-module Vis.Page where
+module Vis.Page ( module Vis.Page, Internal.VisPage
+                , Internal.runPage, Internal.runPageIO
+                , Internal.runPageDefault, Internal.runPageDefault'
+                ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Section
-import           Vis.Internal.Settings
+import           Vis.Internal.Page as Internal
+import           Vis.Internal.Section
 
-
--- Page Type
+-- Page Builder
 --------------------------------------------------------------------------------
+page :: [VisSection] -> VisPage
+page = visPage
 
--- A VisPage is a collection of Sections.
 
--- data VisPage = VisPage VisSettings [(VisSection,NumLines)]
 
--- VisPositions
+
+
+
+
+
+
+
