@@ -1,6 +1,5 @@
 module Vis.Section ( module Vis.Section
-                   , Internal.VisSection
-                   , Internal.runSection, Internal.runSectionIO
+                   , Internal.VisSection, Internal.runSection
                    , Internal.runSectionDefault, Internal.runSectionDefault'
                    ) where
 

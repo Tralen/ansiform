@@ -1,26 +1,34 @@
 module Vis.Settings (module Vis.Settings
-                    , Internal.VisSettings , Internal.defaultSettings
+                    , Internal.VisConfig
+                    , Internal.VisSettings
                     ) where
 
 
 --------------------------------------------------------------------------------
-import           Data.List
 import           Vis.Internal.Number
 import           Vis.Internal.Settings as Internal
 
 
--- Settings modifiers
+-- Default Settings
 --------------------------------------------------------------------------------
-width :: VisWidth -> VisSettings -> VisSettings
+
+settings :: [VisConfig -> VisConfig] -> VisSettings
+settings = visSettings
+
+defaultSettings :: VisSettings
+defaultSettings = visSettings []
+
+
+-- Configuration modifiers
+--------------------------------------------------------------------------------
+width :: VisWidth -> VisConfig -> VisConfig
 width = setWidth
 
-minSpace :: VisWidth -> VisSettings -> VisSettings
+minSpace :: VisWidth -> VisConfig -> VisConfig
 minSpace = setMinSpace
 
-groupOverflow :: VisNumber -> VisSettings -> VisSettings
+groupOverflow :: VisNumber -> VisConfig -> VisConfig
 groupOverflow = setGroupOverflow
 overflow = setGroupOverflow
 
--- Function to build the settings in a declarative style.
-settings :: [(VisSettings -> VisSettings)] -> IO VisSettings
-settings fs = defaultSettings >>= \dft -> return $ foldl' (\sets f -> f sets) dft fs 
+

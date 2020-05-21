@@ -28,13 +28,13 @@ unPage (VisPage ss) = ss
 
 -- Page Runners
 --------------------------------------------------------------------------------
--- Functions to print the page with the given settings.
+-- Functions to print the page with the user settings.
 runPage :: VisSettings -> VisPage -> IO [VisNumber]
 runPage s = mapM (runSection s) . unPage
 
 -- Prints the page with the given settings still in IO.
-runPageIO :: IO VisSettings -> VisPage -> IO [VisNumber]
-runPageIO s = mapM (runSectionIO s) . unPage
+runPageIO :: IO VisConfig -> VisPage -> IO [VisNumber]
+runPageIO cfg = mapM (runSectionIO cfg) . unPage
 
 -- Uses default settings.
 runPageDefault :: VisPage -> IO [VisNumber]

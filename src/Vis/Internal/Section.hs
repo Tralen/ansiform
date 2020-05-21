@@ -30,13 +30,13 @@ unSection (VisSection ps) = ps
 -- Section Runners
 --------------------------------------------------------------------------------
 
--- Function to run the list of VisPrinters with the given settings.
+-- Function to run the list of VisPrinters with the user settings.
 runSection :: VisSettings -> VisSection -> IO VisNumber
 runSection s = calcSection (runPrinter s) 
 
 -- Version of runSection with settings in IO.
-runSectionIO :: IO VisSettings -> VisSection -> IO VisNumber
-runSectionIO s = calcSection (runPrinterIO s)
+runSectionIO :: IO VisConfig -> VisSection -> IO VisNumber
+runSectionIO cfg = calcSection (runPrinterIO cfg)
 
 -- Uses default settings.
 runSectionDefault :: VisSection -> IO VisNumber

@@ -3,10 +3,32 @@ module Example where
 --------------------------------------------------------------------------------
 import           Vis.Internal.Utils
 import           Vis.Content
+import           Vis.Draw
 import           Vis.Page
 import           Vis.Printer
 import           Vis.Section
 import           Vis.Style
+import           Vis.Settings
+
+
+-- Program Example
+--------------------------------------------------------------------------------
+exMain :: IO ()
+exMain = start exPage_1 mySettings >>= \x -> 
+           getLine >>
+           draw exPage_2 x >>= \x' ->
+           getLine >>
+           amend exBody_3 1 x' >>= \x'' ->
+           getLine >>
+           amend exFooter_3 2 x'' >>= \x''' ->
+           getLine >>
+           redraw x''' >>
+           putStrLn "End"
+
+
+
+mySettings :: VisSettings
+mySettings = settings [minSpace 3]
 
 
 -- Page Examples

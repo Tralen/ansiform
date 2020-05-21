@@ -3,6 +3,14 @@
 
 ## Early Versions
 
+### 0.2.2.0 -- 2020-05-20
+* Finished amend functionality for VisPage and workflow.
+* Made Settings update at each redraw.
+* Created the new VisConfig type for internal use.
+* Made VisSettings the user exposed settings type.
+* Made the basic Run functions work with configs, not settings.
+* Created Draw module and internal State module.
+
 ### 0.2.1.4 -- 2020-05-19
 * Exposed the basic builders.
 * Reworked type runners to deal with IO separately.

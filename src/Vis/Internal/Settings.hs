@@ -1,49 +1,67 @@
 module Vis.Internal.Settings where
 
 --------------------------------------------------------------------------------
+import           Data.List
 import           Vis.Internal.Number
 import           Vis.Internal.Terminal
 
 
+-- Config type
+--------------------------------------------------------------------------------
+
+-- Config is just a set of functions to modify the settings, set by the user.
+newtype VisSettings = VisSettings [VisConfig -> VisConfig]
+
+visSettings :: [VisConfig -> VisConfig] -> VisSettings
+visSettings fs = VisSettings fs
+
+unSettings :: VisSettings -> [VisConfig -> VisConfig]
+unSettings (VisSettings fs) = fs
+
+
+-- Function to build the settings in a declarative style.
+runSettings :: VisSettings -> IO VisConfig
+runSettings stgs = initialConfig >>= \dft ->
+                  return $ foldl' (\sets f -> f sets) dft $ unSettings stgs 
+
 -- Settings type
 --------------------------------------------------------------------------------
 
--- Settings are a tuple of the settings need to run the printers and more.
-newtype VisSettings = VisSettings 
+-- Config is a tuple of the values needed to run the printers and more.
+newtype VisConfig = VisConfig 
             ( VisWidth  -- Current screen width
             , VisWidth  -- Minimum space to be used bettwen blocks.
             , VisNumber -- Percentage that groups are allowed to overflow.
             )
 
-instance Show VisSettings where
-    show (VisSettings (w,m,g)) = "VisSettings"
+instance Show VisConfig where
+    show (VisConfig (w,m,g)) = "VisConfig"
                                 ++ "\n  Screen Width: " ++ show w
                                 ++ "\n  Minimum Space: " ++ show m
                                 ++ "\n  Group Overflow: " ++ show g ++ "%"
 
 -- Wrapper
-visSettings :: VisWidth -> VisWidth -> VisNumber -> VisSettings
-visSettings w m g = VisSettings (w, m, g)
+visConfig :: VisWidth -> VisWidth -> VisNumber -> VisConfig
+visConfig w m g = VisConfig (w, m, g)
 
 
 -- Unwrappers
-unSettings :: VisSettings -> (VisWidth, VisWidth, VisNumber)
-unSettings (VisSettings s) = s
+unConfig :: VisConfig -> (VisWidth, VisWidth, VisNumber)
+unConfig (VisConfig s) = s
 
-unWidth :: VisSettings -> VisWidth
-unWidth (VisSettings (w,_,_)) = w
+unWidth :: VisConfig -> VisWidth
+unWidth (VisConfig (w,_,_)) = w
 
-unMinSpace :: VisSettings -> VisWidth
-unMinSpace (VisSettings (_,m,_)) = m
+unMinSpace :: VisConfig -> VisWidth
+unMinSpace (VisConfig (_,m,_)) = m
 
-unGroupOverflow :: VisSettings -> VisNumber
-unGroupOverflow (VisSettings (_,_,g)) = g
+unGroupOverflow :: VisConfig -> VisNumber
+unGroupOverflow (VisConfig (_,_,g)) = g
 
 
--- Default
-defaultSettings :: IO VisSettings
-defaultSettings = termW >>= \w -> return $ visSettings (visNumber w) 2 25
-
+-- Generates the base settings to be configured.
+initialConfig :: IO VisConfig
+initialConfig = termW >>= \w -> return $ visConfig (visNumber w) 2 25
 
 -- Support Functions
 --------------------------------------------------------------------------------
@@ -54,14 +72,14 @@ groupOverflowRatio :: VisNumber -> Int
 groupOverflowRatio n | n <= 0 = 0 | n >= 100 = 1 | otherwise = div 100 (unn n)
 
 
-setWidth :: VisWidth -> VisSettings -> VisSettings
-setWidth n (VisSettings (_,m,g)) = visSettings n m g
+setWidth :: VisWidth -> VisConfig -> VisConfig
+setWidth n (VisConfig (_,m,g)) = visConfig n m g
 
-setMinSpace :: VisWidth -> VisSettings -> VisSettings
-setMinSpace n (VisSettings (w,_,g)) = visSettings w n g
+setMinSpace :: VisWidth -> VisConfig -> VisConfig
+setMinSpace n (VisConfig (w,_,g)) = visConfig w n g
 
-setGroupOverflow :: VisNumber -> VisSettings -> VisSettings
-setGroupOverflow n (VisSettings (w,m,_)) = visSettings w m n
+setGroupOverflow :: VisNumber -> VisConfig -> VisConfig
+setGroupOverflow n (VisConfig (w,m,_)) = visConfig w m n
 
 
 

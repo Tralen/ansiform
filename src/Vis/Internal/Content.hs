@@ -304,7 +304,7 @@ itemSplit w vi = ( visItem (fst processText) vs
 
 -- Reduces the length of groups in a list of VisGroups so that they don't exceed
 --   the average length too much, based on the excess configuration constant.
-groupAverage :: VisSettings -> [VisGroup] -> [VisGroup]
+groupAverage :: VisConfig -> [VisGroup] -> [VisGroup]
 groupAverage s gs = foldr groupProcess [] gs
     where 
        gof = unGroupOverflow s
