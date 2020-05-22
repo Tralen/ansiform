@@ -20,7 +20,7 @@ instance Show VisPage where
 
 -- Wrappers
 visPage :: [VisSection] -> VisPage
-visPage ss = VisPage ss
+visPage = VisPage
 
 unPage :: VisPage -> [VisSection]
 unPage (VisPage ss) = ss
@@ -38,7 +38,7 @@ runPageIO cfg = mapM (runSectionIO cfg) . unPage
 
 -- Uses default settings.
 runPageDefault :: VisPage -> IO [VisNumber]
-runPageDefault = mapM (runSectionDefault) . unPage
+runPageDefault = mapM runSectionDefault . unPage
 
 -- Uses default settings, with given width and minSpace.
 runPageDefault' :: VisNumber -> VisNumber -> VisPage -> IO [VisNumber]

@@ -34,52 +34,57 @@ mySettings = settings [minSpace 3]
 -- Page Examples
 --------------------------------------------------------------------------------
 exPage_1 :: VisPage
-exPage_1 = page [exHeader, exBody_1, exFooter_1]
+exPage_1 = page [exHeader, exBody_1, exFooter_1, exBottom]
 
 
 exPage_2 :: VisPage
-exPage_2 = page [exHeader, exBody_2, exFooter_2]
+exPage_2 = page [exHeader, exBody_2, exFooter_2, exBottom]
 
 -- Section Examples
 --------------------------------------------------------------------------------
 exHeader :: VisSection
-exHeader = sectionTop' 1 exRule [ exTopBar, printerEmpty 1, exMainLine ]
+exHeader = sectionTop 1 [ exTopBar, printerEmpty 1, exMainLine ]
 
 
 exBody_1 :: VisSection
-exBody_1 = sectionBody' 1 exRule' [ exBodyMenu ]
+exBody_1 = sectionBodyRule' 12 1 exRule [ exBodyMenu ]
 
 exBody_2 :: VisSection
-exBody_2 = sectionBody' 1 exRule' [ exBodyList ]
+exBody_2 = sectionBodyRule' 12 1 exRule [ exBodyList ]
 
 exBody_3 :: VisSection
-exBody_3 = sectionBody' 1 exRule' [ exBodyTable ]
+exBody_3 = sectionBodyRule' 12 1 exRule [ exBodyTable ]
 
 
 exFooter_1 :: VisSection
-exFooter_1 = sectionBody' 1 exRule'' [ exInstruction_1 ]
+exFooter_1 = sectionBodyRule 1 exRule' [ exInstruction_1 ]
 
 exFooter_2 :: VisSection
-exFooter_2 = sectionBody' 1 exRule'' [ exInstruction_2
-                                     , printerEmpty 1
-                                     , exCommands ]
+exFooter_2 = sectionBodyRule 1 exRule' [ exInstruction_2
+                                        , printerEmpty 1
+                                        , exCommands ]
 
 exFooter_3 :: VisSection
-exFooter_3 = sectionBody' 1 exRule'' [ exInstruction_2
-                                     , printerEmpty 1
-                                     , exCommands' ]
+exFooter_3 = sectionBodyRule 1 exRule' [ exInstruction_2
+                                        , printerEmpty 1
+                                        , exCommands' ]
+
+
+exBottom :: VisSection
+exBottom = sectionRule exRule''
+
 
 -- Printer Examples
 --------------------------------------------------------------------------------
 exTopBar :: VisPrinter
 exTopBar = printerSolidLineCenter 0 1 red
-                           ([ blockSimple "Prog Name" (bold white')
-                            , blockSimple "0.1.0.0" (bold white') ])
+                           [ blockSimple "Prog Name" (bold white')
+                           , blockSimple "0.1.0.0" (bold white') ]
 
 exMainLine :: VisPrinter
-exMainLine = printerLineCenter 4 ([ blockSimple "Context" (bold yellow) 
-                                  , blockSimple "Main Article" (bold white) 
-                                  , blockSimple "User Name" (bold red) ])
+exMainLine = printerLineCenter 4 [ blockSimple "Context" (bold yellow) 
+                                 , blockSimple "Main Article" (bold white) 
+                                 , blockSimple "User Name" (bold red) ]
 
 
 exBodyMenu :: VisPrinter

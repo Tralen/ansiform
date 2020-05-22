@@ -29,7 +29,7 @@ blockCycle = visBlock . visItemList
 -- VisBlock of the form 'Element1 S Element2 S Element3...',
 --    where S is a repeated separator.
 blockSeq :: [String] -> VisStyle -> String -> VisStyle -> VisBlock
-blockSeq ss v sep va = visBlock $ intersperse sep' $ fmap (\s -> visItem s v)ss
+blockSeq ss v sep va = visBlock $ intersperse sep' $ fmap (\s -> visItem s v) ss
       where sep' = visItem sep va
        
 -- VisBlock of the form 'Element', where a given character has a different style.

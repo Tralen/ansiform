@@ -20,12 +20,6 @@ average :: [Int] -> Int
 average xs = case xs of [] -> 0; _ -> div (sum xs) (length xs)
 
 
--- Text
---------------------------------------------------------------------------------
--- Generates a string with the same repeated character.
-repeatChar :: Int -> Char -> String
-repeatChar n c = replicate n c
-
 -- Lists
 --------------------------------------------------------------------------------
 -- Version of head that returns a maybe.

@@ -255,7 +255,7 @@ blockPublish w p vbs = rebuildBlocks [[]] p vbs
             fitItem = fst splitItem
             splitItem = itemSplit (w - cw) curItem
 
-            indentFirst = [ visItem (repeatChar p ' ') visDefault : []]
+            indentFirst = [ visItem (replicate p ' ') visDefault : []]
 
 
 -- Splits a VisBlock into two, splitting on a desired text length.
@@ -349,7 +349,7 @@ visTableGroups :: [VisGroup] -> Maybe VisTable
 visTableGroups vgs = visTable vgs vgsLengthMatch
     where 
        headLength = maybe 0 (length . unGroup) $ headMaybe vgs
-       vgsLengthMatch = and $ ((==) headLength . length . unGroup) <$> drop 1 vgs
+       vgsLengthMatch = and $ fmap ((==) headLength . length . unGroup) (drop 1 vgs)
 
 
 -- Enforces the invariant that the header and each row 
@@ -382,7 +382,7 @@ visRule c v
 -- Creates a VisItem for rules and solid spaces from a VisRule.
 --   Must be called direct from printing, as it calculates the width on the fly.
 visRuleItem :: VisRule -> VisNumber -> VisItem
-visRuleItem r n = visItem (repeatChar (unn n) (unRuleChar r)) (unRuleStyle r)
+visRuleItem r n = visItem (replicate (unn n) (unRuleChar r)) (unRuleStyle r)
 
 
 

@@ -48,7 +48,7 @@ instance Show VisColor where
 
 -- Wrapper and Default
 visColor :: ColorIntensity -> Color -> VisColor
-visColor i c = VisColor i c
+visColor = VisColor
 
 visColorDefault :: VisColor
 visColorDefault = VisColorDefault
@@ -89,7 +89,7 @@ instance Show VisFormat where
 
 -- Wrapper and Default
 visFormat :: ConsoleIntensity -> Bool -> Underlining -> VisFormat 
-visFormat b i u = VisFormat b i u
+visFormat = VisFormat
 
 visFormatDefault :: VisFormat
 visFormatDefault = VisFormatDefault
@@ -172,7 +172,7 @@ visFormatBuilder f
 
 -- Wrapper and Defaults
 visStyle :: VisColor -> VisColor -> VisFormat -> VisStyle
-visStyle fc bc f = VisStyle fc bc f
+visStyle = VisStyle
 
 visDefault :: VisStyle
 visDefault = visStyle visColorDefault visColorDefault visFormatDefault

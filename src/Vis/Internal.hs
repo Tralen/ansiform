@@ -7,6 +7,7 @@ import           Vis.Internal.Page      as All
 import           Vis.Internal.Printer   as All
 import           Vis.Internal.Result    as All
 import           Vis.Internal.Section   as All
+import           Vis.Internal.State     as All
 import           Vis.Internal.Settings  as All
 import           Vis.Internal.Style     as All
 import           Vis.Internal.Terminal  as All

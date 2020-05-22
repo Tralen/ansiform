@@ -3,6 +3,9 @@
 
 ## Early Versions
 
+### 0.2.2.1 -- 2020-05-21
+* Implemented minimum number of lines for Sections.
+
 ### 0.2.2.0 -- 2020-05-20
 * Finished amend functionality for VisPage and workflow.
 * Made Settings update at each redraw.

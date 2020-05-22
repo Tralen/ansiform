@@ -82,7 +82,7 @@ printLeft o b = ind o >> printBlock b >> printEnd
 
 -- Function to execute the printing functions that sums the line counts.
 printCounter :: (a -> IO VisNumber) -> [a] -> IO VisNumber
-printCounter f = foldM (\ns l -> f l >>= return . (+) ns) 0
+printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 
 
 -- Rules & Solid Printing
@@ -171,8 +171,8 @@ printColumn o bs = printCounter (printLeft o) bs
 printList :: VisOffset -> VisNumber -> [VisBlock] -> VisConfig -> IO VisNumber
 printList o l bs s = fmap headNum . sequence $ mainPrinter (new (unn l)) bs
      where 
-        w = unWidth s; m = unMinSpace s
-        w' = unn w ; o' = unn o ; m' = unn m
+        w' = unn (unWidth s); m = unMinSpace s
+        o' = unn o ; m' = unn m
         maxWidth = blockTextMax bs + m'
 
         new :: Int -> Int
@@ -357,4 +357,4 @@ printZebraBG o n s = sequence_ $ take n $ cycle [printEmpty 1, printSolid o blac
 
 -- Prints a solid background of several lines of the same color.
 printSolidBG :: VisOffset -> Int -> VisColor -> VisConfig -> IO ()
-printSolidBG o n vc s = sequence_ $ replicate n (printSolid o vc s)
+printSolidBG o n vc s = replicateM_ n (printSolid o vc s)

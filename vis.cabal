@@ -16,6 +16,7 @@ library
   exposed-modules:     Vis
 
   other-modules:       Vis.Content
+                     , Vis.Draw
                      , Vis.Page
                      , Vis.Printer
                      , Vis.Section
@@ -29,11 +30,12 @@ library
                      , Vis.Internal.Result
                      , Vis.Internal.Section
                      , Vis.Internal.Settings
+                     , Vis.Internal.State
                      , Vis.Internal.Style
                      , Vis.Internal.Terminal
                      , Vis.Internal.Utils
 
-  default-extensions:  GeneralizedNewtypeDeriving
+  default-extensions:
 
   build-depends:       base >= 4.10
                      , ansi-terminal >= 0.8

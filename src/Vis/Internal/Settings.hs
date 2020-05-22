@@ -9,11 +9,11 @@ import           Vis.Internal.Terminal
 -- Config type
 --------------------------------------------------------------------------------
 
--- Config is just a set of functions to modify the settings, set by the user.
+-- Config is just a list of functions to modify the settings, made by the user.
 newtype VisSettings = VisSettings [VisConfig -> VisConfig]
 
 visSettings :: [VisConfig -> VisConfig] -> VisSettings
-visSettings fs = VisSettings fs
+visSettings = VisSettings
 
 unSettings :: VisSettings -> [VisConfig -> VisConfig]
 unSettings (VisSettings fs) = fs
