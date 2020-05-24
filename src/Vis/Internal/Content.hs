@@ -6,6 +6,7 @@ import           Data.List
 import           Data.List.Split
 import           Data.Maybe
 import           Vis.Internal.Number
+import           Vis.Internal.Sample
 import           Vis.Internal.Settings
 import           Vis.Internal.Style
 import           Vis.Internal.Utils
@@ -18,21 +19,21 @@ import           Vis.Internal.Utils
 -- Combination of text and a VisStyle for that text.
 --   It should have no non-printable characters.
 newtype VisItem = VisItem (String,VisStyle)
-                deriving (Eq)
+                deriving (Eq, Show)
 
 -- List of VisItems to be printed as a block. 
 --   It should have no empty items, to avoid setting styles unnecessarely.
 --   It is treated as a block and can only be separated by paragraph formatting.
 newtype VisBlock = VisBlock [VisItem]
-                deriving (Eq)
+                deriving (Eq, Show)
 
 -- List of VisBlocks that start with a title for that list.
 newtype VisGroup = VisGroup [VisBlock]
-                 deriving (Eq)
+                 deriving (Eq, Show)
 
 -- List of VisGroups where each group has the same length.
 newtype VisTable = VisTable [VisGroup]
-                 deriving (Eq)
+                 deriving (Eq, Show)
 
 -- A VisParagraph is just a suggestive name for a list of VisBlocks.
 type VisParagraph = [VisBlock]
@@ -40,32 +41,30 @@ type VisParagraph = [VisBlock]
 -- An article is just a list of VisParagraphs.
 type VisArticle = [VisParagraph]
 
--- Show Instances
+-- Sample Instances
 --------------------------------------------------------------------------------
 
-instance Show VisItem where
-  show (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show v  
-  showList is = showContentList (zip is [0..]) 6
+instance VisSample VisItem where
+  sample vi = putStrLn $ show' 0 vi
+  show' _ (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show' 0 v  
+  -- showList is = showContentList (zip is [0..]) 6
 
-instance Show VisBlock where
-   show (VisBlock is) = "VisBlock\n" ++ show is
-   showList bs = showContentList (zip bs [0..]) 4
+instance VisSample VisBlock where
+  sample vb = putStrLn $ show' 0 vb
+  show' _ (VisBlock is) = "VisBlock\n" ++ show' 6 is
+  -- showList bs = showContentList (zip bs [0..]) 4
 
-instance Show VisGroup where
-    show (VisGroup bs) = "VisGroup\n" ++ show bs
-    showList gs = showContentList (zip gs [0..]) 2
+instance VisSample VisGroup where
+  sample vg = putStrLn $ show' 0 vg
+  show' _ (VisGroup bs) = "VisGroup\n" ++ show' 4 bs
+  -- showList gs = showContentList (zip gs [0..]) 2
 
-instance Show VisTable where
-    show (VisTable gs) = "VisTable\n" ++ show gs
-    showList ts = showContentList (zip ts [0..]) 0
+instance VisSample VisTable where
+  sample vt = putStrLn $ show' 0 vt
+  show' _ (VisTable gs) = "VisTable\n" ++ show' 2 gs
+  -- showList ts = showContentList (zip ts [0..]) 0
 
--- Support function to assist in showing list of content types.
-showContentList :: Show a => [(a,Int)] -> Int -> ShowS
-showContentList [] _ = id
-showContentList ((i,0):is) n = (showSpaces n ++) . shows i . showContentList is n
-showContentList ((i,_):is) n = ("\n" ++) . (showSpaces n ++) . shows i . showContentList is n
 
-showSpaces n = replicate n ' '
 
 -- Wrappers
 --------------------------------------------------------------------------------
@@ -171,7 +170,7 @@ isItemNull = null . unItemText
 
 -- Calculates the maximum length of the text in a list of VisBlocks.
 blockTextMax :: [VisBlock] -> Int
-blockTextMax bs = maximumInt
+blockTextMax bs = maximum' 0
     $ (return . blockTextWidth . visBlock) =<< unBlockList bs
 
 -- Calculates the length of a VisBlock text, summing each VisItem.
@@ -362,10 +361,11 @@ isTableBalanced h rs = and $ fmap (\r -> headLength == length r) rs
 -- Rules && Solid
 --------------------------------------------------------------------------------
 newtype VisRule = VisRule (Char, VisStyle)
-                  deriving (Eq)
+                  deriving (Eq, Show)
 
-instance Show VisRule where
-    show (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ show v
+instance VisSample VisRule where
+    sample vr = putStrLn $ show' 0 vr
+    show' _ (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ show' 0 v
 
 unRuleChar :: VisRule -> Char
 unRuleChar (VisRule (c,_)) = c

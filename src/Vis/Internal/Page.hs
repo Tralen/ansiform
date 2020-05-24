@@ -2,6 +2,7 @@ module Vis.Internal.Page where
 
 --------------------------------------------------------------------------------
 import           Vis.Internal.Number
+import           Vis.Internal.Sample
 import           Vis.Internal.Section
 import           Vis.Internal.Settings
 import           Vis.Internal.Terminal
@@ -12,10 +13,12 @@ import           Vis.Internal.Terminal
 
 -- A VisPage is just a list of VisSections.
 newtype VisPage = VisPage [VisSection]
+                deriving (Eq,Show)
 
 
-instance Show VisPage where
-    show (VisPage sns) = "VisPage\n" ++ show sns
+instance VisSample VisPage where
+    sample vp = putStrLn $ show' 0 vp
+    show' _ (VisPage sns) = "VisPage\n" ++ show' 2 sns
     
 
 -- Wrappers

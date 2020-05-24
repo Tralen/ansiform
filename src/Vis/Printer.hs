@@ -19,9 +19,8 @@ import           Vis.Style
 printerEmpty :: VisNumber -> VisPrinter
 printerEmpty n = visPrinter "Empty" $ \_ -> printEmpty n
 
--- Printer for a VisBlock in single line, left aligned.
-printerLeft :: VisOffset -> VisBlock -> VisPrinter
-printerLeft o b = visPrinter "Left" $ \_ -> printLeft o b
+printerItem :: VisItem -> VisPrinter
+printerItem i = visPrinter "Item" $ \_ -> printSingleItem i
 
 
 -- Rules & Solid Printing
@@ -46,6 +45,10 @@ printerSolid' o c = visPrinter "Solid'" $ \s -> printRule o (ruleSolid c) s
 
 -- Line Printing
 --------------------------------------------------------------------------------
+
+-- Printer for a VisBlock in single line, left aligned.
+printerLeft :: VisOffset -> VisBlock -> VisPrinter
+printerLeft o b = visPrinter "Left" $ \_ -> printLeft o b
 
 -- Printer for single VisBlock, right aligned.
 printerRight :: VisOffset -> VisBlock -> VisPrinter

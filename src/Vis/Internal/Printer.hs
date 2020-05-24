@@ -8,6 +8,7 @@ import           Data.List.Split
 import           Data.Maybe (fromMaybe)
 import           Vis.Internal.Content
 import           Vis.Internal.Number
+import           Vis.Internal.Sample
 import           Vis.Internal.Settings
 import           Vis.Internal.Style
 import           Vis.Internal.Terminal
@@ -19,20 +20,22 @@ import           Vis.Style
 
 -- Printer Type
 --------------------------------------------------------------------------------
--- A printer is a function, from Settings to IO VisNumber, that prints on the screen.
+-- A printer is a function, from Config to IO VisNumber, that prints on the screen.
 --    It is expected that a Printer will print at least one line.
 --    The Printer should return the number of lines printed as an IO VisNumber.
 --    An String is passed to identify the specific printer function used.
---    The Printer doesn't show its content since it is restructured on the fly.
+--    The Printer cant't show its content since it is restructured on the fly.
 newtype VisPrinter = VisPrinter (String, (VisConfig -> IO VisNumber))
-
-
-instance Show VisPrinter where
-    show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ "> "
-    showList ps = showContentList (zip ps [0..]) 4
 
 instance Eq VisPrinter where
     VisPrinter (n1,_) == VisPrinter (n2,_) = n1 == n2
+
+instance Show VisPrinter where
+    show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ ">"
+
+instance VisSample VisPrinter where
+    sample vp = putStrLn $ show' 0 vp
+    show' _ vp = show vp
 
 
 -- Wrapper
@@ -102,6 +105,11 @@ printSolid o c s = printRule o (ruleSolid c) s
 -- Line Printing
 --------------------------------------------------------------------------------
 
+-- Prints a single Item as a line, left aligned.
+printSingleItem :: VisItem -> IO VisNumber
+printSingleItem i = printItem i >> printEnd
+
+
 -- Prints a line of VisBlocks, left aligned.
 printLineLeft :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
 printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd
@@ -169,7 +177,7 @@ printColumn o bs = printCounter (printLeft o) bs
 -- Prints a list of VisBlocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
 printList :: VisOffset -> VisNumber -> [VisBlock] -> VisConfig -> IO VisNumber
-printList o l bs s = fmap headNum . sequence $ mainPrinter (new (unn l)) bs
+printList o l bs s = fmap (head' 0) . sequence $ mainPrinter (new (unn l)) bs
      where 
         w' = unn (unWidth s); m = unMinSpace s
         o' = unn o ; m' = unn m
@@ -233,7 +241,7 @@ printGroups o p n bSpace bTable gs s = mainPrinter
        finalWidth = w' - offset*2 + m'
        
        widthList = fmap ((+m') . blockTextMax . unGroup) gs
-       maxWidth = maximumInt widthList
+       maxWidth = maximum' 0 widthList
        evenList = replicate (length gs) maxWidth
        chosenWidthList | bSpace = evenList | otherwise = widthList
 
@@ -260,7 +268,7 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                  lastRow = null remWidths
                  validIndex = bTable && not lastRow
                  rowColumns = length curWidths
-                 rowLength = maximumInt $ fmap (length . unGroup) curGroups
+                 rowLength = maximum' 0 $ fmap (length . unGroup) curGroups
                  lastLength = length . unGroup $ last curGroups
 
                  curOffsets = scanl (+) 0 curWidths

@@ -3,6 +3,7 @@ module Vis.Internal.Settings where
 --------------------------------------------------------------------------------
 import           Data.List
 import           Vis.Internal.Number
+import           Vis.Internal.Sample
 import           Vis.Internal.Terminal
 
 
@@ -11,6 +12,10 @@ import           Vis.Internal.Terminal
 
 -- Config is just a list of functions to modify the settings, made by the user.
 newtype VisSettings = VisSettings [VisConfig -> VisConfig]
+
+instance VisSample VisSettings where
+    sample vs = sample =<< runSettings vs
+    show' _ (VisSettings fs) = ""
 
 visSettings :: [VisConfig -> VisConfig] -> VisSettings
 visSettings = VisSettings
@@ -34,11 +39,12 @@ newtype VisConfig = VisConfig
             , VisNumber -- Percentage that groups are allowed to overflow.
             )
 
-instance Show VisConfig where
-    show (VisConfig (w,m,g)) = "VisConfig"
-                                ++ "\n  Screen Width: " ++ show w
-                                ++ "\n  Minimum Space: " ++ show m
-                                ++ "\n  Group Overflow: " ++ show g ++ "%"
+instance VisSample VisConfig where
+    sample vc = putStrLn $ show' 0 vc
+    show' _ (VisConfig (w,m,g)) = "Settings"
+                               ++ "\n  Screen Width: " ++ show w
+                               ++ "\n  Minimum Space: " ++ show m
+                               ++ "\n  Group Overflow: " ++ show g ++ "%"
 
 -- Wrapper
 visConfig :: VisWidth -> VisWidth -> VisNumber -> VisConfig

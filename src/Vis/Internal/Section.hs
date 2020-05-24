@@ -5,6 +5,7 @@ import           Control.Monad
 import           Vis.Internal.Content
 import           Vis.Internal.Number
 import           Vis.Internal.Printer
+import           Vis.Internal.Sample
 import           Vis.Internal.Settings
 import           Vis.Printer
 
@@ -15,12 +16,11 @@ import           Vis.Printer
 --    The section takes a number as a minimum number of lines. If the printing
 --    of the section doesn't reach that number, empty lines will be printed.
 newtype VisSection = VisSection (VisNumber,[VisPrinter])
-                     deriving (Eq)
+                     deriving (Eq, Show)
 
-instance Show VisSection where
-    show (VisSection (n,ps)) = "VisSection  (minimum " ++ show n ++ " lines)\n" ++ show ps
-    showList ss = showContentList (zip ss [0..]) 2
-
+instance VisSample VisSection where
+    sample vs = putStrLn $ show' 0 vs 
+    show' _ (VisSection (n,ps)) = "VisSection (minimum lines: " ++ show n ++ ")\n" ++ show' 4 ps
 
 -- Wrappers
 visSection :: VisNumber -> [VisPrinter] -> VisSection

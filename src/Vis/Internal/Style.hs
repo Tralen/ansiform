@@ -11,6 +11,7 @@ import           Data.Char
 import           Data.Word
 import           System.Console.ANSI as ANSI
 import           Vis.Internal.Number
+import           Vis.Internal.Sample
 --------------------------------------------------------------------------------
 
 {-
@@ -38,12 +39,13 @@ SetColor                    ConsoleLayer ColorIntensity Color
 -- Colors
 --------------------------------------------------------------------------------
 data VisColor = VisColorDefault | VisColor ColorIntensity Color
-                deriving (Eq)
+                deriving (Eq, Show)
 
-instance Show VisColor where
-    show VisColorDefault = "ColorDefault"
-    show (VisColor Dull c) = show c
-    show (VisColor Vivid c) = show c ++ "'"  
+instance VisSample VisColor where
+    sample vc = putStrLn $ show' 0 vc
+    show' _ VisColorDefault = "ColorDefault"
+    show' _ (VisColor Dull c) = show c
+    show' _ (VisColor Vivid c) = show c ++ "'"  
 
 
 -- Wrapper and Default
@@ -73,18 +75,19 @@ isColorDefault vc = case vc of VisColorDefault -> True ; _ -> False
 --------------------------------------------------------------------------------
 --                                            Bold             Italic Underline
 data VisFormat = VisFormatDefault | VisFormat ConsoleIntensity Bool   Underlining
-                 deriving (Eq)
+                 deriving (Eq, Show)
 
-instance Show VisFormat where
-    show VisFormatDefault = "FormatDefault"
-    show (VisFormat BoldIntensity False NoUnderline) = "Bold"
-    show (VisFormat NormalIntensity True NoUnderline) = "Italic"
-    show (VisFormat NormalIntensity False SingleUnderline) = "Underline"
-    show (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
-    show (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
-    show (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
-    show (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
-    show _ = "Regular"
+instance VisSample VisFormat where
+    sample vf = putStrLn $ show' 0 vf
+    show' _ VisFormatDefault = "FormatDefault"
+    show' _ (VisFormat BoldIntensity False NoUnderline) = "Bold"
+    show' _ (VisFormat NormalIntensity True NoUnderline) = "Italic"
+    show' _ (VisFormat NormalIntensity False SingleUnderline) = "Underline"
+    show' _ (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
+    show' _ (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
+    show' _ (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
+    show' _ (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
+    show' _ _ = "Regular"
 
 
 -- Wrapper and Default
@@ -127,11 +130,12 @@ isUnderline vf = case unUnderline vf of SingleUnderline -> True; _ -> False
 -- Visual Styles
 --------------------------------------------------------------------------------
 data VisStyle = VisZero | VisStyle VisColor VisColor VisFormat
-                deriving (Eq)
+                deriving (Eq, Show)
 
-instance Show VisStyle where
-  show VisZero = "Reset"
-  show (VisStyle fc bg f) = "{" ++ show fc ++ " " ++ show bg ++ " " ++ show f ++ "}"
+instance VisSample VisStyle where
+  sample vs = putStrLn $ show' 0 vs
+  show' _ VisZero = "Reset"
+  show' _ (VisStyle fc bg f) = "{" ++ show' 0 fc ++ " " ++ show' 0 bg ++ " " ++ show' 0 f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
 vis :: MonadIO m => VisStyle -> m ()

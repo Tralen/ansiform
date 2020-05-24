@@ -7,13 +7,13 @@ import           Data.Maybe (fromMaybe)
 
 -- Numbers
 --------------------------------------------------------------------------------
--- Int specialized version of maximum so it doesn't fail.
-maximumInt :: [Int] -> Int
-maximumInt xs = case xs of [] -> 0; _ -> maximum xs
+-- Version of maximum that takes a default, so it doesn't fail.
+maximum' :: Ord a => a -> [a] -> a
+maximum' d xs = case xs of [] -> d; _ -> maximum xs
 
--- Int specialized version of minimum so it doesn't fail.
-minimumInt :: [Int] -> Int
-minimumInt xs = case xs of [] -> 0; _ -> minimum xs
+-- Version of minimum that takes a default, so it doesn't fail.
+minimum' :: Ord a => a -> [a] -> a
+minimum' d xs = case xs of [] -> d; _ -> minimum xs
 
 -- Calculates the average value from a list of Ints.
 average :: [Int] -> Int
@@ -26,17 +26,17 @@ average xs = case xs of [] -> 0; _ -> div (sum xs) (length xs)
 headMaybe :: [a] -> Maybe a
 headMaybe xs = case xs of [] -> Nothing; _ -> Just (head xs)
 
--- Num specialized version of head so it doesn't fail.
-headNum :: Num a => [a] -> a
-headNum xs = case xs of [] -> 0; _ -> head xs
+-- Version of head that takes a default.
+head' :: a -> [a] -> a
+head' d xs = case xs of [] -> d; _ -> head xs
 
 -- Version of last that returns a maybe. Still doesn't work for infinite lists.
 lastMaybe :: [a] -> Maybe a
 lastMaybe xs = case xs of [] -> Nothing; _ -> Just (last xs)
 
--- Num specialized version of head so it doesn't fail.
-lastNum :: Num a => [a] -> a
-lastNum xs = case xs of [] -> 0; _ -> last xs
+-- Version of last that takes a default.
+last' :: a -> [a] -> a
+last' d xs = case xs of [] -> d; _ -> last xs
 
 
 -- Reverses and concats a list simultaneously, used to avoid appending.

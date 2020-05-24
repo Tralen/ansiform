@@ -15,12 +15,9 @@ import           Vis.Internal  as All
 
 
 -- TODO:
---   Consider implementing the Empty Lines between sections as a Config.
---   Consider making the rules a part of the section?
---   Revert Show instances to default, create Sample functions.
---   Review if the Result type is needed.
---   Review if returning the IO VisNumber is necessary.
---   Create page for State.
+--   Implement Sample for VisNumber.
+--   Refine Sample functions to include indentation.
+--   Implement instances for VisState.
 --   Implement StateT.
 --   Migration to Text.
 --   Migration to Seq.
