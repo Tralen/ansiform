@@ -42,10 +42,9 @@ data VisColor = VisColorDefault | VisColor ColorIntensity Color
                 deriving (Eq, Show)
 
 instance VisSample VisColor where
-    sample vc = putStrLn $ show' 0 vc
-    show' _ VisColorDefault = "ColorDefault"
-    show' _ (VisColor Dull c) = show c
-    show' _ (VisColor Vivid c) = show c ++ "'"  
+    sampleShow _ VisColorDefault = "ColorDefault"
+    sampleShow _ (VisColor Dull c) = show c
+    sampleShow _ (VisColor Vivid c) = show c ++ "'"  
 
 
 -- Wrapper and Default
@@ -78,16 +77,15 @@ data VisFormat = VisFormatDefault | VisFormat ConsoleIntensity Bool   Underlinin
                  deriving (Eq, Show)
 
 instance VisSample VisFormat where
-    sample vf = putStrLn $ show' 0 vf
-    show' _ VisFormatDefault = "FormatDefault"
-    show' _ (VisFormat BoldIntensity False NoUnderline) = "Bold"
-    show' _ (VisFormat NormalIntensity True NoUnderline) = "Italic"
-    show' _ (VisFormat NormalIntensity False SingleUnderline) = "Underline"
-    show' _ (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
-    show' _ (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
-    show' _ (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
-    show' _ (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
-    show' _ _ = "Regular"
+    sampleShow _ VisFormatDefault = "FormatDefault"
+    sampleShow _ (VisFormat BoldIntensity False NoUnderline) = "Bold"
+    sampleShow _ (VisFormat NormalIntensity True NoUnderline) = "Italic"
+    sampleShow _ (VisFormat NormalIntensity False SingleUnderline) = "Underline"
+    sampleShow _ (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
+    sampleShow _ (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
+    sampleShow _ (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
+    sampleShow _ (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
+    sampleShow _ _ = "Regular"
 
 
 -- Wrapper and Default
@@ -133,9 +131,8 @@ data VisStyle = VisZero | VisStyle VisColor VisColor VisFormat
                 deriving (Eq, Show)
 
 instance VisSample VisStyle where
-  sample vs = putStrLn $ show' 0 vs
-  show' _ VisZero = "Reset"
-  show' _ (VisStyle fc bg f) = "{" ++ show' 0 fc ++ " " ++ show' 0 bg ++ " " ++ show' 0 f ++ "}"
+  sampleShow _ VisZero = "Reset"
+  sampleShow _ (VisStyle fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
 vis :: MonadIO m => VisStyle -> m ()

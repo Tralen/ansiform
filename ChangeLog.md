@@ -3,6 +3,10 @@
 
 ## Early Versions
 
+### 0.2.2.7 -- 2020-05-29
+* Implementation of Sample instance for VisNumber.
+* Refining of Sample instances for all types.
+
 ### 0.2.2.5 -- 2020-05-23
 * Got rid of the Result type and module.
 * Reversal of Show instances to default, creation of Sample class.

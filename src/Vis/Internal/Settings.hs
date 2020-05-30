@@ -15,7 +15,7 @@ newtype VisSettings = VisSettings [VisConfig -> VisConfig]
 
 instance VisSample VisSettings where
     sample vs = sample =<< runSettings vs
-    show' _ (VisSettings fs) = ""
+    sampleShow _ (VisSettings fs) = ""
 
 visSettings :: [VisConfig -> VisConfig] -> VisSettings
 visSettings = VisSettings
@@ -37,11 +37,10 @@ newtype VisConfig = VisConfig
             ( VisWidth  -- Current screen width
             , VisWidth  -- Minimum space to be used bettwen blocks.
             , VisNumber -- Percentage that groups are allowed to overflow.
-            )
+            ) deriving (Eq, Show)
 
 instance VisSample VisConfig where
-    sample vc = putStrLn $ show' 0 vc
-    show' _ (VisConfig (w,m,g)) = "Settings"
+    sampleShow _ (VisConfig (w,m,g)) = "Settings"
                                ++ "\n  Screen Width: " ++ show w
                                ++ "\n  Minimum Space: " ++ show m
                                ++ "\n  Group Overflow: " ++ show g ++ "%"

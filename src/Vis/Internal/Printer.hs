@@ -34,8 +34,7 @@ instance Show VisPrinter where
     show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ ">"
 
 instance VisSample VisPrinter where
-    sample vp = putStrLn $ show' 0 vp
-    show' _ vp = show vp
+    sampleShow _ vp = show vp
 
 
 -- Wrapper

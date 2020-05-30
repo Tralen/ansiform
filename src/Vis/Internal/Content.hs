@@ -45,25 +45,16 @@ type VisArticle = [VisParagraph]
 --------------------------------------------------------------------------------
 
 instance VisSample VisItem where
-  sample vi = putStrLn $ show' 0 vi
-  show' _ (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ show' 0 v  
-  -- showList is = showContentList (zip is [0..]) 6
+  sampleShow _ (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ sampleShow 0 v  
 
 instance VisSample VisBlock where
-  sample vb = putStrLn $ show' 0 vb
-  show' _ (VisBlock is) = "VisBlock\n" ++ show' 6 is
-  -- showList bs = showContentList (zip bs [0..]) 4
+  sampleShow n (VisBlock is) = sampleFormat "VisBlock" n is
 
 instance VisSample VisGroup where
-  sample vg = putStrLn $ show' 0 vg
-  show' _ (VisGroup bs) = "VisGroup\n" ++ show' 4 bs
-  -- showList gs = showContentList (zip gs [0..]) 2
+  sampleShow n (VisGroup bs) = sampleFormat "VisGroup" n bs
 
 instance VisSample VisTable where
-  sample vt = putStrLn $ show' 0 vt
-  show' _ (VisTable gs) = "VisTable\n" ++ show' 2 gs
-  -- showList ts = showContentList (zip ts [0..]) 0
-
+  sampleShow n (VisTable gs) = sampleFormat "VisTable" n gs
 
 
 -- Wrappers
@@ -364,8 +355,7 @@ newtype VisRule = VisRule (Char, VisStyle)
                   deriving (Eq, Show)
 
 instance VisSample VisRule where
-    sample vr = putStrLn $ show' 0 vr
-    show' _ (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ show' 0 v
+    sampleShow _ (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ sampleShow 0 v
 
 unRuleChar :: VisRule -> Char
 unRuleChar (VisRule (c,_)) = c

@@ -15,8 +15,6 @@ import           Vis.Internal  as All
 
 
 -- TODO:
---   Implement Sample for VisNumber.
---   Refine Sample functions to include indentation.
 --   Implement instances for VisState.
 --   Implement StateT.
 --   Migration to Text.

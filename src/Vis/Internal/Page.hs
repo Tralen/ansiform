@@ -17,8 +17,7 @@ newtype VisPage = VisPage [VisSection]
 
 
 instance VisSample VisPage where
-    sample vp = putStrLn $ show' 0 vp
-    show' _ (VisPage sns) = "VisPage\n" ++ show' 2 sns
+    sampleShow n (VisPage sns) = sampleFormat "VisPage" n sns
     
 
 -- Wrappers

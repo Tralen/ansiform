@@ -1,5 +1,5 @@
 name:                vis
-version:             0.2.2.5
+version:             0.2.2.7
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface with colors, alignment, tables, paragraphs and more.
 license:             GPL-3

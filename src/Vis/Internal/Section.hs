@@ -19,8 +19,7 @@ newtype VisSection = VisSection (VisNumber,[VisPrinter])
                      deriving (Eq, Show)
 
 instance VisSample VisSection where
-    sample vs = putStrLn $ show' 0 vs 
-    show' _ (VisSection (n,ps)) = "VisSection (minimum lines: " ++ show n ++ ")\n" ++ show' 4 ps
+    sampleShow n (VisSection (m,ps)) = "VisSection (minimum lines: " ++ sampleShow 0 m ++ ")\n" ++ sampleShow n ps
 
 -- Wrappers
 visSection :: VisNumber -> [VisPrinter] -> VisSection
