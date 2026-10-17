@@ -122,31 +122,35 @@ printLineRight o bs s = printLineLeft finalOffset bs s
           totalWidth = visNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
 
--- Prints a list of VisBlocks in a single line, with center alignment.
--- Indentation level is given by the offset.
+-- Prints a list of VisBlocks in a single line, centered and spread across
+--    the available width. Adjacent blocks are separated by at least the
+--    minimum space setting. If the content does not fit, the line overflows
+--    instead of overlapping.
 printLineCenter :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
 printLineCenter _ [] _ = printEnd
-printLineCenter o bs s = mapM_ printText (zip bs [0..]) >> printEnd
-     where 
-        w' = unn $ unWidth s ; o' = unn o
-        numItems = length bs
-        halfItems = quot numItems 2
-        screenInd = quot w' numItems
-        
-        printText :: (VisBlock,Int) -> IO ()
-        printText (v,i) 
-              | odd numItems && i == halfItems = offsetMiddle >> printBlock'
-              | i >= halfItems = offsetRight >> printBlock'
-              | otherwise = offsetLeft >> printBlock'
-            where
-               i' = numItems - 1 - i
-               printBlock' = printBlock v
-               itemWidth = blockTextWidth v
-               offsetMiddle = indR (quot w' 2 - quot itemWidth 2)
-               offsetRight = indR (w' - (screenOffset i' + itemWidth + itemOffset i'))
-               offsetLeft = indR (screenOffset i + itemOffset i)
-               screenOffset x = quot o' (x+1) + screenInd * x
-               itemOffset x = quot itemWidth (halfItems + 1) * x
+printLineCenter o [b] s = indR centered >> printBlock b >> printEnd
+     where
+        w' = unn (unWidth s)
+        o' = unn o
+        width = blockTextWidth b
+        centered = o' + max 0 (quot (w' - o' * 2 - width) 2)
+printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd
+     where
+        w' = unn (unWidth s)
+        o' = unn o
+        m = unn (unMinSpace s)
+        widths = fmap blockTextWidth bs
+        gaps = length bs - 1
+        total = sum widths + m * gaps
+        available = w' - o' * 2
+        extra = max 0 (available - total)
+        baseGap = m + quot extra gaps
+        remainder = rem extra gaps
+        gapsList = [ baseGap + if i < remainder then 1 else 0
+                   | i <- [0 .. gaps - 1] ]
+        positions = scanl (\x (width,gap) -> x + width + gap) o'
+                          (zip widths gapsList)
+        printAt (x,b) = indR x >> printBlock b
 
 
 type VisLineFunction = (VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber)

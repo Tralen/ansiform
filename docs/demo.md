@@ -22,7 +22,7 @@ The header and footer are shared components; only the body changes between scree
 | `R` | Redraw the current screen. |
 | `X` | Exit. |
 
-The menu marks the shortcut letter of each option. Press a key directly; the screen changes immediately, with no prompt and no Enter. The demo restores the terminal settings when it exits. When stdin is not a terminal, for example with piped input, line breaks are ignored and each character is handled as a key.
+The menu lists each shortcut next to its option, and the footer shows the same keys. On the main menu, the footer commands are split into two rows so longer labels do not crowd. Press a key directly; the screen changes immediately, with no prompt and no Enter. The demo restores the terminal settings when it exits. When stdin is not a terminal, for example with piped input, line breaks are ignored and each character is handled as a key.
 
 ## Source
 

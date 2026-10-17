@@ -51,7 +51,7 @@ printerLineRight :: VisOffset -> [VisBlock] -> VisPrinter
 printerLineCenter :: VisOffset -> [VisBlock] -> VisPrinter
 ```
 
-The `Line` variants print several blocks on the same line with the minimum space from the settings between them. The first group takes a single block.
+The `Line` variants print several blocks on the same line with the minimum space from the settings between them. The first group takes a single block. Centered lines respect the minimum space and overflow rather than overlapping when the blocks do not fit.
 
 ```haskell
 printerLineCenter 4

@@ -21,7 +21,7 @@ overflow :: VisNumber -> VisConfig -> VisConfig
 ```
 
 - `width n` overrides the detected terminal width. Useful for deterministic output or for rendering into a fixed-width surface.
-- `minSpace n` is the minimum number of columns between blocks, list columns and table columns.
+- `minSpace n` is the minimum number of columns between blocks on a line, list columns and table columns.
 - `groupOverflow n` is the percentage by which a group may exceed the average group width before it is split into extra rows. `0` disables overflow; `100` allows a group to reach twice the average.
 
 `overflow` is an alias for `groupOverflow`.

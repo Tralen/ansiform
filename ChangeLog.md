@@ -2,6 +2,11 @@
 
 ## Functional Versions
 
+### 0.3.3 -- 2026-10-17
+* Fixed printLineCenter so blocks respect the minimum space and never overlap.
+* Made the demo menu use the same shortcut presentation as the footer.
+* Split the demo footer commands into two rows to keep long labels readable.
+
 ### 0.3.2 -- 2026-10-17
 * Reflowed the README and documentation to remove hard wrapping.
 * Added a blank line above the demo's main header line.

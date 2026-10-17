@@ -19,7 +19,7 @@ import           Vis
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.3.2"
+demoVersion = "0.3.3"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -76,10 +76,12 @@ demoSettings = settings [minSpace 2]
 -- Reusable components
 --------------------------------------------------------------------------------
 
-themeAccent, themeMuted, themeDanger :: VisStyle
+themeAccent, themeMuted :: VisStyle
 themeAccent = bold cyan
 themeMuted = normal black'
-themeDanger = bold red
+
+themeDanger :: VisColor
+themeDanger = red'
 
 header :: VisSection
 header = sectionTopRule 1 ruleHeader
@@ -96,12 +98,11 @@ header = sectionTopRule 1 ruleHeader
 bottom :: VisSection
 bottom = sectionRule ruleBottom
 
-footer :: String -> [VisBlock] -> VisSection
-footer message commandLine = sectionBodyRule 1 ruleFooter
-  [ printerLeft 2 (blockSimple message styleDefault)
-  , printerEmpty 1
-  , printerLineCenter 4 commandLine
-  ]
+footer :: String -> [[VisBlock]] -> VisSection
+footer message commandLines = sectionBodyRule 1 ruleFooter
+  ( [ printerLeft 2 (blockSimple message styleDefault)
+    , printerEmpty 1
+    ] ++ fmap (printerLineCenter 4) commandLines )
 
 ruleHeader, ruleBody, ruleFooter, ruleBottom :: VisRule
 ruleHeader = rule '=' (bold black')
@@ -129,21 +130,21 @@ screenFooter :: Screen -> VisSection
 screenFooter Menu = footer "Choose an option above: " menuCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
-menuCommands, pageCommands :: [VisBlock]
+menuCommands, pageCommands :: [[VisBlock]]
 menuCommands =
-  [ blockMenu "L" "List" cyan
-  , blockMenu "G" "Groups" cyan
-  , blockMenu "T" "Tables" cyan
-  , blockMenu "H" "Rich table" cyan
-  , blockMenu "A" "Article" cyan
-  , blockMenu "C" "Content builders" cyan
-  , blockMenu "X" "Exit" red
+  [ [ blockMenu "L" "List" cyan
+    , blockMenu "G" "Groups" cyan
+    , blockMenu "T" "Tables" cyan
+    , blockMenu "H" "Rich table" cyan ]
+  , [ blockMenu "A" "Article" cyan
+    , blockMenu "C" "Content builders" cyan
+    , blockMenu "X" "Exit" themeDanger ]
   ]
 
 pageCommands =
-  [ blockMenu "B" "Back" cyan
-  , blockMenu "R" "Reload" cyan
-  , blockMenu "X" "Exit" red
+  [ [ blockMenu "B" "Back" cyan
+    , blockMenu "R" "Reload" cyan
+    , blockMenu "X" "Exit" themeDanger ]
   ]
 
 --------------------------------------------------------------------------------
@@ -152,13 +153,13 @@ pageCommands =
 
 menuBlocks :: [VisBlock]
 menuBlocks =
-  [ blockMarked 'L' "List composers" themeAccent
-  , blockMarked 'G' "Group philosophers" themeAccent
-  , blockMarked 'T' "Tabulate composers" themeAccent
-  , blockMarked 'H' "RicH flight table" themeAccent
-  , blockMarked 'A' "Article about Vis" themeAccent
-  , blockMarked 'C' "Content builders" themeAccent
-  , blockMarked 'x' "Exit" themeDanger
+  [ blockMenu "L" "List composers" cyan
+  , blockMenu "G" "Group philosophers" cyan
+  , blockMenu "T" "Tabulate composers" cyan
+  , blockMenu "H" "Rich flight table" cyan
+  , blockMenu "A" "Article about Vis" cyan
+  , blockMenu "C" "Content builders" cyan
+  , blockMenu "X" "Exit" themeDanger
   ]
 
 blocksBody :: VisSection
@@ -175,6 +176,7 @@ blocksBody = sectionBodyRule 1 ruleBody
                    , ("styles", bold green) ]
       , blockSeq ["A", "B", "C"] (normal blue) " -> " (normal black')
       , blockAssoc' ["Third", "Second", "First"] styleDefault (normal magenta)
+      , blockMarked 'k' "marked letter" (bold green)
       ]
   , printerEmpty 1
   , printerLeft 4 (blockSimple "left aligned line" (normal green))
