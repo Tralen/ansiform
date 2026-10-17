@@ -2,6 +2,13 @@
 
 ## Functional Versions
 
+### 0.3.2 -- 2026-10-17
+* Reflowed the README and documentation to remove hard wrapping.
+* Added a blank line above the demo's main header line.
+* Changed the demo to read single keys without a prompt or Enter.
+* Fixed the Exit key highlight in the demo menu.
+* Documented the evaluation of the proposed monadic Printer and Section interface.
+
 ### 0.3.1 -- 2026-10-17
 * Removed the extra solid bar from the demo header, which covered part of the second line.
 * Made the demo footer shortcuts functional with an interactive screen loop.

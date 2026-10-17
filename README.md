@@ -1,14 +1,10 @@
 # Vis
 
-Vis is a small Haskell library for building visual command line interfaces.
-It provides a declarative format DSL for styled text, rules, aligned lines,
-lists, groups, tables, paragraphs and multi-section pages.
+Vis is a small Haskell library for building visual command line interfaces. It provides a declarative format DSL for styled text, rules, aligned lines, lists, groups, tables, paragraphs and multi-section pages.
 
-Builders are pure and produce immutable values. A thin drawing layer writes
-those values to the terminal and keeps track of how many lines were printed,
-so a page can be amended, replaced or redrawn in place.
+Builders are pure and produce immutable values. A thin drawing layer writes those values to the terminal and keeps track of how many lines were printed, so a page can be amended, replaced or redrawn in place.
 
-Current version: **0.3.1**.
+Current version: **0.3.2**.
 
 ## Features
 
@@ -56,9 +52,7 @@ cabal test
 cabal run vis-demo
 ```
 
-`vis-demo` is an interactive gallery. Use the keys shown in the footer to open
-list, group, table and article screens; `B` returns to the menu, `R` redraws
-the current screen and `X` exits.
+`vis-demo` is an interactive gallery. Press the keys shown in the footer; the screen changes immediately, without a prompt or Enter. `B` returns to the menu, `R` redraws the current screen and `X` exits.
 
 ## Documentation
 
@@ -74,16 +68,11 @@ the current screen and `X` exits.
 
 ## Design principles
 
-1. **Immutable values.** Every public builder returns a new value; nothing is
-   mutated after creation.
-2. **Pure core.** Layout, wrapping and table validation are pure functions.
-   Only the drawing layer performs IO.
-3. **Errors as data.** Table builders return `Maybe VisTable`. There are no
-   exceptions in the public API.
-4. **Reusable components.** Screens are assembled from shared builders such as
-   `header`, `footer` and `rule`, keeping behavior and theming consistent.
-5. **Explicit versioning.** The package follows the PVP and every release is
-   recorded in [ChangeLog.md](ChangeLog.md).
+1. **Immutable values.** Every public builder returns a new value; nothing is mutated after creation.
+2. **Pure core.** Layout, wrapping and table validation are pure functions. Only the drawing layer performs IO.
+3. **Errors as data.** Table builders return `Maybe VisTable`. There are no exceptions in the public API.
+4. **Reusable components.** Screens are assembled from shared builders such as `header`, `footer` and `rule`, keeping behavior and theming consistent.
+5. **Explicit versioning.** The package follows the PVP and every release is recorded in [ChangeLog.md](ChangeLog.md).
 
 ## License
 

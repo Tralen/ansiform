@@ -5,8 +5,12 @@
 --   > cabal run vis-demo
 module Main where
 
+import           Control.Exception (bracket_)
+import           Control.Monad (when)
 import           Data.Char (toLower)
-import           System.IO (hFlush, isEOF, stdout)
+import           System.IO (BufferMode(..), hGetBuffering, hGetEcho,
+                            hIsTerminalDevice, hSetBuffering, hSetEcho,
+                            isEOF, stdin)
 import           Vis
 
 --------------------------------------------------------------------------------
@@ -15,7 +19,7 @@ import           Vis
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.3.1"
+demoVersion = "0.3.2"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -23,36 +27,47 @@ data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
 
 main :: IO ()
 main = do
-  state <- start (screenPage Menu) demoSettings
-  loop Menu state
+  interactive <- hIsTerminalDevice stdin
+  oldBuffering <- hGetBuffering stdin
+  oldEcho <- if interactive then hGetEcho stdin else return True
+  let setup = when interactive $ do
+                hSetBuffering stdin NoBuffering
+                hSetEcho stdin False
+      restore = when interactive $ do
+                  hSetBuffering stdin oldBuffering
+                  hSetEcho stdin oldEcho
+  bracket_ setup restore $ do
+    state <- start (screenPage Menu) demoSettings
+    loop Menu state
 
 loop :: Screen -> VisState -> IO ()
 loop screen state = do
-  putStr "\nvis-demo> "
-  hFlush stdout
   eof <- isEOF
   if eof
-    then putStrLn "\nVis demo finished."
+    then finish
     else do
-      line <- getLine
-      case take 1 (map toLower line) of
-        "l" -> open List state
-        "g" -> open Groups state
-        "t" -> open Tables state
-        "h" -> open Rich state
-        "a" -> open Article state
-        "c" -> open Blocks state
-        "r" -> do state' <- redraw state
+      key <- getChar
+      case toLower key of
+        'l' -> open List state
+        'g' -> open Groups state
+        't' -> open Tables state
+        'h' -> open Rich state
+        'a' -> open Article state
+        'c' -> open Blocks state
+        'r' -> do state' <- redraw state
                   loop screen state'
-        "b" -> do state' <- draw (screenPage Menu) state
+        'b' -> do state' <- draw (screenPage Menu) state
                   loop Menu state'
-        "x" -> putStrLn "Vis demo finished."
+        'x' -> finish
+        '\n' -> loop screen state
+        ' ' -> loop screen state
         _   -> do putStrLn "Unknown option. Use one of the keys shown in the footer."
                   loop screen state
   where
     open next st = do
       st' <- draw (screenPage next) st
       loop next st'
+    finish = putStrLn "\nVis demo finished."
 
 demoSettings :: VisSettings
 demoSettings = settings [minSpace 2]
@@ -71,6 +86,7 @@ header = sectionTopRule 1 ruleHeader
   [ printerSolidLineCenter 0 1 blue
       [ blockSimple "Vis" (bold white')
       , blockSimple demoVersion (bold white') ]
+  , printerEmpty 1
   , printerLineCenter 4
       [ blockSimple "CLI UI Library" (bold yellow)
       , blockSimple "Gallery" themeMuted
@@ -142,7 +158,7 @@ menuBlocks =
   , blockMarked 'H' "RicH flight table" themeAccent
   , blockMarked 'A' "Article about Vis" themeAccent
   , blockMarked 'C' "Content builders" themeAccent
-  , blockMarked 'X' "Exit" themeDanger
+  , blockMarked 'x' "Exit" themeDanger
   ]
 
 blocksBody :: VisSection

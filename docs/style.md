@@ -1,12 +1,10 @@
 # Styles
 
-A `VisStyle` combines a foreground color, a background color and a text
-format. Styles are values; applying a style never mutates it.
+A `VisStyle` combines a foreground color, a background color and a text format. Styles are values; applying a style never mutates it.
 
 ## Colors
 
-The public color values are ANSI colors with two intensities. The primed names
-are the vivid variants.
+The public color values are ANSI colors with two intensities. The primed names are the vivid variants.
 
 ```haskell
 colorDefault :: VisColor
@@ -60,8 +58,7 @@ warning = bold red
 
 ## Text styles
 
-Text styles are convenient values for paragraph fragments. They use the
-terminal default foreground instead of fixing a color.
+Text styles are convenient values for paragraph fragments. They use the terminal default foreground instead of fixing a color.
 
 ```haskell
 textRegular :: VisStyle
@@ -85,6 +82,4 @@ paragraph =
 
 ## Backgrounds
 
-Printers that draw solid backgrounds add the background to each item without
-overwriting a background that the item already has. This lets a styled cell
-keep its own highlight inside a zebra-striped table.
+Printers that draw solid backgrounds add the background to each item without overwriting a background that the item already has. This lets a styled cell keep its own highlight inside a zebra-striped table.

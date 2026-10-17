@@ -1,8 +1,6 @@
 # Printers
 
-A `VisPrinter` describes one printable element. Builders are pure; the printer
-only runs when a section or page is drawn. Every printer returns the number of
-lines it printed.
+A `VisPrinter` describes one printable element. Builders are pure; the printer only runs when a section or page is drawn. Every printer returns the number of lines it printed.
 
 ```haskell
 -- Run a printer directly, useful for tests and small scripts.
@@ -17,8 +15,7 @@ runPrinterDefault' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
 
 ## Arguments
 
-- `VisOffset`: indentation from the left, in columns. Some printers also use it
-  as an offset from both sides.
+- `VisOffset`: indentation from the left, in columns. Some printers also use it as an offset from both sides.
 - `VisPadding`: space between the text and the edge of a solid background.
 - `VisNumber`: a non-negative count, such as a number of lines or rows.
 
@@ -29,8 +26,7 @@ printerEmpty :: VisNumber -> VisPrinter
 printerItem :: VisItem -> VisPrinter
 ```
 
-`printerEmpty n` prints `n` empty lines. `printerItem` prints one `VisItem`
-followed by a newline.
+`printerEmpty n` prints `n` empty lines. `printerItem` prints one `VisItem` followed by a newline.
 
 ## Rules and solid lines
 
@@ -41,9 +37,7 @@ printerSolid :: VisColor -> VisPrinter
 printerSolid' :: VisOffset -> VisColor -> VisPrinter
 ```
 
-`printerRule` fills the whole width with the rule character. `printerRule'`
-leaves the offset free on both sides. `printerSolid` and `printerSolid'` do the
-same with a background color.
+`printerRule` fills the whole width with the rule character. `printerRule'` leaves the offset free on both sides. `printerSolid` and `printerSolid'` do the same with a background color.
 
 ## Single lines
 
@@ -57,8 +51,7 @@ printerLineRight :: VisOffset -> [VisBlock] -> VisPrinter
 printerLineCenter :: VisOffset -> [VisBlock] -> VisPrinter
 ```
 
-The `Line` variants print several blocks on the same line with the minimum
-space from the settings between them. The first group takes a single block.
+The `Line` variants print several blocks on the same line with the minimum space from the settings between them. The first group takes a single block.
 
 ```haskell
 printerLineCenter 4
@@ -79,9 +72,7 @@ printerSolidLineRight :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> Vi
 printerSolidLineCenter :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
 ```
 
-These printers fill a whole line with the background color and then print the
-text on top, with the given padding. They are useful for title bars and
-selected rows.
+These printers fill a whole line with the background color and then print the text on top, with the given padding. They are useful for title bars and selected rows.
 
 ## Columns and lists
 
@@ -91,10 +82,7 @@ printerList :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
 printerList' :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
 ```
 
-`printerColumn` prints one block per line. `printerList` tries to reach a
-target number of rows and grows the number of columns as needed.
-`printerList'` takes a target number of columns instead. If the terminal is too
-narrow, the printer falls back to a single column.
+`printerColumn` prints one block per line. `printerList` tries to reach a target number of rows and grows the number of columns as needed. `printerList'` takes a target number of columns instead. If the terminal is too narrow, the printer falls back to a single column.
 
 ## Groups
 
@@ -111,8 +99,7 @@ printerGroupsLimited' :: VisOffset -> VisNumber -> [VisGroup] -> VisPrinter
 - `printerGroups'` gives each group the minimum width it needs.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
 
-Groups that exceed the configured overflow ratio are split into extra rows by
-the layout engine.
+Groups that exceed the configured overflow ratio are split into extra rows by the layout engine.
 
 ## Tables
 
@@ -126,8 +113,7 @@ printerTableLimited' :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -
 - `printerTable` uses minimum column spacing and a zebra background.
 - `printerTable'` spaces the columns evenly.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
-- A `Nothing` table is treated as an empty group, so invalid input still
-  produces a well-defined (empty) result instead of an exception.
+- A `Nothing` table is treated as an empty group, so invalid input still produces a well-defined (empty) result instead of an exception.
 
 ## Paragraphs and articles
 
@@ -142,13 +128,8 @@ printerSequenceAfter :: VisOffset -> VisOffset -> VisPadding -> VisNumber -> [Vi
 printerSequencePred :: VisOffset -> VisOffset -> VisPadding -> (Int -> Bool) -> [VisParagraph] -> VisPrinter
 ```
 
-The first offset indents the whole paragraph. The second offset indents only
-the first line.
+The first offset indents the whole paragraph. The second offset indents only the first line.
 
 - `printerParagraph` wraps the blocks at the terminal width.
 - `printerArticle` prints paragraphs separated by a blank line.
-- The `printerSequence` variants add a solid background to selected
-  paragraphs: `printerSequence` selects odd indices, `printerSequence'`
-  selects even indices, `printerSequenceSel` selects one index,
-  `printerSequenceAfter` selects indices greater than or equal to a value, and
-  `printerSequencePred` accepts any predicate.
+- The `printerSequence` variants add a solid background to selected paragraphs: `printerSequence` selects odd indices, `printerSequence'` selects even indices, `printerSequenceSel` selects one index, `printerSequenceAfter` selects indices greater than or equal to a value, and `printerSequencePred` accepts any predicate.

@@ -1,7 +1,6 @@
 # Content
 
-Content values describe what should appear on screen. They carry no terminal
-state and can be built, compared and reused freely.
+Content values describe what should appear on screen. They carry no terminal state and can be built, compared and reused freely.
 
 ## Types
 
@@ -15,8 +14,7 @@ state and can be built, compared and reused freely.
 | `VisArticle` | A list of paragraphs. |
 | `VisRule` | A character and a style used to draw a horizontal rule. |
 
-`VisItem` removes non-printable characters when it is built. `VisBlock` removes
-empty items, so styles are never applied to empty strings.
+`VisItem` removes non-printable characters when it is built. `VisBlock` removes empty items, so styles are never applied to empty strings.
 
 ## Basic builders
 
@@ -114,9 +112,7 @@ flights = tableBlocks
 
 ### Simple tables
 
-Every cell is a plain string. The header blocks are rewritten with the given
-header style, while the first item of each header block supplies the style for
-that column in the body:
+Every cell is a plain string. The header blocks are rewritten with the given header style, while the first item of each header block supplies the style for that column in the body:
 
 ```haskell
 tableSimple :: [VisBlock] -> VisStyle -> [[String]] -> Maybe VisTable
@@ -132,8 +128,7 @@ people = tableSimple
   , ["Alan", "41"] ]
 ```
 
-Here the header is printed in bold white, the name column in bold green and
-the age column in bold cyan.
+Here the header is printed in bold white, the name column in bold green and the age column in bold cyan.
 
 ### Prebuilt groups
 
@@ -141,8 +136,7 @@ the age column in bold cyan.
 tableGroups :: [VisGroup] -> Maybe VisTable
 ```
 
-Use this when the columns are already groups and only the rectangular check is
-needed.
+Use this when the columns are already groups and only the rectangular check is needed.
 
 ### Validation
 
@@ -157,14 +151,11 @@ tableBlocks [blockSimple "A" styleDefault]
                                                         -- Nothing
 ```
 
-The result is an ADT, not an exception. Callers decide how to report invalid
-input to the user.
+The result is an ADT, not an exception. Callers decide how to report invalid input to the user.
 
 ## Paragraphs and articles
 
-A `VisParagraph` is a list of blocks that are wrapped as one continuous
-paragraph. A `VisArticle` is a list of paragraphs. Builders only describe the
-content; wrapping happens in `printerParagraph` and `printerArticle`.
+A `VisParagraph` is a list of blocks that are wrapped as one continuous paragraph. A `VisArticle` is a list of paragraphs. Builders only describe the content; wrapping happens in `printerParagraph` and `printerArticle`.
 
 ```haskell
 paragraph :: VisParagraph
