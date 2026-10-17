@@ -1,11 +1,22 @@
 # Revision history for Vis
 
+## Functional Versions
+
+### 0.3.0 -- 2026-10-17
+* Revival release: removed Example and internal modules from the public Vis module.
+* Added public Vis.Number and Vis.Sample modules.
+* Added the vis-demo executable and the vis-test suite.
+* Made paragraph wrapping, list layout and group layout total for empty and narrow inputs.
+* Fixed a division by zero in group overflow handling.
+* Preserved section line counts across chained replace calls.
+* Added documentation in docs/ and rewrote the README as an index.
+* Enabled -Wall and cleaned compiler warnings.
 
 ## Early Versions
 
 ### 0.2.2.7 -- 2020-05-29
 * Implementation of Sample instance for VisNumber.
-* Refining of Sample instances for all types.
+* Refining of Sample class and instances for all types.
 
 ### 0.2.2.5 -- 2020-05-23
 * Got rid of the Result type and module.

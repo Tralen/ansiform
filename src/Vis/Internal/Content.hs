@@ -149,10 +149,10 @@ itemsEmptyFilter = filter (not . isItemNull)
 -- Checks if a VisBlock is empty.
 isBlockNull :: VisBlock -> Bool
 isBlockNull vb
-     | null vis = True
-     | otherwise = and $ fmap isItemNull vis
+     | null items = True
+     | otherwise = and $ fmap isItemNull items
    where
-     vis = unBlock vb
+     items = unBlock vb
 
 -- Checks if a VisItem is empty.
 isItemNull :: VisItem -> Bool
@@ -212,9 +212,9 @@ itemPrettify vi
    where 
       vs = unItemStyle vi
       vt = unItemText vi
-      pred c = isPunctuation c || isSpace c
-      splitHead = span pred vt
-      splitMiddle = span pred $ reverse $ snd splitHead
+      isBlank c = isPunctuation c || isSpace c
+      splitHead = span isBlank vt
+      splitMiddle = span isBlank $ reverse $ snd splitHead
 
 
 -- Text Formatting
@@ -222,30 +222,35 @@ itemPrettify vi
 
 -- Reformats a list of VisBlocks so they respect the same maximum width.
 --    The first line can be indented using the padding given.
+--    The function always makes progress, even when a single word is wider
+--    than the available space, so narrow terminals cannot cause a loop.
 blockPublish :: Int -> Int -> [VisBlock] -> [VisBlock] 
-blockPublish w p vbs = rebuildBlocks [[]] p vbs
-      where 
-        rebuildBlocks cis cw rbs
-            | null rbs = reverse $ fmap (visBlock . reverse) cis
-            | p > 0 && exactLength 1 cis && null prevItemList = rebuildBlocks indentFirst cw rbs
-            | curTotalWidth <= w = rebuildBlocks curInsert curTotalWidth (drop 1 rbs)
-            | otherwise = rebuildBlocks fitInsert 0 (remInsert:drop 1 rbs)
-          where 
-            curItemList = unBlock . fromMaybe blockEmpty $ headMaybe rbs
-            curItem = fromMaybe itemEmpty $ headMaybe curItemList
-            curWidth = itemTextWidth curItem
-            curTotalWidth = curWidth + cw
+blockPublish w p vbs
+      | w <= 0 = vbs
+      | otherwise = fmap (visBlock . reverse) $ publish firstLine p items
+      where
+        firstLine = if p > 0 then [visItem (replicate p ' ') visDefault] else []
+        items = concatMap unBlock vbs
 
-            prevItemList = head cis
-            curInsert = (curItem:prevItemList) : drop 1 cis
-            fitInsert = [] : ((fitItem:prevItemList) : drop 1 cis)
-            remInsert = visBlock [remItem]
-
-            remItem = snd splitItem
-            fitItem = fst splitItem
-            splitItem = itemSplit (w - cw) curItem
-
-            indentFirst = [ visItem (replicate p ' ') visDefault : []]
+        publish :: [VisItem] -> Int -> [VisItem] -> [[VisItem]]
+        publish line _ [] = [line]
+        publish line cw (item:rest)
+            | itemWidth <= remaining = publish (item:line) (cw + itemWidth) rest
+            | otherwise = case itemSplit remaining item of
+                (fit, remainder)
+                    | not (isItemNull fit) ->
+                        publish (fit:line) (cw + itemTextWidth fit) next
+                    | null line ->
+                        publish (item:line) (cw + itemWidth) rest
+                    | cw == p && p > 0 ->
+                        publish (item:line) (cw + itemWidth) rest
+                    | otherwise ->
+                        line : publish [] 0 (item:rest)
+                  where
+                    next = if isItemNull remainder then rest else remainder:rest
+          where
+            remaining = w - cw
+            itemWidth = itemTextWidth item
 
 
 -- Splits a VisBlock into two, splitting on a desired text length.
@@ -254,10 +259,10 @@ blockSplit w vb = ( visBlock (fst processItems)
                   , visBlock (snd processItems) )
       where
         items = unBlock vb
-        processItems = processItems [] 0 items
+        processItems = go [] 0 items
            where 
-            processItems cvis cw rvis
-                | curWidth <= w && not (null rvis) = processItems (vi:cvis) curWidth (drop 1 rvis)
+            go cvis cw rvis
+                | curWidth <= w && not (null rvis) = go (vi:cvis) curWidth (drop 1 rvis)
                 | otherwise = (reverse (curItem:cvis), remItems:rvis)
               where
                 vi = fromMaybe itemEmpty $ headMaybe rvis
@@ -305,7 +310,10 @@ groupAverage s gs = foldr groupProcess [] gs
                 headerBlocks = take 1 splitBlocks ++ fmap (blockEmpty :) (drop 1 splitBlocks)
                 splitBlocks = splitPlaces (tgtLength + 1 : repeat tgtLength) blocks
                 blocks = unGroup g
-       tgtLength = avgLength + div avgLength (groupOverflowRatio gof)
+       tgtLength
+           | overflowRatio == 0 = avgLength
+           | otherwise = avgLength + div avgLength overflowRatio
+       overflowRatio = groupOverflowRatio gof
        avgLength = average $ fmap (length . unGroup) gs
 
 
@@ -327,7 +335,7 @@ visTableSimple h v sss = visTable fullTable (isTableBalanced h sss)
     where 
        headerList = unBlockList h
        header = headerList >>= \b -> return $ blockSimple (concatMap (fst . unItem) b) v
-       bodyVis = headerList >>= fmap (snd . unItem ) . take 1
+       bodyVis = fmap (maybe visDefault (snd . unItem) . headMaybe) headerList
        body = transpose $
               fmap (\ss -> fmap (uncurry blockSimple)(zip ss bodyVis)) sss
        fullTable = fmap (uncurry visGroup) (zip header body)

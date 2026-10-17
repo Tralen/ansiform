@@ -1,0 +1,9 @@
+# Zed
+.agents/
+.prompt/
+PROMPT.md
+TODO.md
+
+# Haskell
+dist-newstyle/
+dist-*/

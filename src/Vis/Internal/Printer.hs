@@ -2,10 +2,7 @@ module Vis.Internal.Printer where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
-import           Data.Char
-import           Data.List
 import           Data.List.Split
-import           Data.Maybe (fromMaybe)
 import           Vis.Internal.Content
 import           Vis.Internal.Number
 import           Vis.Internal.Sample
@@ -128,6 +125,7 @@ printLineRight o bs s = printLineLeft finalOffset bs s
 -- Prints a list of VisBlocks in a single line, with center alignment.
 -- Indentation level is given by the offset.
 printLineCenter :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
+printLineCenter _ [] _ = printEnd
 printLineCenter o bs s = mapM_ printText (zip bs [0..]) >> printEnd
      where 
         w' = unn $ unWidth s ; o' = unn o
@@ -176,18 +174,21 @@ printColumn o bs = printCounter (printLeft o) bs
 -- Prints a list of VisBlocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
 printList :: VisOffset -> VisNumber -> [VisBlock] -> VisConfig -> IO VisNumber
-printList o l bs s = fmap (head' 0) . sequence $ mainPrinter (new (unn l)) bs
+printList _ _ [] _ = return 0
+printList o l bs s
+     | maxCols <= 0 = printColumn o bs
+     | otherwise = fmap (head' 0) . sequence $ mainPrinter (new (unn l)) bs
      where 
         w' = unn (unWidth s); m = unMinSpace s
         o' = unn o ; m' = unn m
-        maxWidth = blockTextMax bs + m'
+        maxWidth = max 1 (blockTextMax bs + m')
+        maxCols = quot (w' - o' * 2 - quot maxWidth 2) maxWidth
 
         new :: Int -> Int
         new l'
-            | desiredCols l' <= maxCols && l' > 0 = l'
+            | l' > 0 && desiredCols l' <= maxCols = l'
             | otherwise = new (l' + 1)
-          where maxCols = quot (w' - o' * 2 - quot maxWidth 2) maxWidth
-                desiredCols l'' | l'' == 0 = numItems
+          where desiredCols l'' | l'' == 0 = numItems
                                 | otherwise = quot numItems l''
                 numItems = length bs
         
@@ -268,7 +269,6 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                  validIndex = bTable && not lastRow
                  rowColumns = length curWidths
                  rowLength = maximum' 0 $ fmap (length . unGroup) curGroups
-                 lastLength = length . unGroup $ last curGroups
 
                  curOffsets = scanl (+) 0 curWidths
 
@@ -282,7 +282,11 @@ printGroups o p n bSpace bTable gs s = mainPrinter
 
                  splitGroups = splitAt splitPointList rm
                  splitWidths = splitAt splitPointList wl
-                 splitPointList = splitPoint chosenWidthList finalWidth
+                 splitPointList = availableSplitPoint
+
+                 availableSplitPoint
+                     | null chosenWidthList = 0
+                     | otherwise = max 1 (splitPoint chosenWidthList finalWidth)
 
                        
                  printEach :: (VisGroup,Int,Int) -> IO ()
@@ -302,7 +306,8 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                       setBG :: VisGroup -> VisGroup
                       setBG g' | bTable = visGroup' $ changeBlocks <$> zip (unGroup g') [0..]
                                   | otherwise = g'
-                               where changeBlocks (b,ib)
+                               where changeBlocks :: (VisBlock, Int) -> VisBlock
+                                     changeBlocks (b,ib)
                                        | even ib = b
                                        | otherwise = blockSetBG black b
 

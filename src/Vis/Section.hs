@@ -5,7 +5,6 @@ module Vis.Section ( module Vis.Section
 
 --------------------------------------------------------------------------------
 import           Vis.Internal.Number
-import           Vis.Internal.Settings
 import           Vis.Internal.Section as Internal
 import           Vis.Content
 import           Vis.Printer

@@ -1,7 +1,7 @@
 module Vis.Internal.Settings where
 
 --------------------------------------------------------------------------------
-import           Data.List
+import qualified Data.List as List
 import           Vis.Internal.Number
 import           Vis.Internal.Sample
 import           Vis.Internal.Terminal
@@ -15,7 +15,7 @@ newtype VisSettings = VisSettings [VisConfig -> VisConfig]
 
 instance VisSample VisSettings where
     sample vs = sample =<< runSettings vs
-    sampleShow _ (VisSettings fs) = ""
+    sampleShow _ (VisSettings _) = ""
 
 visSettings :: [VisConfig -> VisConfig] -> VisSettings
 visSettings = VisSettings
@@ -27,7 +27,7 @@ unSettings (VisSettings fs) = fs
 -- Function to build the settings in a declarative style.
 runSettings :: VisSettings -> IO VisConfig
 runSettings stgs = initialConfig >>= \dft ->
-                  return $ foldl' (\sets f -> f sets) dft $ unSettings stgs 
+                  return $ List.foldl' (\sets f -> f sets) dft $ unSettings stgs
 
 -- Settings type
 --------------------------------------------------------------------------------

@@ -7,10 +7,7 @@ module Vis.Internal.Style
            
 --------------------------------------------------------------------------------
 import           Control.Monad.IO.Class
-import           Data.Char
-import           Data.Word
 import           System.Console.ANSI as ANSI
-import           Vis.Internal.Number
 import           Vis.Internal.Sample
 --------------------------------------------------------------------------------
 
@@ -141,6 +138,8 @@ vis s = liftIO $ setSGR (Reset : visBuilder s)
 -- Resets visual styles.
 visZero :: IO ()
 visZero = vis VisZero
+
+vis0 :: IO ()
 vis0 = visZero
 
 -- Constructs the final list of SGR instructions for Vis.

@@ -1,7 +1,7 @@
 module Vis.Internal.Utils where
 
 --------------------------------------------------------------------------------
-import           Data.List
+import qualified Data.List as List
 import           Data.Maybe (fromMaybe)
 
 
@@ -9,11 +9,11 @@ import           Data.Maybe (fromMaybe)
 --------------------------------------------------------------------------------
 -- Version of maximum that takes a default, so it doesn't fail.
 maximum' :: Ord a => a -> [a] -> a
-maximum' d xs = case xs of [] -> d; _ -> maximum xs
+maximum' = foldr max
 
 -- Version of minimum that takes a default, so it doesn't fail.
 minimum' :: Ord a => a -> [a] -> a
-minimum' d xs = case xs of [] -> d; _ -> minimum xs
+minimum' = foldr min
 
 -- Calculates the average value from a list of Ints.
 average :: [Int] -> Int
@@ -24,19 +24,23 @@ average xs = case xs of [] -> 0; _ -> div (sum xs) (length xs)
 --------------------------------------------------------------------------------
 -- Version of head that returns a maybe.
 headMaybe :: [a] -> Maybe a
-headMaybe xs = case xs of [] -> Nothing; _ -> Just (head xs)
+headMaybe [] = Nothing
+headMaybe (x:_) = Just x
 
 -- Version of head that takes a default.
 head' :: a -> [a] -> a
-head' d xs = case xs of [] -> d; _ -> head xs
+head' d [] = d
+head' _ (x:_) = x
 
 -- Version of last that returns a maybe. Still doesn't work for infinite lists.
 lastMaybe :: [a] -> Maybe a
-lastMaybe xs = case xs of [] -> Nothing; _ -> Just (last xs)
+lastMaybe [] = Nothing
+lastMaybe (x:xs) = Just (last' x xs)
 
 -- Version of last that takes a default.
 last' :: a -> [a] -> a
-last' d xs = case xs of [] -> d; _ -> last xs
+last' d [] = d
+last' _ (x:xs) = last' x xs
 
 
 -- Reverses and concats a list simultaneously, used to avoid appending.
@@ -44,7 +48,7 @@ concatRev :: [[a]] -> [a]
 concatRev = foldr (flip (++)) []
 
 concatRev' :: [[a]] -> [a]
-concatRev' = foldl' (flip (++)) []
+concatRev' = List.foldl' (flip (++)) []
 
 
 -- Checks if a List has at least a given number of items or more.
@@ -70,7 +74,7 @@ insertAt n e es = take n es ++ [e] ++ drop n es
 
 -- GroupsBy using any binary operation, not only equality. (Brandon Simmons)
 groupBy' :: (a -> a -> Bool) -> [a] -> [[a]]
-groupBy' c [] = []
+groupBy' _ [] = []
 groupBy' c (a:as) = (a:ys) : groupBy' c zs
     where (ys,zs) = spanC a as
           spanC _ [] = ([], [])

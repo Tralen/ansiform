@@ -1,8 +1,6 @@
 module Vis.Internal.Sample where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Utils
-
 
 -- Sample Class
 --------------------------------------------------------------------------------
@@ -34,4 +32,5 @@ showContentList [] _ = ""
 showContentList ((i,0):is) n = showSpaces n ++ sampleShow n i ++ showContentList is n
 showContentList ((i,_):is) n = "\n" ++ showSpaces n ++ sampleShow n i ++ showContentList is n
 
+showSpaces :: Int -> String
 showSpaces n = replicate n ' '

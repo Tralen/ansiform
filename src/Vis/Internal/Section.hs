@@ -2,7 +2,6 @@ module Vis.Internal.Section where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
-import           Vis.Internal.Content
 import           Vis.Internal.Number
 import           Vis.Internal.Printer
 import           Vis.Internal.Sample

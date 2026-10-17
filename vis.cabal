@@ -1,28 +1,42 @@
+cabal-version:       2.0
 name:                vis
-version:             0.2.2.7
+version:             0.3.0
 synopsis:            Display formatting for command line interfaces.
-description:         Basic format DSL for building an ANSI command line interface with colors, alignment, tables, paragraphs and more.
+description:         Basic format DSL for building an ANSI command line interface
+                     with colors, alignment, tables, paragraphs and more.
 license:             GPL-3
 license-file:        LICENSE
 author:              Tunai Raiol
 maintainer:          tunairaiol@yahoo.co.uk
 copyright:           All rights reserved
-category:            Interface
+category:            User Interfaces
 build-type:          Simple
-extra-source-files:  ChangeLog.md
-cabal-version:       >= 2.0
+tested-with:         GHC == 9.14.1
+extra-doc-files:     ChangeLog.md
+                     README.md
+                     docs/architecture.md
+                     docs/content.md
+                     docs/demo.md
+                     docs/design-notes.md
+                     docs/pages.md
+                     docs/printers.md
+                     docs/sections.md
+                     docs/settings.md
+                     docs/style.md
 
 library
   exposed-modules:     Vis
-
-  other-modules:       Vis.Content
+                     , Vis.Content
                      , Vis.Draw
+                     , Vis.Number
                      , Vis.Page
                      , Vis.Printer
+                     , Vis.Sample
                      , Vis.Section
                      , Vis.Settings
                      , Vis.Style
-                     , Vis.Internal
+
+  other-modules:       Vis.Internal
                      , Vis.Internal.Content
                      , Vis.Internal.Number
                      , Vis.Internal.Page
@@ -35,13 +49,29 @@ library
                      , Vis.Internal.Terminal
                      , Vis.Internal.Utils
 
-  default-extensions:
-
-  build-depends:       base >= 4.10
-                     , ansi-terminal >= 0.8
-                     , terminal-size >= 0.3
-                     , split >= 0.2
+  build-depends:       base >= 4.10 && < 5
+                     , ansi-terminal >= 0.8 && < 1.2
+                     , terminal-size >= 0.3 && < 0.4
+                     , split >= 0.2 && < 0.3
+                     , transformers >= 0.5 && < 0.7
 
   hs-source-dirs:      src
-  
   default-language:    Haskell2010
+  ghc-options:         -Wall
+
+executable vis-demo
+  main-is:             Demo.hs
+  hs-source-dirs:      examples
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+  build-depends:       base >= 4.10 && < 5
+                     , vis
+
+test-suite vis-test
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  hs-source-dirs:      test
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+  build-depends:       base >= 4.10 && < 5
+                     , vis

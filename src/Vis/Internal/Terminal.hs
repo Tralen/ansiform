@@ -36,6 +36,7 @@ indR' = cursorForward
 clr :: VisNumber -> IO ()
 clr n = setCursorPosition (unn n) 0 >> clearFromCursorToScreenEnd
 
+clr0 :: IO ()
 clr0 = clr 0
 
 

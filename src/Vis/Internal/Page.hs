@@ -5,7 +5,6 @@ import           Vis.Internal.Number
 import           Vis.Internal.Sample
 import           Vis.Internal.Section
 import           Vis.Internal.Settings
-import           Vis.Internal.Terminal
 
 
 -- Page Type

@@ -10,7 +10,6 @@ import           Vis.Internal.Settings
 --------------------------------------------------------------------------------
 
 -- VisState carries the data needed to print each page correctly.
---    
 newtype VisState = VisState (VisSettings,VisPage,[VisNumber])
 
 

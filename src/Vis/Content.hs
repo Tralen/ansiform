@@ -2,7 +2,7 @@ module Vis.Content ( module Vis.Content
                    , Internal.VisItem, Internal.VisBlock, Internal.VisRule
                    , Internal.VisGroup, Internal.VisTable
                    , Internal.VisParagraph, Internal.VisArticle
-                   , Internal.blockSimple ) where
+                   , Internal.blockEmpty, Internal.blockSimple ) where
 
 --------------------------------------------------------------------------------
 import           Data.List

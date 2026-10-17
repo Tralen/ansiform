@@ -20,7 +20,7 @@ instance Num VisNumber where
     n + m = visNumber $ unn n + unn m
     n - m = visNumber $ unn n - unn m
     n * m = visNumber $ unn n * unn m
-    negate n = 0
+    negate _ = 0
     abs n = n
     signum n | n <= 0 = 0 | otherwise = 1 
 
@@ -30,10 +30,14 @@ instance VisSample VisNumber where
 
 visNumber :: Int -> VisNumber
 visNumber n | n <= 0 = VisNumber 0 | otherwise = VisNumber n
+
+visNum :: Int -> VisNumber
 visNum = visNumber
 
 unNumber :: VisNumber -> Int
 unNumber (VisNumber n) = n
+
+unn :: VisNumber -> Int
 unn = unNumber
 
 

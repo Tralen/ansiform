@@ -29,6 +29,8 @@ minSpace = setMinSpace
 
 groupOverflow :: VisNumber -> VisConfig -> VisConfig
 groupOverflow = setGroupOverflow
+
+overflow :: VisNumber -> VisConfig -> VisConfig
 overflow = setGroupOverflow
 
 
