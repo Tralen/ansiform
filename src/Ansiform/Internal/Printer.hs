@@ -60,24 +60,24 @@ runPrinterDefault' w m (Printer (_,fio)) = initialConfig >>= \dft -> fio $ setWi
 --------------------------------------------------------------------------------
 
 -- Prints a number of empty lines.
-printEmpty :: Number -> IO Number
-printEmpty n = resetStyle >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
+printEmpty :: Config -> Number -> IO Number
+printEmpty s n = resetStyle (colorsEnabled s) >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
 
 -- Prints the end of line character.
-printEnd :: IO Number
-printEnd = resetStyle >> putStr "\n" >> return 1
+printEnd :: Config -> IO Number
+printEnd s = resetStyle (colorsEnabled s) >> putStr "\n" >> return 1
 
 -- Prints a Item with the proper visual style.
-printItem :: Item -> IO ()
-printItem v = applyStyle (unItemStyle v) >> putStr (unItemText v)
+printItem :: Config -> Item -> IO ()
+printItem s v = applyStyle (colorsEnabled s) (unItemStyle v) >> putStr (unItemText v)
 
 -- Prints each Item of a Block, with the proper visual style.
-printBlock :: Block -> IO ()
-printBlock b = mapM_ printItem (unBlock b)
+printBlock :: Config -> Block -> IO ()
+printBlock s b = mapM_ (printItem s) (unBlock b)
 
 -- Prints a Block, left aligned, with proper indentation and line ending.
-printLeft :: Offset -> Block -> IO Number
-printLeft o b = ind o >> printBlock b >> printEnd
+printLeft :: Config -> Offset -> Block -> IO Number
+printLeft s o b = ind o >> printBlock s b >> printEnd s
 
 -- Function to execute the printing functions that sums the line counts.
 printCounter :: (a -> IO Number) -> [a] -> IO Number
@@ -89,7 +89,7 @@ printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 
 -- Prints a horizontal rule with an offset on both sides.
 printRule :: Offset -> Rule -> Config -> IO Number
-printRule o r s = ind o >> printItem (formRuleItem r (w - o*2)) >> printEnd
+printRule o r s = ind o >> printItem s (formRuleItem r (w - o*2)) >> printEnd s
               where w = unWidth s
 
 -- Prints a line filled with spaces with the background color given.
@@ -102,16 +102,16 @@ printSolid o c s = printRule o (ruleSolid c) s
 --------------------------------------------------------------------------------
 
 -- Prints a single Item as a line, left aligned.
-printSingleItem :: Item -> IO Number
-printSingleItem i = printItem i >> printEnd
+printSingleItem :: Config -> Item -> IO Number
+printSingleItem s i = printItem s i >> printEnd s
 
 
 -- Prints a line of Blocks, left aligned.
 printLineLeft :: Offset -> [Block] -> Config -> IO Number
-printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd
+printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd s
         where 
            m = unMinSpace s
-           mainPrinter vb = printBlock vb >> ind' m
+           mainPrinter vb = printBlock s vb >> ind' m
 
 -- Prints a line of Blocks, right aligned.
 printLineRight :: Offset -> [Block] -> Config -> IO Number
@@ -127,14 +127,14 @@ printLineRight o bs s = printLineLeft finalOffset bs s
 --    minimum space setting. If the content does not fit, the line overflows
 --    instead of overlapping.
 printLineCenter :: Offset -> [Block] -> Config -> IO Number
-printLineCenter _ [] _ = printEnd
-printLineCenter o [b] s = indR centered >> printBlock b >> printEnd
+printLineCenter _ [] s = printEnd s
+printLineCenter o [b] s = indR centered >> printBlock s b >> printEnd s
      where
         w' = unn (unWidth s)
         o' = unn o
         width = blockTextWidth b
         centered = o' + max 0 (quot (w' - o' * 2 - width) 2)
-printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd
+printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd s
      where
         w' = unn (unWidth s)
         o' = unn o
@@ -150,7 +150,7 @@ printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd
                    | i <- [0 .. gaps - 1] ]
         positions = scanl (\x (width,gap) -> x + width + gap) o'
                           (zip widths gapsList)
-        printAt (x,b) = indR x >> printBlock b
+        printAt (x,b) = indR x >> printBlock s b
 
 
 type LineFunction = (Offset -> [Block] -> Config -> IO Number)
@@ -171,8 +171,8 @@ printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
 --------------------------------------------------------------------------------
 
 -- Prints a list of Blocks as a single Column, with the given offset.
-printColumn :: Offset -> [Block] -> IO Number
-printColumn o bs = printCounter (printLeft o) bs
+printColumn :: Config -> Offset -> [Block] -> IO Number
+printColumn s o bs = printCounter (printLeft s o) bs
 
 
 -- Prints a list of Blocks in several columns, aiming for a specified length.
@@ -180,7 +180,7 @@ printColumn o bs = printCounter (printLeft o) bs
 printList :: Offset -> Number -> [Block] -> Config -> IO Number
 printList _ _ [] _ = return 0
 printList o l bs s
-     | maxCols <= 0 = printColumn o bs
+     | maxCols <= 0 = printColumn s o bs
      | otherwise = fmap (head' 0) . sequence $ mainPrinter (new (unn l)) bs
      where 
         w' = unn (unWidth s); m = unMinSpace s
@@ -207,7 +207,7 @@ printList o l bs s
                        | i == length splitCols - 1 = 
                             cursorUp newL >> printCol >>= \n -> cursorDown (newL - length b) >> return n
                        | otherwise = cursorUp newL >> printCol
-                     where printCol = printColumn currentOffset b
+                     where printCol = printColumn s currentOffset b
                            currentOffset = formNumber (i * maxWidth + o')
 
 
@@ -224,8 +224,8 @@ printList' o l bs s = printList o desiredLines bs s
 --------------------------------------------------------------------------------
 
 -- Prints a single Group as a column, with the given offset.
-printGroup :: Offset -> Group -> IO Number
-printGroup o g = printColumn o (unGroup g)
+printGroup :: Config -> Offset -> Group -> IO Number
+printGroup s o g = printColumn s o (unGroup g)
 
 
 -- Main function for printing groups and tables, used by the specialized versions.
@@ -303,9 +303,9 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                       printGroupChangeBG = printGroup' $ setBG g
                       colOffset = wg + offset
                       curLength = length (unGroup g)
-                      printGroup' g' = printGroup (formNumber colOffset) g'
+                      printGroup' g' = printGroup s (formNumber colOffset) g'
                       printSpacing
-                           | lastRow = return_ | otherwise = printEmpty 1 >> return_
+                           | lastRow = return_ | otherwise = printEmpty s 1 >> return_
 
                       setBG :: Group -> Group
                       setBG g' | bTable = formGroup' $ changeBlocks <$> zip (unGroup g') [0..]
@@ -338,7 +338,7 @@ printParagraph o o1 p bZebra vbs s = printCounter printEachBlock
                    >> printLeft' (blockSetBG black blockPretty)
            | otherwise = printLeft' blockPretty
         where
-          printLeft' vb' = printLeft offset vb'
+          printLeft' vb' = printLeft s offset vb'
           blockPretty = blockPrettify vb
 
 
@@ -361,7 +361,7 @@ printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..]
           printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs s
           printSeparation
               | predZebra = printSolid o black s
-              | otherwise = printEmpty 1  
+              | otherwise = printEmpty s 1  
 
 
 -- Background Printing
@@ -369,7 +369,7 @@ printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..]
 -- Prints a series of alternating lines, black and grey, for usage with tables.
 --   The offset and number of lines are given as parameters.
 printZebraBG :: Offset -> Int -> Config -> IO ()
-printZebraBG o n s = sequence_ $ take n $ cycle [printEmpty 1, printSolid o black s]
+printZebraBG o n s = sequence_ $ take n $ cycle [printEmpty s 1, printSolid o black s]
 
 -- Prints a solid background of several lines of the same color.
 printSolidBG :: Offset -> Int -> Color -> Config -> IO ()

@@ -4,6 +4,13 @@
 
 ## Functional Versions
 
+### 0.7.0 -- 2026-10-17
+* Added the ColorMode setting with Auto, Always and Never.
+* Auto suppresses ANSI styles when stdout is not a terminal, when NO_COLOR is set or when TERM is dumb.
+* Added the colorMode modifier and the autoColors, alwaysColors and neverColors shortcuts.
+* Added regression tests for style suppression and forced styling.
+* Renamed ChangeLog.md to CHANGELOG.md.
+
 ### 0.6.1 -- 2026-10-17
 * Added the GitHub Actions CI workflow.
 * Added docs/releasing.md with the Hackage and GitHub checklist.

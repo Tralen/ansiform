@@ -134,12 +134,14 @@ instance Sample Style where
   sampleShow _ (Style fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
-applyStyle :: MonadIO m => Style -> m ()
-applyStyle s = liftIO $ setSGR (Reset : styleCommands s)
+--   When styling is disabled, no escape sequence is emitted.
+applyStyle :: MonadIO m => Bool -> Style -> m ()
+applyStyle True s = liftIO $ setSGR (Reset : styleCommands s)
+applyStyle False _ = return ()
 
--- Resets visual styles.
-resetStyle :: IO ()
-resetStyle = applyStyle Zero
+-- Resets visual styles, when styling is enabled.
+resetStyle :: Bool -> IO ()
+resetStyle enabled = applyStyle enabled Zero
 
 -- Constructs the final list of SGR instructions for Ansiform.
 styleCommands ::  Style -> [SGR]

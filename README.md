@@ -6,11 +6,11 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.6.1**.
+Current version: **0.7.0**.
 
 ## Features
 
-- ANSI colors, bold, italic and underline.
+- ANSI colors, bold, italic and underline, with automatic suppression on non-TTY output, `NO_COLOR` and `TERM=dumb`.
 - Horizontal rules, solid backgrounds, offsets and padding.
 - Single-line and multi-line alignment.
 - Columns, lists, groups, simple tables and rich tables.
@@ -77,7 +77,7 @@ cabal run ansiform-demo
 2. **Pure core.** Layout, wrapping and table validation are pure functions. Only the drawing layer performs IO.
 3. **Errors as data.** Table builders return `Maybe Table`. There are no exceptions in the public API.
 4. **Reusable components.** Screens are assembled from shared builders such as `header`, `footer` and `rule`, keeping behavior and theming consistent.
-5. **Explicit versioning.** The package follows the PVP and every release is recorded in [ChangeLog.md](ChangeLog.md).
+5. **Explicit versioning.** The package follows the PVP and every release is recorded in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

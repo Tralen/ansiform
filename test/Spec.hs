@@ -4,7 +4,10 @@ module Main where
 import           Control.Monad (unless)
 import           Data.List (isInfixOf)
 import           Data.Maybe (isJust, isNothing)
+import           GHC.IO.Handle (hDuplicate, hDuplicateTo)
+import           System.Directory (getTemporaryDirectory, removeFile)
 import           System.Exit (exitFailure)
+import           System.IO (hClose, hFlush, openTempFile, stdout)
 import           Ansiform
 
 main :: IO ()
@@ -53,6 +56,14 @@ main = do
          in "<Right>" `isInfixOf` out
               && not ("<Left>" `isInfixOf` out)
               && "<Center>" `isInfixOf` out)
+    , testIO "Styles are suppressed when colors are never" $ do
+        (_, out) <- captureStdout
+          $ runPrinter (settings [neverColors]) (printerItem (item "plain" (bold red)))
+        return $ '\ESC' `notElem` out && "plain" `isInfixOf` out
+    , testIO "Styles are emitted when colors are always" $ do
+        (_, out) <- captureStdout
+          $ runPrinter (settings [alwaysColors]) (printerItem (item "styled" (bold red)))
+        return $ '\ESC' `elem` out && "styled" `isInfixOf` out
     ]
   unless (and results) exitFailure
   putStrLn "All tests passed."
@@ -61,6 +72,26 @@ test :: String -> Bool -> IO Bool
 test name passed = do
   putStrLn ((if passed then "ok   " else "FAIL ") ++ name)
   return passed
+
+testIO :: String -> IO Bool -> IO Bool
+testIO name action = action >>= test name
+
+-- Runs an action with stdout redirected to a temporary file and returns
+-- the captured output.
+captureStdout :: IO a -> IO (a, String)
+captureStdout action = do
+  tmp <- getTemporaryDirectory
+  (path, handle) <- openTempFile tmp "ansiform-test-output"
+  original <- hDuplicate stdout
+  hDuplicateTo handle stdout
+  result <- action
+  hFlush stdout
+  hDuplicateTo original stdout
+  hClose original
+  hClose handle
+  output <- readFile path
+  removeFile path
+  return (result, output)
 
 --------------------------------------------------------------------------------
 -- Fixtures

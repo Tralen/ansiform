@@ -4,10 +4,6 @@ This is a prioritized list of possible features and adjustments. It records the 
 
 ## High value
 
-### Color mode and non-TTY detection
-
-Respect `NO_COLOR`, `TERM=dumb` and whether stdout is a terminal. Add a setting such as `ColorMode` with `Auto`, `Always` and `Never`. This prevents ANSI escapes from leaking into redirected output, logs and CI. It touches `Config` and the style application path, so it should be designed carefully.
-
 ### Unicode display width
 
 The layout uses `length` on `String`, which counts code points rather than terminal columns. Wide characters, combining marks and emoji break alignment. Introduce a display-width function, for example through the small `unicode-width` package, and use it for text measurement, wrapping and table widths.
@@ -49,3 +45,9 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 ### Monadic Printer and Section interface
 
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
+
+## Implemented
+
+### Color mode and non-TTY detection
+
+Released in 0.7.0. `ColorAuto` disables ANSI styling when stdout is not a terminal, when `NO_COLOR` is set or when `TERM=dumb`; `ColorAlways` and `ColorNever` override the detection. See [Settings](settings.md).

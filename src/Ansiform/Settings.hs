@@ -2,6 +2,7 @@
 module Ansiform.Settings (module Ansiform.Settings
                     , Internal.Config
                     , Internal.Settings
+                    , Internal.ColorMode(..)
                     ) where
 
 
@@ -33,5 +34,21 @@ groupOverflow = setGroupOverflow
 
 overflow :: Number -> Config -> Config
 overflow = setGroupOverflow
+
+-- | Selects how ANSI styling is handled.
+colorMode :: ColorMode -> Config -> Config
+colorMode = setColorMode
+
+-- | Detects color support from the environment and from stdout.
+autoColors :: Config -> Config
+autoColors = colorMode ColorAuto
+
+-- | Forces ANSI styling, even when stdout is not a terminal.
+alwaysColors :: Config -> Config
+alwaysColors = colorMode ColorAlways
+
+-- | Disables ANSI styling unconditionally.
+neverColors :: Config -> Config
+neverColors = colorMode ColorNever
 
 

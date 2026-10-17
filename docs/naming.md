@@ -37,7 +37,7 @@ The public builders remain unprefixed (`item`, `block`, `groupSimple`, `tableBlo
 
 ## Remaining names to avoid confusion
 
-The old package name remains in the ChangeLog for historical context. The public API no longer uses the `Vis` prefix, nor does it export the `vis` builder prefix. The README explains that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
+The old package name remains in the changelog for historical context. The public API no longer uses the `Vis` prefix, nor does it export the `vis` builder prefix. The README explains that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
 
 ## Other candidates
 

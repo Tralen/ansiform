@@ -18,10 +18,10 @@ import           Ansiform.Style
 
 -- Printer for a number of empty lines.
 printerEmpty :: Number -> Printer
-printerEmpty n = formPrinter "Empty" $ \_ -> printEmpty n
+printerEmpty n = formPrinter "Empty" $ \s -> printEmpty s n
 
 printerItem :: Item -> Printer
-printerItem i = formPrinter "Item" $ \_ -> printSingleItem i
+printerItem i = formPrinter "Item" $ \s -> printSingleItem s i
 
 
 -- Rules & Solid Printing
@@ -49,7 +49,7 @@ printerSolid' o c = formPrinter "Solid'" $ \s -> printRule o (ruleSolid c) s
 
 -- Printer for a Block in single line, left aligned.
 printerLeft :: Offset -> Block -> Printer
-printerLeft o b = formPrinter "Left" $ \_ -> printLeft o b
+printerLeft o b = formPrinter "Left" $ \s -> printLeft s o b
 
 -- Printer for single Block, right aligned.
 printerRight :: Offset -> Block -> Printer
@@ -99,7 +99,7 @@ printerSolidLineCenter o p c bs = formPrinter "SolidLineCenter" $ \s -> printSol
 
 -- Printer for a column of Blocks, with indentation.
 printerColumn :: Offset -> [Block] -> Printer
-printerColumn o bs = formPrinter "Column" $ \_ -> printColumn o bs
+printerColumn o bs = formPrinter "Column" $ \s -> printColumn s o bs
 
 -- Printer for a list of Blocks, aiming for a specified number of rows.
 printerList :: Offset -> Number -> [Block] -> Printer
@@ -115,7 +115,7 @@ printerList' o l bs = formPrinter "List'" $ \s -> printList' o l bs s
 
 -- Printer for a single Group, printed as a column with the given offset.
 printerGroup :: Offset -> Group -> Printer
-printerGroup o g = formPrinter "Group" $ \_ -> printGroup o g
+printerGroup o g = formPrinter "Group" $ \s -> printGroup s o g
 
 -- Printer for a list of Groups with evenly spaced columns.
 printerGroups :: Offset -> [Group] -> Printer

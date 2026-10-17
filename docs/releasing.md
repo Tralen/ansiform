@@ -5,9 +5,9 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.6.1.
+- Version: 0.7.0.
 - License: MIT.
-- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
+- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, CHANGELOG and LICENSE.
 - Haddock builds. Function-level documentation coverage is still being improved.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
 - GitHub remote: not configured yet.
@@ -86,7 +86,7 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
    git push origin master --tags
    ```
 
-2. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
+2. Create a GitHub release from the tag, using the relevant CHANGELOG section as the description.
 3. Add CI, Hackage and license badges to the README once the URLs exist.
 
 ## Notes
