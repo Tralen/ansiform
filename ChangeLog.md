@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.7.8.1 -- 2026-10-17
+* Merged the Groups prompt message and input line into a single footer line.
+
 ### 0.7.8.0 -- 2026-10-17
 * Added readLineAt and readLineAtOn to Ansiform.Input for prompts printed inside a page.
 * The demo Groups prompt now lives in the footer, above the command keys, so nothing is printed below the footer.

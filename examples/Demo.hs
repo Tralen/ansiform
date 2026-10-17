@@ -15,7 +15,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.8.0"
+demoVersion = "0.7.8.1"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -102,24 +102,22 @@ bottom :: Section
 bottom = sectionRule ruleBottom
 
 footer :: String -> [[Block]] -> Section
-footer message commandLines = footerWithPrompt message Nothing commandLines
-
--- Footer with an optional prompt line above the command keys.
-footerWithPrompt :: String -> Maybe Block -> [[Block]] -> Section
-footerWithPrompt message prompt commandLines = sectionBodyRule 1 ruleFooter
+footer message commandLines = sectionBodyRule 1 ruleFooter
   ( [ printerLeft 2 (blockSimple message (themeFooter demoTheme))
     , printerEmpty 1
-    ] ++ promptLine ++ fmap (printerLineCenter 4) commandLines )
-  where
-    promptLine = case prompt of
-      Nothing -> []
-      Just b -> [ printerLeft promptOffset b ]
+    ] ++ fmap (printerLineCenter 4) commandLines )
+
+-- Footer with a single prompt line above the command keys.
+footerPrompt :: String -> [[Block]] -> Section
+footerPrompt message commandLines = sectionBodyRule 1 ruleFooter
+  ( [ printerLeft promptOffset (blockSimple message (themeFooter demoTheme)) ]
+    ++ fmap (printerLineCenter 4) commandLines )
 
 promptOffset :: Offset
 promptOffset = 2
 
 promptMessage :: String
-promptMessage = "Enter a number and press Enter: "
+promptMessage = "Choose a philosopher by number and press Enter: "
 
 -- The input column is the prompt offset plus its display width.
 promptInputColumn :: Offset
@@ -160,9 +158,7 @@ screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
 screenFooter Groups = footer "Press E to choose a philosopher by number." groupsCommands
 screenFooter GroupsPrompt =
-  footerWithPrompt "Choose a philosopher by number."
-                   (Just (blockSimple promptMessage (themeFooter demoTheme)))
-                   groupsCommands
+  footerPrompt promptMessage groupsCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
 menuCommands, pageCommands, groupsCommands :: [[Block]]
