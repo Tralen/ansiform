@@ -5,13 +5,22 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.2.0.
+- Version: 0.7.3.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, CHANGELOG and LICENSE.
 - Haddock builds. Function-level documentation coverage is still being improved.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
 - GitHub remote: not configured yet.
 - `source-repository`, `homepage` and `bug-reports` are not set because the repository URL is not known yet.
+
+## Credentials
+
+Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist` do not use them.
+
+- `HACKAGE_TOKEN` is the Hackage upload token. Cabal does not read an environment variable automatically; pass it with `--token "$HACKAGE_TOKEN"` or configure it once in the Cabal configuration file. Never commit it or paste it into a command that is logged.
+- `GITHUB_TOKEN` is used by GitHub API operations, such as creating a release or a repository with `curl` or `gh`. A normal `git push` uses the remote's SSH key or credential helper, not this variable.
+
+Load the private secrets file in the shell that runs the release commands, and check that the variables are non-empty before uploading. The values must stay out of the repository and out of the documentation.
 
 ## Before the first release
 
@@ -66,13 +75,13 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
    If the token is not configured, pass it explicitly:
 
    ```sh
-   cabal upload --token <token> --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+   cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
    ```
 
 4. Upload the documentation for the published package:
 
    ```sh
-   cabal upload --token <token> --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
+   cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
    ```
 
 5. Check the package page, the documentation links and the dependency bounds.

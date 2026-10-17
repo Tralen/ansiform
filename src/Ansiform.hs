@@ -24,6 +24,7 @@ import           Ansiform.Sample    as All
 import           Ansiform.Section   as All
 import           Ansiform.Settings  as All
 import           Ansiform.Style     as All
+import           Ansiform.Table     as All
 import           Ansiform.Width     as All
 
 

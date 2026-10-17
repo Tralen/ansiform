@@ -115,11 +115,17 @@ printerTable :: Offset -> Padding -> Maybe Table -> Printer
 printerTable' :: Offset -> Padding -> Maybe Table -> Printer
 printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
+
+printerTableFormat :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableFormat' :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableLimitedFormat :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 ```
 
 - `printerTable` uses minimum column spacing and a zebra background.
 - `printerTable'` spaces the columns evenly.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
+- The `Format` variants apply per-column alignment, maximum widths and truncation. See [Table formatting](table-format.md).
 - A `Nothing` table is treated as an empty group, so invalid input still produces a well-defined (empty) result instead of an exception.
 
 ## Paragraphs and articles

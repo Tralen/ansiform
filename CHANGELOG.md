@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.3.0 -- 2026-10-17
+* Added Ansiform.Table with per-column alignment, maximum widths and ellipsis truncation.
+* Added printerTableFormat, printerTableFormat', printerTableLimitedFormat and printerTableLimitedFormat'.
+* Updated the demo Tables screen to right-align numeric columns and truncate long composer names.
+* Added docs/table-format.md.
+
 ### 0.7.2.0 -- 2026-10-17
 * Added handle-aware runners: startOn, drawOn, redrawOn, amendOn, replaceOn and their variants.
 * Added runPrinterOn, runPrinterDefaultOn and runPrinterDefaultOn' for writing to a specific handle.

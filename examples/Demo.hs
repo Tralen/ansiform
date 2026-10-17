@@ -14,7 +14,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.2.0"
+demoVersion = "0.7.3.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -103,7 +103,7 @@ screenBody :: Screen -> Section
 screenBody Menu = sectionBodyRule 1 ruleBody [printerColumn 8 menuBlocks]
 screenBody List = sectionBodyRule 1 ruleBody [printerList 8 6 composers]
 screenBody Groups = sectionBodyRule 1 ruleBody [printerGroups' 4 groups]
-screenBody Tables = sectionBodyRule 1 ruleBody [printerTable' 4 1 simpleTable]
+screenBody Tables = sectionBodyRule 1 ruleBody [printerTableFormat' demoTablesFormat 4 1 simpleTable]
 screenBody Rich = sectionBodyRule 1 ruleBody [printerTable 8 1 richTable]
 screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
@@ -255,6 +255,17 @@ richRows =
 
 simpleTable :: Maybe Table
 simpleTable = tableSimple simpleHeader (normal blue') simpleRows
+
+-- Right aligns the numeric columns and truncates long composer names.
+demoTablesFormat :: TableFormat
+demoTablesFormat = tableFormat
+  [ defaultColumnSpec { columnMaxWidth = Just 10
+                      , columnEllipsis = EllipsisChar '…' }
+  , defaultColumnSpec
+  , defaultColumnSpec { columnAlign = AlignRight }
+  , defaultColumnSpec { columnAlign = AlignRight }
+  , defaultColumnSpec { columnAlign = AlignRight }
+  ]
 
 simpleHeader :: [Block]
 simpleHeader =

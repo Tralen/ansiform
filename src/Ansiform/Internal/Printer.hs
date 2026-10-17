@@ -2,6 +2,7 @@ module Ansiform.Internal.Printer where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
+import           Data.List (zipWith4)
 import           Data.List.Split
 import           System.IO (Handle, hPutStr, hPutStrLn, stdout)
 import           Ansiform.Internal.Content
@@ -10,6 +11,7 @@ import           Ansiform.Internal.Output
 import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Settings
 import           Ansiform.Internal.Style
+import           Ansiform.Internal.Table
 import           Ansiform.Internal.Terminal
 import           Ansiform.Internal.Utils
 import           Ansiform.Content
@@ -269,9 +271,9 @@ printGroup out o g = printColumn out o (unGroup g)
 --       Number -> Sets the number of rows printed, rest is discarded, 0 is max.
 --       Bool -> Sets the alignment to be evenly spaced if True, or max per row.
 --       Bool -> Table mode: zebra background and repeating index column.
-printGroups :: Offset -> Padding -> Number -> Bool
+printGroups :: TableFormat -> Offset -> Padding -> Number -> Bool
             -> Bool -> [Group] -> Output -> IO Number
-printGroups o p n bSpace bTable gs out = mainPrinter
+printGroups fmt o p n bSpace bTable gs out = mainPrinter
     where
        cfg = outputConfig out
        h = outputHandle out
@@ -280,15 +282,26 @@ printGroups o p n bSpace bTable gs out = mainPrinter
        w' = unn w ; m' = unn m ; n' = unn n
        offset = unn o + unn p
        finalWidth = w' - offset*2 + m'
-       
-       widthList = fmap ((+m') . blockTextMax . unGroup) gs
+
+       specs = fmap (columnSpecAt fmt) [0 .. length gs - 1]
+       cappedWidths = zipWith cappedWidth specs gs
+       widthList = fmap (+m') cappedWidths
        maxWidth = maximum' 0 widthList
        evenList = replicate (length gs) maxWidth
        chosenWidthList | bSpace = evenList | otherwise = widthList
+       formattedGroups = zipWith4 formatOne specs cappedWidths chosenWidthList gs
 
-       initGroup = take 1 gs
+       formatOne :: ColumnSpec -> Int -> Int -> Group -> Group
+       formatOne spec capped chosen g = formatGroup spec (formNumber target) g
+         where
+           chosenContent = chosen - m'
+           target = case columnAlign spec of
+               AlignLeft -> capped
+               _ -> chosenContent
+
+       initGroup = take 1 formattedGroups
        initWidth = take 1 chosenWidthList
-       mainPrinter = printLoop gs chosenWidthList 0 0
+       mainPrinter = printLoop formattedGroups chosenWidthList 0 0
          where
             printLoop :: [Group] -> [Int] -> Int -> Number -> IO Number
             printLoop rm wl ri nls

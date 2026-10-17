@@ -78,6 +78,30 @@ main = do
         let p = page [section [printerLeft 0 (blockSimple "rendered" styleDefault)]]
         out <- renderPage p (settings [width 20, neverColors])
         return $ "rendered" `isInfixOf` out
+    , testIO "Formatted table aligns and truncates columns" $ do
+        let tbl = tableSimple
+              [ blockSimple "Name" styleDefault
+              , blockSimple "Age" styleDefault ]
+              styleDefault
+              [ ["Alexandra", "7"]
+              , ["Bo", "42"] ]
+            fmt = tableFormat
+              [ defaultColumnSpec { columnMaxWidth = Just 4
+                                  , columnEllipsis = EllipsisChar '.' }
+              , defaultColumnSpec { columnAlign = AlignRight } ]
+        out <- renderPrinter (printerTableFormat fmt 0 0 tbl)
+                             (settings [width 30, neverColors])
+        return $ all (`isInfixOf` out) ["Ale.", "Bo  ", "  7", " 42"]
+    , testIO "Formatted table centers columns" $ do
+        let tbl = tableSimple
+              [ blockSimple "X" styleDefault ]
+              styleDefault
+              [ ["ab"], ["abcd"] ]
+            fmt = tableFormat
+              [ defaultColumnSpec { columnAlign = AlignCenter } ]
+        out <- renderPrinter (printerTableFormat fmt 0 0 tbl)
+                             (settings [width 20, neverColors])
+        return $ " ab " `isInfixOf` out
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])

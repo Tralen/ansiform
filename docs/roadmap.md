@@ -8,10 +8,6 @@ No pending high-value items.
 
 ## Medium value
 
-### Per-column alignment and truncation
-
-Tables currently print left-aligned cells and do not truncate long content. Add per-column alignment (`Left`, `Center`, `Right`), a maximum width and an ellipsis policy. This is especially useful for numeric columns.
-
 ### Theme record
 
 Introduce a `Theme` value grouping the styles used by headers, footers, accents, danger, muted text and tables. Reusable components can take a theme instead of hard-coded styles. This is a low-risk addition that reinforces the library's consistency goal.
@@ -41,6 +37,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Per-column alignment and truncation
+
+Released in 0.7.3.0. `Ansiform.Table` adds `Align`, `Ellipsis` and `ColumnSpec`, and the `printerTableFormat` family applies right, center or left alignment, maximum widths and ellipsis truncation per column. See [Table formatting](table-format.md).
 
 ### Rendering to a handle or string
 

@@ -13,6 +13,7 @@ import           Ansiform.Internal.Content
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Output (outputConfig)
 import           Ansiform.Internal.Printer as Internal
+import           Ansiform.Internal.Table (TableFormat, defaultTableFormat)
 import           Ansiform.Content
 import           Ansiform.Style
 
@@ -124,22 +125,22 @@ printerGroup o g = formPrinter "Group" $ \s -> printGroup s o g
 -- Printer for a list of Groups with evenly spaced columns.
 printerGroups :: Offset -> [Group] -> Printer
 printerGroups o gs = formPrinter "Groups" $ \s -> 
-              printGroups o 0 0 True False (groupAverage (outputConfig s) gs) s
+              printGroups defaultTableFormat o 0 0 True False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with minimum spaced columns.
 printerGroups' :: Offset -> [Group] -> Printer
 printerGroups' o gs = formPrinter "Groups'" $ \s -> 
-              printGroups o 0 0 False False (groupAverage (outputConfig s) gs) s
+              printGroups defaultTableFormat o 0 0 False False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with evenly spaced columns, limiting number of rows.
 printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited o r gs = formPrinter "GroupsLimited" $ \s -> 
-              printGroups o 0 r True False (groupAverage (outputConfig s) gs) s
+              printGroups defaultTableFormat o 0 r True False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with minimum spaced columns, limiting number of rows.
 printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s -> 
-              printGroups o 0 r False False (groupAverage (outputConfig s) gs) s
+              printGroups defaultTableFormat o 0 r False False (groupAverage (outputConfig s) gs) s
 
 
 -- Table Printing
@@ -148,22 +149,42 @@ printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s ->
 -- Prints a Table with alternating background, with minimum spaced columns.
 printerTable :: Offset -> Padding -> Maybe Table -> Printer
 printerTable o p mt = formPrinter "Table" $ \s -> 
-                 printGroups o p 0 False True (unMaybeTable mt) s
+                 printGroups defaultTableFormat o p 0 False True (unMaybeTable mt) s
 
 -- Prints a Table with alternating background, with evenly spaced columns.
 printerTable' :: Offset -> Padding -> Maybe Table -> Printer
 printerTable' o p mt = formPrinter "Table'" $ \s -> 
-                 printGroups o p 0 True True (unMaybeTable mt) s
+                 printGroups defaultTableFormat o p 0 True True (unMaybeTable mt) s
 
 -- Prints a Table limiting the number of rows, with minimum spaced columns.
 printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited o p r mt = formPrinter "TableLimited" $ \s -> 
-                 printGroups o p r False True (unMaybeTable mt) s
+                 printGroups defaultTableFormat o p r False True (unMaybeTable mt) s
 
 -- Prints a Table limiting the number of rows, with evenly spaced columns.
 printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited' o p r mt = formPrinter "TableLimited'" $ \s -> 
-                 printGroups o p r True True (unMaybeTable mt) s
+                 printGroups defaultTableFormat o p r True True (unMaybeTable mt) s
+
+-- | Prints a formatted Table with alternating background, with minimum spaced columns.
+printerTableFormat :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableFormat fmt o p mt = formPrinter "TableFormat" $ \s ->
+                 printGroups fmt o p 0 False True (unMaybeTable mt) s
+
+-- | Prints a formatted Table with alternating background, with evenly spaced columns.
+printerTableFormat' :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableFormat' fmt o p mt = formPrinter "TableFormat'" $ \s ->
+                 printGroups fmt o p 0 True True (unMaybeTable mt) s
+
+-- | Prints a formatted Table limiting the number of rows, with minimum spaced columns.
+printerTableLimitedFormat :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableLimitedFormat fmt o p r mt = formPrinter "TableLimitedFormat" $ \s ->
+                 printGroups fmt o p r False True (unMaybeTable mt) s
+
+-- | Prints a formatted Table limiting the number of rows, with evenly spaced columns.
+printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableLimitedFormat' fmt o p r mt = formPrinter "TableLimitedFormat'" $ \s ->
+                 printGroups fmt o p r True True (unMaybeTable mt) s
 
 
 -- Text Printing

@@ -14,7 +14,7 @@ The header and footer are shared components; only the body changes between scree
 | --- | --- |
 | `L` | List of composers, flowing into columns. |
 | `G` | Groups of philosophers, spaced across the width. |
-| `T` | Simple table, reusing the header styles for each column. |
+| `T` | Simple table with right-aligned numeric columns and truncated composer names. |
 | `H` | Rich table, with independently styled cells. |
 | `A` | Article with styled paragraph fragments. |
 | `C` | Showcase of the composite content builders. |
