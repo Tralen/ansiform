@@ -10,10 +10,11 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
-- GitHub: the repository was deleted to remove personal paths from its history. Recreate it before the next push; the local remote is `git@github.com:Tralen/ansiform.git`.
+- GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
-- The local history has been rewritten and contains no personal paths.
-- The roadmap is complete. GitHub publication and the Hackage upload are pending.
+- The history has been rewritten and contains no personal paths.
+- Tag `0.7.8.2` and its GitHub release are published.
+- The roadmap is complete. GitHub publication is done; the Hackage upload is pending.
 
 ## Credentials
 
@@ -122,7 +123,7 @@ Never print the values of the tokens or commit the location of your secrets.
 
 ## GitHub release
 
-1. Recreate the repository as public, if it does not exist.
+1. Confirm that the repository exists and is public. Recreate it only if it is missing.
 2. Push the final commit and tag the release:
 
    ```sh
