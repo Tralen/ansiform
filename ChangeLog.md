@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### 0.7.7.0 -- 2026-10-17
+* Added withLineInput and readLine to Ansiform.Input.
+* Replaced the Cicero and Locke shortcuts with an E Escolher prompt that accepts any philosopher number.
+* Back from a philosopher article now returns to the Groups screen.
+
 ### 0.7.6.0 -- 2026-10-17
 * Added dedicated demo screens and articles for Cicero and Locke.
 * Added C and L shortcuts to the Groups footer.

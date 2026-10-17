@@ -5,7 +5,9 @@
 --   > cabal run ansiform-demo
 module Main where
 
-import           Data.Char (toLower)
+import           Data.Char (isSpace, toLower)
+import           Data.List (elemIndex)
+import           System.IO (hFlush, stdout)
 import           Ansiform
 
 --------------------------------------------------------------------------------
@@ -14,10 +16,18 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.6.0"
+demoVersion = "0.7.7.0"
+
+-- The philosophers shown in the Groups screen.
+data Philosopher
+  = Socrates | Plato | Aristotle | Diogenes | Epicurus
+  | Cicero | Seneca | Lucretius | MarcusAurelius | Virgil
+  | Hobbes | Spinoza | Descartes | Locke | Hume
+  deriving (Eq, Show)
 
 -- The demo is a small screen machine.
-data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks | Cicero | Locke
+data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
+            | PhilosopherPage Philosopher
   deriving (Eq, Show)
 
 main :: IO ()
@@ -30,20 +40,18 @@ loop screen state = do
   key <- readKey
   case fmap toLower key of
     Nothing -> finish
+    Just 'l' -> open List state
     Just 'g' -> open Groups state
     Just 't' -> open Tables state
     Just 'h' -> open Rich state
     Just 'a' -> open Article state
-    Just 'c' -> case screen of
-                  Groups -> open Cicero state
-                  _ -> open Blocks state
-    Just 'l' -> case screen of
-                  Groups -> open Locke state
-                  _ -> open List state
+    Just 'c' -> open Blocks state
+    Just 'e' -> case screen of
+                  Groups -> choosePhilosopher state
+                  _ -> loop screen state
     Just 'r' -> do state' <- redraw state
                    loop screen state'
-    Just 'b' -> do state' <- draw (screenPage Menu) state
-                   loop Menu state'
+    Just 'b' -> open (backScreen screen) state
     Just 'x' -> finish
     Just '\n' -> loop screen state
     Just ' ' -> loop screen state
@@ -52,7 +60,23 @@ loop screen state = do
     open next st = do
       st' <- draw (screenPage next) st
       loop next st'
+
+    choosePhilosopher st = withLineInput $ do
+      putStr "Digite o número e aperte Enter: "
+      hFlush stdout
+      input <- readLine
+      case input >>= philosopherByNumber . trim of
+        Just p -> open (PhilosopherPage p) st
+        Nothing -> do
+          st' <- draw (screenPage Groups) st
+          loop Groups st'
+
     finish = putStrLn "\nAnsiform demo finished."
+
+-- Returns to the screen that contains the current one.
+backScreen :: Screen -> Screen
+backScreen (PhilosopherPage _) = Groups
+backScreen _ = Menu
 
 demoSettings :: Settings
 demoSettings = settings [minSpace 2]
@@ -106,12 +130,12 @@ screenBody Tables = sectionBodyRule 1 ruleBody [printerTableFormat' demoTablesFo
 screenBody Rich = sectionBodyRule 1 ruleBody [printerTableBordered BordersLight defaultTableFormat 8 0 richTable]
 screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
-screenBody Cicero = sectionBodyRule 1 ruleBody [printerArticle 2 0 ciceroArticle]
-screenBody Locke = sectionBodyRule 1 ruleBody [printerArticle 2 0 lockeArticle]
+screenBody (PhilosopherPage p) =
+  sectionBodyRule 1 ruleBody [printerArticle 2 0 (philosopherArticle p)]
 
 screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
-screenFooter Groups = footer "Cicero and Locke have dedicated pages." groupsCommands
+screenFooter Groups = footer "Press E to choose a philosopher by number." groupsCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
 menuCommands, pageCommands, groupsCommands :: [[Block]]
@@ -132,11 +156,10 @@ pageCommands =
   ]
 
 groupsCommands =
-  [ [ blockMenuStyle "C" "Cicero" (themeAccent demoTheme)
-    , blockMenuStyle "L" "Locke" (themeAccent demoTheme)
-    , blockMenuStyle "B" "Back" (themeAccent demoTheme) ]
-  , [ blockMenuStyle "R" "Reload" (themeAccent demoTheme)
-    , blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
+  [ [ blockMenuStyle "E" "Escolher" (themeAccent demoTheme)
+    , blockMenuStyle "B" "Back" (themeAccent demoTheme)
+    , blockMenuStyle "R" "Reload" (themeAccent demoTheme) ]
+  , [ blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
   ]
 
 --------------------------------------------------------------------------------
@@ -193,30 +216,70 @@ composers =
   ]
 
 --------------------------------------------------------------------------------
--- Groups
+-- Philosophers
 --------------------------------------------------------------------------------
+
+philosopherGroups :: [(String, [Philosopher])]
+philosopherGroups =
+  [ ("Greek", [Socrates, Plato, Aristotle, Diogenes, Epicurus])
+  , ("Roman", [Cicero, Seneca, Lucretius, MarcusAurelius, Virgil])
+  , ("Enlightenment", [Hobbes, Spinoza, Descartes, Locke, Hume])
+  ]
+
+philosophers :: [Philosopher]
+philosophers = concatMap snd philosopherGroups
 
 groups :: [Group]
 groups =
-  [ groupSimple (blockSimple "Greek" (normal yellow))
-      [ blockEnum "01" "Socrates" black
-      , blockEnum "02" "Plato" black
-      , blockEnum "03" "Aristotle" black
-      , blockEnum "04" "Diogenes" black
-      , blockEnum "05" "Epicurus" black ]
-  , groupSimple (blockSimple "Roman" (normal yellow))
-      [ blockEnum "06" "Cicero" magenta
-      , blockEnum "07" "Seneca" black
-      , blockEnum "08" "Lucretius" black
-      , blockEnum "09" "Marcus Aurelius" black
-      , blockEnum "10" "Virgil" black ]
-  , groupSimple (blockSimple "Enlightenment" (normal yellow))
-      [ blockEnum "11" "Hobbes" black
-      , blockEnum "12" "Spinoza" black
-      , blockEnum "13" "Descartes" black
-      , blockEnum "14" "Locke" green
-      , blockEnum "15" "Hume" black ]
-  ]
+  [ groupSimple (blockSimple title (normal yellow))
+      [ philosopherBlock p | p <- ps ]
+  | (title, ps) <- philosopherGroups ]
+
+philosopherBlock :: Philosopher -> Block
+philosopherBlock p =
+  blockEnum (philosopherNumber p) (philosopherName p) (philosopherColor p)
+
+philosopherName :: Philosopher -> String
+philosopherName p = case p of
+  Socrates -> "Socrates"
+  Plato -> "Plato"
+  Aristotle -> "Aristotle"
+  Diogenes -> "Diogenes"
+  Epicurus -> "Epicurus"
+  Cicero -> "Cicero"
+  Seneca -> "Seneca"
+  Lucretius -> "Lucretius"
+  MarcusAurelius -> "Marcus Aurelius"
+  Virgil -> "Virgil"
+  Hobbes -> "Hobbes"
+  Spinoza -> "Spinoza"
+  Descartes -> "Descartes"
+  Locke -> "Locke"
+  Hume -> "Hume"
+
+philosopherColor :: Philosopher -> Color
+philosopherColor p = case p of
+  Cicero -> magenta
+  Locke -> green
+  _ -> black
+
+philosopherNumber :: Philosopher -> String
+philosopherNumber p = case elemIndex p philosophers of
+  Just i -> pad2 (i + 1)
+  Nothing -> "??"
+
+pad2 :: Int -> String
+pad2 n | n < 10 = '0' : show n
+       | otherwise = show n
+
+philosopherByNumber :: String -> Maybe Philosopher
+philosopherByNumber s = case reads s :: [(Int, String)] of
+  [(n, "")] -> lookup n [ (read (philosopherNumber p) :: Int, p) | p <- philosophers ]
+  _ -> Nothing
+
+trim :: String -> String
+trim = f . f
+  where f = reverse . dropWhile isSpace
 
 --------------------------------------------------------------------------------
 -- Tables
@@ -373,3 +436,55 @@ lockeParagraph2 =
   , blockSimple "The Essay Concerning Human Understanding " textItalic
   , blockSimple "shaped modern epistemology and liberal thought." (textColor cyan)
   ]
+
+philosopherArticle :: Philosopher -> Article
+philosopherArticle p = case p of
+  Socrates -> bio "Socrates " "(c. 470-399 BC) was an Athenian philosopher. "
+                  "He examined ethical concepts through dialogue and questioning. "
+                  "He wrote nothing and is known mainly through Plato."
+  Plato -> bio "Plato " "(c. 427-347 BC) was an Athenian philosopher. "
+               "He developed the theory of Forms and founded the Academy. "
+               "His dialogues include the Republic and the Symposium."
+  Aristotle -> bio "Aristotle " "(384-322 BC) was a Greek philosopher and student of Plato. "
+                   "He worked on logic, ethics, politics and natural science. "
+                   "He also tutored Alexander the Great."
+  Diogenes -> bio "Diogenes " "(c. 412-323 BC) was a Cynic philosopher. "
+                  "He rejected wealth and convention and lived with extreme simplicity. "
+                  "His anecdotes illustrate independence and moral frankness."
+  Epicurus -> bio "Epicurus " "(341-270 BC) was a Greek philosopher. "
+                  "He founded a school known as the Garden and taught that pleasure is the absence of pain. "
+                  "His atomism influenced later materialist thought."
+  Cicero -> ciceroArticle
+  Seneca -> bio "Seneca " "(c. 4 BC-AD 65) was a Roman Stoic philosopher and statesman. "
+                 "He wrote letters and essays on ethics and advised Nero. "
+                 "He was forced to commit suicide in AD 65."
+  Lucretius -> bio "Lucretius " "(c. 99-55 BC) was a Roman poet and philosopher. "
+                    "His poem De Rerum Natura explains Epicurean atomism. "
+                    "It is a major source for ancient materialist ideas."
+  MarcusAurelius -> bio "Marcus Aurelius " "(AD 121-180) was a Roman emperor and Stoic philosopher. "
+                         "His Meditations record private reflections on duty and self-control. "
+                         "He is often called the philosopher emperor."
+  Virgil -> bio "Virgil " "(70-19 BC) was a Roman poet. "
+                  "He wrote the Eclogues, the Georgics and the Aeneid. "
+                  "The Aeneid became a foundational text of Roman literature."
+  Hobbes -> bio "Thomas Hobbes " "(1588-1679) was an English philosopher. "
+                  "He is known for Leviathan and for social contract theory. "
+                  "He argued for a strong sovereign to prevent civil war."
+  Spinoza -> bio "Baruch Spinoza " "(1632-1677) was a Dutch philosopher. "
+                   "His Ethics presents a rationalist and monist system. "
+                   "He defended freedom of thought and religious toleration."
+  Descartes -> bio "René Descartes " "(1596-1650) was a French philosopher and mathematician. "
+                     "He is known for the cogito and for mind-body dualism. "
+                     "He helped shape modern rationalism and the scientific method."
+  Locke -> lockeArticle
+  Hume -> bio "David Hume " "(1711-1776) was a Scottish philosopher and historian. "
+                "He developed empiricism and an influential analysis of causation. "
+                "His works include A Treatise of Human Nature and An Enquiry Concerning Human Understanding."
+
+bio :: String -> String -> String -> String -> Article
+bio name dates role detail =
+  [ [ blockSimple name textBold
+    , blockSimple dates textRegular
+    , blockSimple role textItalic
+    , blockSimple detail textRegular
+    ] ]

@@ -5,7 +5,7 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.6.0.
+- Version: 0.7.7.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.

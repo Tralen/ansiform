@@ -5,6 +5,9 @@ Ansiform's standard interaction is immediate: pressing a key runs an action with
 ```haskell
 withImmediateInput :: IO a -> IO a
 readKey :: IO (Maybe Char)
+
+withLineInput :: IO a -> IO a
+readLine :: IO (Maybe String)
 ```
 
 ## Setting up
@@ -36,6 +39,20 @@ loop state = do
 ```
 
 Pressing `N` or `P` changes the page immediately. The loop ignores unknown keys and keeps the current state.
+
+## Line input
+
+Some screens need a value typed by the user. `withLineInput` temporarily restores line buffering and echo, and `readLine` reads until Enter:
+
+```haskell
+promptNumber :: IO (Maybe String)
+promptNumber = withLineInput $ do
+  putStr "Enter a number and press Enter: "
+  hFlush stdout
+  readLine
+```
+
+`withLineInput` restores the immediate input settings when the action ends, so the same program can mix key-driven and line-driven screens. `readLine` returns `Nothing` at end of input.
 
 ## Terminal state
 
