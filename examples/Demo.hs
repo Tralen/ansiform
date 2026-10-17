@@ -19,7 +19,7 @@ import           Vis
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.3.3"
+demoVersion = "0.3.4"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks

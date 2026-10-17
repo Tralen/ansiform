@@ -2,6 +2,10 @@
 
 ## Functional Versions
 
+### 0.3.4 -- 2026-10-17
+* Documented the name rationale and its relationship to vis-network.js.
+* Added a disambiguation note to the README.
+
 ### 0.3.3 -- 2026-10-17
 * Fixed printLineCenter so blocks respect the minimum space and never overlap.
 * Made the demo menu use the same shortcut presentation as the footer.
