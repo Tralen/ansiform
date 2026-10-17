@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.6.1 -- 2026-10-17
+* Added the GitHub Actions CI workflow.
+* Added docs/releasing.md with the Hackage and GitHub checklist.
+* Added docs/roadmap.md with prioritized feature suggestions.
+* Added module-level Haddock headers to the public modules.
+
 ### 0.6.0 -- 2026-10-17
 * Renamed the internal vis* builders to form* (formItem, formBlock, formGroup, ...).
 * Renamed the low-level style helpers to descriptive names (applyStyle, resetStyle, styleCommands, colorCommands, formatCommands, setBackground, swapBackground).

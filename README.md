@@ -6,7 +6,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.6.0**.
+Current version: **0.6.1**.
 
 ## Features
 
@@ -68,6 +68,8 @@ cabal run ansiform-demo
 - [Demo](docs/demo.md): what the executable showcases.
 - [Design notes](docs/design-notes.md): original project notes and their current status.
 - [Naming](docs/naming.md): name rationale and disambiguation.
+- [Releasing](docs/releasing.md): Hackage and GitHub publication checklist.
+- [Roadmap](docs/roadmap.md): prioritized feature suggestions.
 
 ## Design principles
 

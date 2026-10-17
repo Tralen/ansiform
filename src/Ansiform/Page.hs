@@ -1,3 +1,4 @@
+-- | Page builders and runners.
 module Ansiform.Page ( module Ansiform.Page, Internal.Page, Internal.runPage
                 , Internal.runPageDefault, Internal.runPageDefault'
                 ) where

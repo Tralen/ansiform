@@ -1,3 +1,4 @@
+-- | Settings and configuration modifiers.
 module Ansiform.Settings (module Ansiform.Settings
                     , Internal.Config
                     , Internal.Settings

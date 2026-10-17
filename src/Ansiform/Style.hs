@@ -1,3 +1,4 @@
+-- | Colors, formats and reusable styles.
 module Ansiform.Style ( module Ansiform.Style
                  , Internal.Color, Internal.Format, Internal.Style
                  ) where

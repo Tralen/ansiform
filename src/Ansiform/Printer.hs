@@ -1,3 +1,4 @@
+-- | Printer builders for lines, lists, groups, tables and text.
 module Ansiform.Printer ( module Ansiform.Printer 
                    , Internal.Printer, Internal.runPrinter
                    , Internal.runPrinterDefault

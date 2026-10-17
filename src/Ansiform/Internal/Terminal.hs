@@ -1,3 +1,4 @@
+-- | Internal terminal cursor and size helpers.
 module Ansiform.Internal.Terminal 
                     ( module Ansiform.Internal.Terminal
                     , ANSI.cursorUp, ANSI.cursorDown

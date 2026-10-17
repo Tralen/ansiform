@@ -1,3 +1,4 @@
+-- | Section builders and runners.
 module Ansiform.Section ( module Ansiform.Section
                    , Internal.Section, Internal.runSection
                    , Internal.runSectionDefault, Internal.runSectionDefault'

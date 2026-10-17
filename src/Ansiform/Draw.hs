@@ -1,3 +1,4 @@
+-- | Drawing functions and the page state lifecycle.
 module Ansiform.Draw ( start, draw, redraw
                 , amend, amend'
                 , replace, replace'

@@ -1,3 +1,4 @@
+-- | Pure builders for items, blocks, groups, tables, paragraphs and rules.
 module Ansiform.Content ( module Ansiform.Content
                    , Internal.Item, Internal.Block, Internal.Rule
                    , Internal.Group, Internal.Table

@@ -1,3 +1,4 @@
+-- | Internal style representation and ANSI SGR application.
 module Ansiform.Internal.Style 
                     ( module Ansiform.Internal.Style
                     , ANSI.ColorIntensity(..)
