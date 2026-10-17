@@ -12,17 +12,19 @@ The header and footer are shared components; only the body changes between scree
 
 | Key | Action |
 | --- | --- |
-| `L` | List of composers, flowing into columns. |
+| `L` | List of composers; on the Groups screen, opens the Locke article. |
 | `G` | Groups of philosophers, spaced across the width. |
 | `T` | Simple table with right-aligned numeric columns and truncated composer names. |
 | `H` | Rich table with light box borders and independently styled cells. |
 | `A` | Article with styled paragraph fragments. |
-| `C` | Showcase of the composite content builders. |
+| `C` | Showcase of the composite content builders; on the Groups screen, opens the Cicero article. |
 | `B` | Back to the main menu. |
 | `R` | Redraw the current screen. |
 | `X` | Exit. |
 
 The menu lists each shortcut next to its option, and the footer shows the same keys. On the main menu, the footer commands are split into two rows so longer labels do not crowd. Press a key directly; the screen changes immediately, with no prompt and no Enter. The demo restores the terminal settings when it exits. When stdin is not a terminal, for example with piped input, line breaks are ignored and each character is handled as a key.
+
+On the Groups screen, the colored numbers 06 (Cicero) and 14 (Locke) identify the philosophers that have dedicated articles. The footer adds `C` for Cicero and `L` for Locke; both articles use the standard `B`/`R`/`X` footer.
 
 ## Source
 

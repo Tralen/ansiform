@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.6.0 -- 2026-10-17
+* Added dedicated demo screens and articles for Cicero and Locke.
+* Added C and L shortcuts to the Groups footer.
+* Added a CI matrix with GHC 9.2.8 and GHC 9.14.1.
+* Documented direct command-line Hackage tokens and SSH setup for GitHub.
+
 ### 0.7.5.2 -- 2026-10-17
 * Renamed CHANGELOG.md back to ChangeLog.md, following the Hackage convention.
 * Documented the Hackage token key at the top level of ~/.cabal/config.

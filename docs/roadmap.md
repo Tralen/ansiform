@@ -12,9 +12,7 @@ No pending medium-value items.
 
 ## Publication quality
 
-### CI matrix
-
-The current CI targets GHC 9.14.1. Consider a matrix with the oldest supported GHC and the latest one once the lower bound is validated.
+No pending publication-quality items.
 
 ## Deferred
 
@@ -27,6 +25,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### CI matrix
+
+Released in 0.7.6.0. The CI workflow tests GHC 9.2.8 and GHC 9.14.1 with Cabal 3.18.1.0.
 
 ### Haddock coverage
 

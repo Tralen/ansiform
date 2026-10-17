@@ -5,13 +5,14 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.5.2.
+- Version: 0.7.6.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
-- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
-- GitHub remote: `origin` points to https://github.com/Tralen/ansiform.git. The repository is private for now.
+- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
+- GitHub remote: `origin` uses SSH (`git@github.com:Tralen/ansiform.git`). The repository is private for now.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
+- Publication is deferred until the roadmap is complete.
 
 ## Credentials
 
@@ -19,60 +20,50 @@ Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist`
 
 ### Hackage
 
-Cabal reads the global keys `token`, `username`, `password` and `password-command` from the user config. Depending on the installation, the file is `~/.cabal/config` (legacy layout) or `~/.config/cabal/config` (XDG layout). Use the file Cabal already uses; `cabal user-config` refers to the XDG path.
+Use the token directly on the command line so it is not stored:
 
-1. Store the token in the Cabal config for repeated releases. `token` is a global key, so it must be at the top level, not inside the `repository` stanza:
+```sh
+cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+```
 
-   ```cabal
-   token: <hackage-token>
+For documentation:
 
-   repository hackage.haskell.org
-     url: http://hackage.haskell.org/
-   ```
+```sh
+cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
+```
 
-   The `repository` stanza configures the server; it is not where the upload token belongs.
-
-2. Pass it per command after loading your secrets file:
-
-   ```sh
-   cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
-   ```
-
-3. Use a command that prints the token on demand:
-
-   ```sh
-   cabal upload --password-command 'cat /path/to/hackage-token' --publish <tarball>
-   ```
-
-Never put the token directly in shell history or commit the file that contains it.
+Do not add the token to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
 
 ### GitHub
 
-`GITHUB_TOKEN` is used by the GitHub API and by `gh`. It is not used automatically by `git push`. Choose one of these:
+This project uses SSH for pushes. Configure a key for your GitHub account.
 
-- **SSH**, recommended:
+1. Add the public key to GitHub under **Settings > SSH and GPG keys**:
 
-  ```sh
-  git remote set-url origin git@github.com:Tralen/ansiform.git
-  ```
+   ```sh
+   cat ~/.ssh/id_ed25519.pub
+   ```
 
-  The corresponding public key must be registered on GitHub.
-- **`gh`**, if installed:
+2. Test the connection:
 
-  ```sh
-  gh auth login
-  ```
+   ```sh
+   ssh -T git@github.com
+   ```
 
-  `gh` configures the git credential helper. It is not installed in the current environment.
-- **HTTPS credential helper**: configure a helper that reads the token from your secret store. Avoid `credential.helper store`, which saves the token in plain text.
+3. Verify that the remote uses SSH:
 
-The private secrets file is not inherited by non-interactive shells. Load it in the shell that runs the release commands, for example with `source`, or configure the credentials persistently.
+   ```sh
+   git remote -v
+   git remote set-url origin git@github.com:Tralen/ansiform.git
+   ```
+
+The repository is private, so the key must belong to an account with access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
 
 Never print the values of the tokens or commit the secrets file.
 
 ## Before the first release
 
-1. Confirm access to the GitHub repository and decide when it becomes public.
+1. Authorize the SSH public key on GitHub and confirm access to the private repository.
 2. Verify the remote:
 
    ```sh

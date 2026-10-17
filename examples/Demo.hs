@@ -14,10 +14,10 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.5.2"
+demoVersion = "0.7.6.0"
 
 -- The demo is a small screen machine.
-data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
+data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks | Cicero | Locke
   deriving (Eq, Show)
 
 main :: IO ()
@@ -30,12 +30,16 @@ loop screen state = do
   key <- readKey
   case fmap toLower key of
     Nothing -> finish
-    Just 'l' -> open List state
     Just 'g' -> open Groups state
     Just 't' -> open Tables state
     Just 'h' -> open Rich state
     Just 'a' -> open Article state
-    Just 'c' -> open Blocks state
+    Just 'c' -> case screen of
+                  Groups -> open Cicero state
+                  _ -> open Blocks state
+    Just 'l' -> case screen of
+                  Groups -> open Locke state
+                  _ -> open List state
     Just 'r' -> do state' <- redraw state
                    loop screen state'
     Just 'b' -> do state' <- draw (screenPage Menu) state
@@ -102,12 +106,15 @@ screenBody Tables = sectionBodyRule 1 ruleBody [printerTableFormat' demoTablesFo
 screenBody Rich = sectionBodyRule 1 ruleBody [printerTableBordered BordersLight defaultTableFormat 8 0 richTable]
 screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
+screenBody Cicero = sectionBodyRule 1 ruleBody [printerArticle 2 0 ciceroArticle]
+screenBody Locke = sectionBodyRule 1 ruleBody [printerArticle 2 0 lockeArticle]
 
 screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
+screenFooter Groups = footer "Cicero and Locke have dedicated pages." groupsCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
-menuCommands, pageCommands :: [[Block]]
+menuCommands, pageCommands, groupsCommands :: [[Block]]
 menuCommands =
   [ [ blockMenuStyle "L" "List" (themeAccent demoTheme)
     , blockMenuStyle "G" "Groups" (themeAccent demoTheme)
@@ -121,6 +128,14 @@ menuCommands =
 pageCommands =
   [ [ blockMenuStyle "B" "Back" (themeAccent demoTheme)
     , blockMenuStyle "R" "Reload" (themeAccent demoTheme)
+    , blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
+  ]
+
+groupsCommands =
+  [ [ blockMenuStyle "C" "Cicero" (themeAccent demoTheme)
+    , blockMenuStyle "L" "Locke" (themeAccent demoTheme)
+    , blockMenuStyle "B" "Back" (themeAccent demoTheme) ]
+  , [ blockMenuStyle "R" "Reload" (themeAccent demoTheme)
     , blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
   ]
 
@@ -317,4 +332,44 @@ paragraph3 =
   , blockSimple "and wide characters, combining marks and emoji " textRegular
   , blockSimple "keep their alignment " (textMark cyan)
   , blockSimple "because layout measures terminal columns, not code points." textRegular
+  ]
+
+--------------------------------------------------------------------------------
+-- Philosopher articles
+--------------------------------------------------------------------------------
+
+ciceroArticle :: Article
+ciceroArticle = [ciceroParagraph1, ciceroParagraph2]
+
+ciceroParagraph1, ciceroParagraph2 :: Paragraph
+ciceroParagraph1 =
+  [ blockSimple "Marcus Tullius Cicero " textBold
+  , blockSimple "(106-43 BC) was a Roman statesman, orator and philosopher. " textRegular
+  , blockSimple "He was consul in 63 BC " textItalic
+  , blockSimple "and is known for the Catilinarian orations and for his many speeches." textRegular
+  ]
+
+ciceroParagraph2 =
+  [ blockSimple "His philosophical works, " textRegular
+  , blockSimple "such as De Re Publica and De Officiis, " (textMark yellow)
+  , blockSimple "helped bring Greek philosophy into Latin. " textRegular
+  , blockSimple "He was killed during the proscriptions of 43 BC." (textColor cyan)
+  ]
+
+lockeArticle :: Article
+lockeArticle = [lockeParagraph1, lockeParagraph2]
+
+lockeParagraph1, lockeParagraph2 :: Paragraph
+lockeParagraph1 =
+  [ blockSimple "John Locke " textBold
+  , blockSimple "(1632-1704) was an English philosopher and physician. " textRegular
+  , blockSimple "He is a central figure of empiricism " textItalic
+  , blockSimple "and argued that the mind begins as a blank slate." textRegular
+  ]
+
+lockeParagraph2 =
+  [ blockSimple "His Two Treatises of Government " textRegular
+  , blockSimple "defended natural rights and government by consent. " (textMark yellow)
+  , blockSimple "The Essay Concerning Human Understanding " textItalic
+  , blockSimple "shaped modern epistemology and liberal thought." (textColor cyan)
   ]
