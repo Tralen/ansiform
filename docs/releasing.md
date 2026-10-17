@@ -10,10 +10,10 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
-- GitHub remote: `origin` uses SSH (`git@github.com:Tralen/ansiform.git`). The repository is private for now.
+- GitHub remote: `origin` uses SSH (`git@github.com:Tralen/ansiform.git`). The repository is public at <https://github.com/Tralen/ansiform>.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
-- Initial push: `master` is on GitHub and tracks `origin/master`.
-- The roadmap is complete. Publication is pending the repository visibility decision and the Hackage upload.
+- Initial push: `master` is on GitHub and tracks `origin/master`; tag `0.7.8.2` and its GitHub release are published.
+- The roadmap is complete. GitHub publication is done; the Hackage upload is pending.
 
 ## Credentials
 
@@ -58,13 +58,13 @@ This project uses SSH for pushes. Configure a key for your GitHub account.
    git remote set-url origin git@github.com:Tralen/ansiform.git
    ```
 
-The repository is private, so the key must belong to an account with access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
+The repository is public, but pushes still require a key belonging to an account with write access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
 
 Never print the values of the tokens or commit the secrets file.
 
 ## Before the first release
 
-1. Authorize the SSH public key on GitHub and confirm access to the private repository.
+1. Authorize the SSH public key on GitHub and confirm write access to the repository. This is already configured.
 2. Verify the remote:
 
    ```sh
@@ -135,7 +135,7 @@ Never print the values of the tokens or commit the secrets file.
    ```
 
 2. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
-3. Add CI, Hackage and license badges to the README once the URLs exist.
+3. Add the Hackage badge to the README once the package page exists. The CI and license badges are already present.
 
 ## Notes
 

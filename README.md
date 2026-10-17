@@ -1,5 +1,8 @@
 # Ansiform
 
+[![CI](https://github.com/Tralen/ansiform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tralen/ansiform/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Tralen/ansiform/blob/master/LICENSE)
+
 Ansiform is a small Haskell library for building visual command line interfaces. It provides a declarative format DSL for styled text, rules, aligned lines, lists, groups, tables, paragraphs and multi-section pages.
 
 Builders are pure and produce immutable values. A thin drawing layer writes those values to the terminal and keeps track of how many lines were printed, so a page can be amended, replaced or redrawn in place.
