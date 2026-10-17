@@ -21,7 +21,7 @@ Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist`
 
 ### Hackage
 
-Use the token directly on the command line so it is not stored:
+Export `HACKAGE_TOKEN` with your own secret manager before running the command. Use the token directly on the command line so it is not stored:
 
 ```sh
 cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
@@ -33,7 +33,7 @@ For documentation:
 cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
 ```
 
-Do not add the token to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
+Do not add the token or the location of your secret manager to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
 
 ### GitHub
 
