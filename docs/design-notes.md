@@ -1,25 +1,25 @@
 # Design notes
 
-These are the original project notes, kept for context. They record ideas that were considered before the 0.3.0 revival. The current status follows each one.
+These are the original project notes, translated and kept for context. They record ideas that were considered before the 0.3.0 revival. The current status follows each one.
 
 ## Original notes
 
-Biblioteca para controle da formatação do terminal. Usada em todos os programas de linha de comando.
+A library for controlling terminal formatting, used by every command-line program.
 
-- Migrar para Text.
-- Migrar para Seq.
+- Migrate to `Text`.
+- Migrate to `Seq`.
 
 ### Printer
 
-O Printer é similar o Reader Monad, portanto, talvez deva-se considerar usar o ReaderT em vez do próprio tipo. A questão é que o Printer não tem um parâmetro, portanto, seria uma especialização.
+The `Printer` is similar to the `Reader` monad, so using `ReaderT` instead of a dedicated type could be considered. The point is that `Printer` has no parameter, so it would be a specialization.
 
 ### Section
 
-O Section deve ser um Monad, pois é preciso passar a posição do cursor para a próxima section.
+`Section` should be a monad, because the cursor position has to be passed to the next section.
 
 ### Error
 
-Só há um erro previsto no sistema, que é a má-formação das tabelas. Se for necessário, elaborar o erro para passá-lo para os níveis superiores.
+Only one error is expected in the system: a malformed table. If necessary, define the error in a way that lets it reach upper layers.
 
 ## Current status
 

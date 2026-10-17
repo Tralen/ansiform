@@ -1,6 +1,6 @@
 # Releasing
 
-This checklist covers the first Hackage and GitHub release of Ansiform. Update it as the release process evolves.
+This checklist covers the Hackage and GitHub release of Ansiform. Update it as the release process evolves.
 
 ## Current status
 
@@ -10,10 +10,10 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
-- GitHub remote: `origin` uses SSH (`git@github.com:Tralen/ansiform.git`). The repository is public at <https://github.com/Tralen/ansiform>.
+- GitHub: the repository was deleted to remove personal paths from its history. Recreate it before the next push; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
-- Initial push: `master` is on GitHub and tracks `origin/master`; tag `0.7.8.2` and its GitHub release are published.
-- The roadmap is complete. GitHub publication is done; the Hackage upload is pending.
+- The local history has been rewritten and contains no personal paths.
+- The roadmap is complete. GitHub publication and the Hackage upload are pending.
 
 ## Credentials
 
@@ -37,14 +37,9 @@ Do not add the token or the location of your secret manager to the repository. I
 
 ### GitHub
 
-This project uses SSH for pushes. Configure a key for your GitHub account.
+Pushes use SSH. Configure an SSH key for your GitHub account with your own local tooling; no key paths belong in this repository.
 
-1. Add the public key to GitHub under **Settings > SSH and GPG keys**:
-
-   ```sh
-   cat ~/.ssh/id_ed25519.pub
-   ```
-
+1. Add the public key to GitHub under **Settings > SSH and GPG keys**.
 2. Test the connection:
 
    ```sh
@@ -58,13 +53,13 @@ This project uses SSH for pushes. Configure a key for your GitHub account.
    git remote set-url origin git@github.com:Tralen/ansiform.git
    ```
 
-The repository is public, but pushes still require a key belonging to an account with write access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
+The repository must be public for the package links and badges to work. Pushes still require a key belonging to an account with write access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
 
-Never print the values of the tokens or commit the secrets file.
+Never print the values of the tokens or commit the location of your secrets.
 
 ## Before the first release
 
-1. Authorize the SSH public key on GitHub and confirm write access to the repository. This is already configured.
+1. Configure an SSH key for GitHub and confirm write access to the repository.
 2. Verify the remote:
 
    ```sh
@@ -127,19 +122,21 @@ Never print the values of the tokens or commit the secrets file.
 
 ## GitHub release
 
-1. Push the final commit and tag the release:
+1. Recreate the repository as public, if it does not exist.
+2. Push the final commit and tag the release:
 
    ```sh
+   git push -u origin master
    git tag -a <version> -m "ansiform <version>"
    git push origin master --tags
    ```
 
-2. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
-3. Add the Hackage badge to the README once the package page exists. The CI and license badges are already present.
+3. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
+4. Add the Hackage badge to the README once the package page exists. The CI and license badges are already present.
 
 ## Notes
 
 - The old package name `vis` collided with the Hackage `Vis` package (3D graphics). Do not reuse it.
 - The public types no longer use the `Vis` prefix, and the internal builders use the `form` prefix.
-- `hie.yaml` is optional and currently ignored by the user's global Git configuration. Commit it only if the team decides to share the editor configuration.
+- `hie.yaml` is optional editor configuration and is not tracked. Commit it only if the team decides to share it.
 - The CI workflow targets GHC 9.14.1 and Cabal 3.18.1.0. Extend the matrix once the supported GHC range is validated.
