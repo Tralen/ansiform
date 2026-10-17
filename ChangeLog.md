@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.5.0 -- 2026-10-17
+* Removed the Vis prefix from all public types.
+* Renamed VisItem to Item, VisBlock to Block, and so on, including Color, Format, Style, Printer, Section, Page, Settings, Config, State and Sample.
+* Updated the demo, tests, README and docs for the new type names.
+* Kept the internal vis* builder helpers as implementation details.
+
 ### 0.4.0 -- 2026-10-17
 * Renamed the package to ansiform and the module namespace to Ansiform.
 * Changed the license from GPL-3.0-only to MIT.

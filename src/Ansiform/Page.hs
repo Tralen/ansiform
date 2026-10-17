@@ -1,4 +1,4 @@
-module Ansiform.Page ( module Ansiform.Page, Internal.VisPage, Internal.runPage
+module Ansiform.Page ( module Ansiform.Page, Internal.Page, Internal.runPage
                 , Internal.runPageDefault, Internal.runPageDefault'
                 ) where
 
@@ -11,15 +11,15 @@ import           Ansiform.Internal.Section
 --------------------------------------------------------------------------------
 
 -- Simplest page builder.
-page :: [VisSection] -> VisPage
+page :: [Section] -> Page
 page = visPage
 
--- Builds a VisPage by replacing a single VisSection, based on an index.
-amendPage :: VisPage -> VisSection -> VisNumber -> VisPage
+-- Builds a Page by replacing a single Section, based on an index.
+amendPage :: Page -> Section -> Number -> Page
 amendPage p s n = amendPage' p [s] n
 
--- Builds a VisPage by replacing all VisSections after a chosen index.
-amendPage' :: VisPage -> [VisSection] -> VisNumber -> VisPage
+-- Builds a Page by replacing all Sections after a chosen index.
+amendPage' :: Page -> [Section] -> Number -> Page
 amendPage' p ss n = visPage $ starter ++ remainder
     where p' = unPage p; n' = unn n
           remainder = ss ++ drop (n' + length ss) p'

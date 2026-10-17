@@ -27,13 +27,13 @@ There is no compatibility module named `Vis`. The rename is a breaking change fo
 
 ## Type names
 
-The public types still carry the `Vis` prefix: `VisItem`, `VisBlock`, `VisPrinter`, `VisPage`, `VisSection`, `VisNumber`, `VisStyle`, `VisColor`, `VisSettings`, `VisConfig`, `VisState`, `VisSample` and so on.
+The 0.5.0 release removed the `Vis` prefix from the public types. The public API now uses `Item`, `Block`, `Group`, `Table`, `Paragraph`, `Article`, `Rule`, `Number`, `Width`, `Padding`, `Offset`, `Color`, `Format`, `Style`, `Printer`, `Section`, `Page`, `Settings`, `Config`, `State` and `Sample`.
 
-Dropping the prefix is future work. It is a separate breaking change and does not need to happen together with the package rename. Keeping the type names for now preserves some continuity and avoids an unnecessarily large migration.
+The internal builder helpers (`visItem`, `visBlock`, `visGroup`, etc.) keep their names. They are implementation details, hidden behind the public builders, and can be renamed later without changing the public API.
 
 ## Remaining names to avoid confusion
 
-The old name remains in the ChangeLog and in the type prefix. The README and this document explain that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
+The old package name remains in the ChangeLog for historical context. The public API no longer uses the `Vis` prefix, and the README explains that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
 
 ## Other candidates
 

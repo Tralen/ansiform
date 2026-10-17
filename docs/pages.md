@@ -1,13 +1,13 @@
 # Pages and drawing
 
-A `VisPage` is an ordered list of sections. Drawing a page prints every section and records how many lines each one produced. Those line counts are what make in-place updates possible.
+A `Page` is an ordered list of sections. Drawing a page prints every section and records how many lines each one produced. Those line counts are what make in-place updates possible.
 
 ```haskell
-newtype VisPage  -- opaque
+newtype Page  -- opaque
 
-page :: [VisSection] -> VisPage
-amendPage :: VisPage -> VisSection -> VisNumber -> VisPage
-amendPage' :: VisPage -> [VisSection] -> VisNumber -> VisPage
+page :: [Section] -> Page
+amendPage :: Page -> Section -> Number -> Page
+amendPage' :: Page -> [Section] -> Number -> Page
 ```
 
 - `page` builds a page.
@@ -18,10 +18,10 @@ Both functions are pure; they do not draw anything.
 
 ## State
 
-`VisState` is opaque. It carries the settings, the page currently on screen and the line counts returned by the last draw. Create it with `start` and pass it to the drawing functions.
+`State` is opaque. It carries the settings, the page currently on screen and the line counts returned by the last draw. Create it with `start` and pass it to the drawing functions.
 
 ```haskell
-start :: VisPage -> VisSettings -> IO VisState
+start :: Page -> Settings -> IO State
 ```
 
 `start` clears the screen and draws the initial page.
@@ -29,14 +29,14 @@ start :: VisPage -> VisSettings -> IO VisState
 ## Drawing functions
 
 ```haskell
-draw :: VisPage -> VisState -> IO VisState
-redraw :: VisState -> IO VisState
+draw :: Page -> State -> IO State
+redraw :: State -> IO State
 
-amend :: VisSection -> VisNumber -> VisState -> IO VisState
-amend' :: [VisSection] -> VisNumber -> VisState -> IO VisState
+amend :: Section -> Number -> State -> IO State
+amend' :: [Section] -> Number -> State -> IO State
 
-replace :: VisSection -> VisNumber -> VisState -> IO VisState
-replace' :: [VisSection] -> VisNumber -> VisState -> IO VisState
+replace :: Section -> Number -> State -> IO State
+replace' :: [Section] -> Number -> State -> IO State
 ```
 
 - `draw` clears from the top of the screen and draws a new page.

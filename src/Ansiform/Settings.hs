@@ -1,6 +1,6 @@
 module Ansiform.Settings (module Ansiform.Settings
-                    , Internal.VisConfig
-                    , Internal.VisSettings
+                    , Internal.Config
+                    , Internal.Settings
                     ) where
 
 
@@ -12,25 +12,25 @@ import           Ansiform.Internal.Settings as Internal
 -- Default Settings
 --------------------------------------------------------------------------------
 
-settings :: [VisConfig -> VisConfig] -> VisSettings
+settings :: [Config -> Config] -> Settings
 settings = visSettings
 
-defaultSettings :: VisSettings
+defaultSettings :: Settings
 defaultSettings = visSettings []
 
 
 -- Configuration modifiers
 --------------------------------------------------------------------------------
-width :: VisWidth -> VisConfig -> VisConfig
+width :: Width -> Config -> Config
 width = setWidth
 
-minSpace :: VisWidth -> VisConfig -> VisConfig
+minSpace :: Width -> Config -> Config
 minSpace = setMinSpace
 
-groupOverflow :: VisNumber -> VisConfig -> VisConfig
+groupOverflow :: Number -> Config -> Config
 groupOverflow = setGroupOverflow
 
-overflow :: VisNumber -> VisConfig -> VisConfig
+overflow :: Number -> Config -> Config
 overflow = setGroupOverflow
 
 

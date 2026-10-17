@@ -1,13 +1,14 @@
 module Ansiform.Internal.Style 
                     ( module Ansiform.Internal.Style
-                    , ANSI.Color(..), ANSI.ColorIntensity(..)
+                    , ANSI.ColorIntensity(..)
                     , ANSI.ConsoleIntensity(..), ANSI.Underlining(..)
                     , ANSI.cursorUp, ANSI.cursorDown
                     ) where
            
 --------------------------------------------------------------------------------
 import           Control.Monad.IO.Class
-import           System.Console.ANSI as ANSI
+import           System.Console.ANSI as ANSI hiding (Color)
+import qualified System.Console.ANSI as ANSI
 import           Ansiform.Internal.Sample
 --------------------------------------------------------------------------------
 
@@ -35,122 +36,122 @@ SetColor                    ConsoleLayer ColorIntensity Color
 
 -- Colors
 --------------------------------------------------------------------------------
-data VisColor = VisColorDefault | VisColor ColorIntensity Color
+data Color = ColorDefault | Color ColorIntensity ANSI.Color
                 deriving (Eq, Show)
 
-instance VisSample VisColor where
-    sampleShow _ VisColorDefault = "ColorDefault"
-    sampleShow _ (VisColor Dull c) = show c
-    sampleShow _ (VisColor Vivid c) = show c ++ "'"  
+instance Sample Color where
+    sampleShow _ ColorDefault = "ColorDefault"
+    sampleShow _ (Color Dull c) = show c
+    sampleShow _ (Color Vivid c) = show c ++ "'"  
 
 
 -- Wrapper and Default
-visColor :: ColorIntensity -> Color -> VisColor
-visColor = VisColor
+visColor :: ColorIntensity -> ANSI.Color -> Color
+visColor = Color
 
-visColorDefault :: VisColor
-visColorDefault = VisColorDefault
+visColorDefault :: Color
+visColorDefault = ColorDefault
 
 -- Unwrappers
-unColor :: VisColor -> Color
+unColor :: Color -> ANSI.Color
 unColor c = case c of
-          VisColorDefault -> White
-          VisColor _ c' -> c'
+          ColorDefault -> ANSI.White
+          Color _ c' -> c'
 
-unIntensity  :: VisColor -> ColorIntensity
+unIntensity  :: Color -> ColorIntensity
 unIntensity c = case c of
-          VisColorDefault -> Dull
-          VisColor i' _ -> i'
+          ColorDefault -> Dull
+          Color i' _ -> i'
 
 -- Default check.
-isColorDefault :: VisColor -> Bool
-isColorDefault vc = case vc of VisColorDefault -> True ; _ -> False
+isColorDefault :: Color -> Bool
+isColorDefault vc = case vc of ColorDefault -> True ; _ -> False
 
 
 -- Formatting
 --------------------------------------------------------------------------------
 --                                            Bold             Italic Underline
-data VisFormat = VisFormatDefault | VisFormat ConsoleIntensity Bool   Underlining
+data Format = FormatDefault | Format ConsoleIntensity Bool   Underlining
                  deriving (Eq, Show)
 
-instance VisSample VisFormat where
-    sampleShow _ VisFormatDefault = "FormatDefault"
-    sampleShow _ (VisFormat BoldIntensity False NoUnderline) = "Bold"
-    sampleShow _ (VisFormat NormalIntensity True NoUnderline) = "Italic"
-    sampleShow _ (VisFormat NormalIntensity False SingleUnderline) = "Underline"
-    sampleShow _ (VisFormat BoldIntensity True NoUnderline) = "BoldItalic"
-    sampleShow _ (VisFormat BoldIntensity False SingleUnderline) = "BoldUnderline"
-    sampleShow _ (VisFormat NormalIntensity True SingleUnderline) = "ItalicUnderline"
-    sampleShow _ (VisFormat BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
+instance Sample Format where
+    sampleShow _ FormatDefault = "FormatDefault"
+    sampleShow _ (Format BoldIntensity False NoUnderline) = "Bold"
+    sampleShow _ (Format NormalIntensity True NoUnderline) = "Italic"
+    sampleShow _ (Format NormalIntensity False SingleUnderline) = "Underline"
+    sampleShow _ (Format BoldIntensity True NoUnderline) = "BoldItalic"
+    sampleShow _ (Format BoldIntensity False SingleUnderline) = "BoldUnderline"
+    sampleShow _ (Format NormalIntensity True SingleUnderline) = "ItalicUnderline"
+    sampleShow _ (Format BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
     sampleShow _ _ = "Regular"
 
 
 -- Wrapper and Default
-visFormat :: ConsoleIntensity -> Bool -> Underlining -> VisFormat 
-visFormat = VisFormat
+visFormat :: ConsoleIntensity -> Bool -> Underlining -> Format 
+visFormat = Format
 
-visFormatDefault :: VisFormat
-visFormatDefault = VisFormatDefault
+visFormatDefault :: Format
+visFormatDefault = FormatDefault
 
 -- Unwrappers
-unBold :: VisFormat -> ConsoleIntensity
+unBold :: Format -> ConsoleIntensity
 unBold vf = case vf of
-      VisFormatDefault -> NormalIntensity
-      VisFormat b _ _ -> b
+      FormatDefault -> NormalIntensity
+      Format b _ _ -> b
 
-unItalic :: VisFormat -> Bool
+unItalic :: Format -> Bool
 unItalic vf = case vf of
-      VisFormatDefault -> False
-      VisFormat _ i _  -> i
+      FormatDefault -> False
+      Format _ i _  -> i
 
-unUnderline :: VisFormat -> Underlining
+unUnderline :: Format -> Underlining
 unUnderline vf = case vf of
-      VisFormatDefault -> NoUnderline
-      VisFormat _ _ u  -> u
+      FormatDefault -> NoUnderline
+      Format _ _ u  -> u
 
 -- Format checks.
-isFormatDefault :: VisFormat -> Bool
-isFormatDefault vf = case vf of VisFormatDefault -> True ; _ -> False
+isFormatDefault :: Format -> Bool
+isFormatDefault vf = case vf of FormatDefault -> True ; _ -> False
 
-isBold :: VisFormat -> Bool
+isBold :: Format -> Bool
 isBold vf = case unBold vf of BoldIntensity -> True; _ -> False
 
-isItalic :: VisFormat -> Bool
+isItalic :: Format -> Bool
 isItalic = unItalic
 
-isUnderline :: VisFormat -> Bool
+isUnderline :: Format -> Bool
 isUnderline vf = case unUnderline vf of SingleUnderline -> True; _ -> False
 
 
 -- Visual Styles
 --------------------------------------------------------------------------------
-data VisStyle = VisZero | VisStyle VisColor VisColor VisFormat
+data Style = Zero | Style Color Color Format
                 deriving (Eq, Show)
 
-instance VisSample VisStyle where
-  sampleShow _ VisZero = "Reset"
-  sampleShow _ (VisStyle fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
+instance Sample Style where
+  sampleShow _ Zero = "Reset"
+  sampleShow _ (Style fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
-vis :: MonadIO m => VisStyle -> m ()
+vis :: MonadIO m => Style -> m ()
 vis s = liftIO $ setSGR (Reset : visBuilder s)
 
 -- Resets visual styles.
 visZero :: IO ()
-visZero = vis VisZero
+visZero = vis Zero
 
 vis0 :: IO ()
 vis0 = visZero
 
 -- Constructs the final list of SGR instructions for Ansiform.
-visBuilder ::  VisStyle -> [SGR]
+visBuilder ::  Style -> [SGR]
 visBuilder s = case s of
-                   VisZero -> []
-                   VisStyle fc bc f ->
+                   Zero -> []
+                   Style fc bc f ->
                         visColorBuilder fc bc ++ visFormatBuilder f
 
 -- Builds the color SGR list.
-visColorBuilder :: VisColor -> VisColor -> [SGR]
+visColorBuilder :: Color -> Color -> [SGR]
 visColorBuilder fc bc
     | isColorDefault fc && isColorDefault bc = []
     | isColorDefault bc = [ setForeground fc ]
@@ -162,7 +163,7 @@ visColorBuilder fc bc
 
 
 -- Builds the formatting SGR list.
-visFormatBuilder :: VisFormat -> [SGR]
+visFormatBuilder :: Format -> [SGR]
 visFormatBuilder f
       | isFormatDefault f = []
       | otherwise = [ SetConsoleIntensity (unBold f)
@@ -171,50 +172,50 @@ visFormatBuilder f
                     ]
 
 -- Wrapper and Defaults
-visStyle :: VisColor -> VisColor -> VisFormat -> VisStyle
-visStyle = VisStyle
+visStyle :: Color -> Color -> Format -> Style
+visStyle = Style
 
-visDefault :: VisStyle
+visDefault :: Style
 visDefault = visStyle visColorDefault visColorDefault visFormatDefault
 
 -- Unwrappers
-unStyleForeground :: VisStyle -> VisColor
-unStyleForeground s = case s of VisZero -> visColorDefault ; VisStyle fc _ _ -> fc
+unStyleForeground :: Style -> Color
+unStyleForeground s = case s of Zero -> visColorDefault ; Style fc _ _ -> fc
 
-unStyleBackground :: VisStyle -> VisColor
-unStyleBackground s = case s of VisZero -> visColorDefault ; VisStyle _ bc _ -> bc
+unStyleBackground :: Style -> Color
+unStyleBackground s = case s of Zero -> visColorDefault ; Style _ bc _ -> bc
 
-unStyleFormat :: VisStyle -> VisFormat
-unStyleFormat s = case s of VisZero -> visFormatDefault ; VisStyle _ _ f -> f
+unStyleFormat :: Style -> Format
+unStyleFormat s = case s of Zero -> visFormatDefault ; Style _ _ f -> f
 
 
 -- Style checks
-isZero :: VisStyle -> Bool
-isZero v = case v of VisZero -> True ; _ -> False
+isZero :: Style -> Bool
+isZero v = case v of Zero -> True ; _ -> False
 
-isSpecial :: VisStyle -> Bool
+isSpecial :: Style -> Bool
 isSpecial vs = isBold vf || isItalic vf || isUnderline vf || isColored vs || isSolid vs
     where vf = unStyleFormat vs
 
-isSolid :: VisStyle -> Bool
+isSolid :: Style -> Bool
 isSolid vs = not . isColorDefault $ unStyleBackground vs
 
-isColored :: VisStyle -> Bool
+isColored :: Style -> Bool
 isColored vs = not . isColorDefault $ unStyleForeground vs
 
 -- Sets the background color to a given color, respects if there is already one.
-visSetBG :: VisColor -> VisStyle -> VisStyle
+visSetBG :: Color -> Style -> Style
 visSetBG c v = case v of
-   VisZero -> v
-   VisStyle fc bc f -> case bc of 
-                VisColorDefault -> visStyle fc c f
+   Zero -> v
+   Style fc bc f -> case bc of 
+                ColorDefault -> visStyle fc c f
                 _ -> v
 
 -- Swaps the foreground and background color.
-visSwapBG :: VisStyle -> VisStyle
+visSwapBG :: Style -> Style
 visSwapBG v = case v of
-   VisZero -> v
-   VisStyle fc bc f -> visStyle bc fc f
+   Zero -> v
+   Style fc bc f -> visStyle bc fc f
 
 
 

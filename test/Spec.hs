@@ -10,19 +10,19 @@ import           Ansiform
 main :: IO ()
 main = do
   results <- sequence
-    [ test "VisNumber caps negative values"
+    [ test "Number caps negative values"
         (unNumber (visNumber (-7)) == 0)
-    , test "VisNumber keeps positive values"
+    , test "Number keeps positive values"
         (unNumber (visNumber 12) == 12)
-    , test "VisNumber addition"
-        (unNumber (3 + 4 :: VisNumber) == 7)
-    , test "VisNumber subtraction caps at zero"
-        (unNumber (2 - 5 :: VisNumber) == 0)
-    , test "VisNumber negation caps at zero"
-        (unNumber (negate (5 :: VisNumber)) == 0)
-    , test "VisNumber signum"
-        (unNumber (signum (0 :: VisNumber)) == 0
-          && unNumber (signum (5 :: VisNumber)) == 1)
+    , test "Number addition"
+        (unNumber (3 + 4 :: Number) == 7)
+    , test "Number subtraction caps at zero"
+        (unNumber (2 - 5 :: Number) == 0)
+    , test "Number negation caps at zero"
+        (unNumber (negate (5 :: Number)) == 0)
+    , test "Number signum"
+        (unNumber (signum (0 :: Number)) == 0
+          && unNumber (signum (5 :: Number)) == 1)
     , test "Balanced block table is accepted"
         (isJust (tableBlocks header [row]))
     , test "Unbalanced block table is rejected"
@@ -66,26 +66,26 @@ test name passed = do
 -- Fixtures
 --------------------------------------------------------------------------------
 
-header :: [VisBlock]
+header :: [Block]
 header = [ blockSimple "A" styleDefault
          , blockSimple "B" styleDefault ]
 
-row :: [VisBlock]
+row :: [Block]
 row = [ blockSimple "1" styleDefault
       , blockSimple "2" styleDefault ]
 
-balancedGroup, otherBalancedGroup, shortGroup :: VisGroup
+balancedGroup, otherBalancedGroup, shortGroup :: Group
 balancedGroup = groupSimple (blockSimple "Header" styleDefault) [rowBlock]
 otherBalancedGroup = groupSimple (blockSimple "Header" styleDefault) [rowBlock]
 shortGroup = groupSimple (blockSimple "Header" styleDefault) []
 
-rowBlock :: VisBlock
+rowBlock :: Block
 rowBlock = blockSimple "value" styleDefault
 
-oldPage :: VisPage
+oldPage :: Page
 oldPage = page [ oldSection, keptSection ]
 
-oldSection, keptSection, newSection :: VisSection
+oldSection, keptSection, newSection :: Section
 oldSection = section [ printerLeft 0 (blockSimple "old" styleDefault) ]
 keptSection = section [ printerCenter 0 (blockSimple "kept" styleDefault) ]
 newSection = section [ printerRight 0 (blockSimple "new" styleDefault) ]

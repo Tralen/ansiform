@@ -11,21 +11,21 @@ import           Ansiform.Internal.Terminal
 --------------------------------------------------------------------------------
 
 -- Config is just a list of functions to modify the settings, made by the user.
-newtype VisSettings = VisSettings [VisConfig -> VisConfig]
+newtype Settings = Settings [Config -> Config]
 
-instance VisSample VisSettings where
+instance Sample Settings where
     sample vs = sample =<< runSettings vs
-    sampleShow _ (VisSettings _) = ""
+    sampleShow _ (Settings _) = ""
 
-visSettings :: [VisConfig -> VisConfig] -> VisSettings
-visSettings = VisSettings
+visSettings :: [Config -> Config] -> Settings
+visSettings = Settings
 
-unSettings :: VisSettings -> [VisConfig -> VisConfig]
-unSettings (VisSettings fs) = fs
+unSettings :: Settings -> [Config -> Config]
+unSettings (Settings fs) = fs
 
 
 -- Function to build the settings in a declarative style.
-runSettings :: VisSettings -> IO VisConfig
+runSettings :: Settings -> IO Config
 runSettings stgs = initialConfig >>= \dft ->
                   return $ List.foldl' (\sets f -> f sets) dft $ unSettings stgs
 
@@ -33,39 +33,39 @@ runSettings stgs = initialConfig >>= \dft ->
 --------------------------------------------------------------------------------
 
 -- Config is a tuple of the values needed to run the printers and more.
-newtype VisConfig = VisConfig 
-            ( VisWidth  -- Current screen width
-            , VisWidth  -- Minimum space to be used bettwen blocks.
-            , VisNumber -- Percentage that groups are allowed to overflow.
+newtype Config = Config 
+            ( Width  -- Current screen width
+            , Width  -- Minimum space to be used bettwen blocks.
+            , Number -- Percentage that groups are allowed to overflow.
             ) deriving (Eq, Show)
 
-instance VisSample VisConfig where
-    sampleShow _ (VisConfig (w,m,g)) = "Settings"
+instance Sample Config where
+    sampleShow _ (Config (w,m,g)) = "Settings"
                                ++ "\n  Screen Width: " ++ show w
                                ++ "\n  Minimum Space: " ++ show m
                                ++ "\n  Group Overflow: " ++ show g ++ "%"
 
 -- Wrapper
-visConfig :: VisWidth -> VisWidth -> VisNumber -> VisConfig
-visConfig w m g = VisConfig (w, m, g)
+visConfig :: Width -> Width -> Number -> Config
+visConfig w m g = Config (w, m, g)
 
 
 -- Unwrappers
-unConfig :: VisConfig -> (VisWidth, VisWidth, VisNumber)
-unConfig (VisConfig s) = s
+unConfig :: Config -> (Width, Width, Number)
+unConfig (Config s) = s
 
-unWidth :: VisConfig -> VisWidth
-unWidth (VisConfig (w,_,_)) = w
+unWidth :: Config -> Width
+unWidth (Config (w,_,_)) = w
 
-unMinSpace :: VisConfig -> VisWidth
-unMinSpace (VisConfig (_,m,_)) = m
+unMinSpace :: Config -> Width
+unMinSpace (Config (_,m,_)) = m
 
-unGroupOverflow :: VisConfig -> VisNumber
-unGroupOverflow (VisConfig (_,_,g)) = g
+unGroupOverflow :: Config -> Number
+unGroupOverflow (Config (_,_,g)) = g
 
 
 -- Generates the base settings to be configured.
-initialConfig :: IO VisConfig
+initialConfig :: IO Config
 initialConfig = termW >>= \w -> return $ visConfig (visNumber w) 2 25
 
 -- Support Functions
@@ -73,18 +73,18 @@ initialConfig = termW >>= \w -> return $ visConfig (visNumber w) 2 25
 
 -- Maximum allowed for groups to exceed the average length, 
 --    Converts the percentage to the divisor.
-groupOverflowRatio :: VisNumber -> Int
+groupOverflowRatio :: Number -> Int
 groupOverflowRatio n | n <= 0 = 0 | n >= 100 = 1 | otherwise = div 100 (unn n)
 
 
-setWidth :: VisWidth -> VisConfig -> VisConfig
-setWidth n (VisConfig (_,m,g)) = visConfig n m g
+setWidth :: Width -> Config -> Config
+setWidth n (Config (_,m,g)) = visConfig n m g
 
-setMinSpace :: VisWidth -> VisConfig -> VisConfig
-setMinSpace n (VisConfig (w,_,g)) = visConfig w n g
+setMinSpace :: Width -> Config -> Config
+setMinSpace n (Config (w,_,g)) = visConfig w n g
 
-setGroupOverflow :: VisNumber -> VisConfig -> VisConfig
-setGroupOverflow n (VisConfig (w,m,_)) = visConfig w m n
+setGroupOverflow :: Number -> Config -> Config
+setGroupOverflow n (Config (w,m,_)) = visConfig w m n
 
 
 

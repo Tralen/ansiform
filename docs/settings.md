@@ -3,10 +3,10 @@
 Settings are built from a list of configuration modifiers. They are applied in order to a configuration derived from the terminal.
 
 ```haskell
-newtype VisSettings  -- opaque
+newtype Settings  -- opaque
 
-settings :: [VisConfig -> VisConfig] -> VisSettings
-defaultSettings :: VisSettings
+settings :: [Config -> Config] -> Settings
+defaultSettings :: Settings
 ```
 
 `defaultSettings` is `settings []`. The initial configuration uses the current terminal width, a minimum space of `2` and a group overflow of `25` percent.
@@ -14,10 +14,10 @@ defaultSettings :: VisSettings
 ## Modifiers
 
 ```haskell
-width :: VisWidth -> VisConfig -> VisConfig
-minSpace :: VisWidth -> VisConfig -> VisConfig
-groupOverflow :: VisNumber -> VisConfig -> VisConfig
-overflow :: VisNumber -> VisConfig -> VisConfig
+width :: Width -> Config -> Config
+minSpace :: Width -> Config -> Config
+groupOverflow :: Number -> Config -> Config
+overflow :: Number -> Config -> Config
 ```
 
 - `width n` overrides the detected terminal width. Useful for deterministic output or for rendering into a fixed-width surface.
@@ -27,7 +27,7 @@ overflow :: VisNumber -> VisConfig -> VisConfig
 `overflow` is an alias for `groupOverflow`.
 
 ```haskell
-mySettings :: VisSettings
+mySettings :: Settings
 mySettings = settings [ width 100
                       , minSpace 2
                       , groupOverflow 25 ]
@@ -35,7 +35,7 @@ mySettings = settings [ width 100
 
 ## Configuration values
 
-`VisConfig` is opaque. The drawing layer reads three values from it:
+`Config` is opaque. The drawing layer reads three values from it:
 
 | Value | Meaning |
 | --- | --- |

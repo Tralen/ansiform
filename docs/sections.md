@@ -1,21 +1,21 @@
 # Sections
 
-A `VisSection` groups printers and reserves a minimum number of lines. A page is a list of sections; the index of a section is the unit used by `amend` and `replace`.
+A `Section` groups printers and reserves a minimum number of lines. A page is a list of sections; the index of a section is the unit used by `amend` and `replace`.
 
 ```haskell
-newtype VisSection  -- opaque
+newtype Section  -- opaque
 
-section :: [VisPrinter] -> VisSection
-section' :: VisNumber -> [VisPrinter] -> VisSection
-runSection :: VisSettings -> VisSection -> IO VisNumber
-runSectionDefault :: VisSection -> IO VisNumber
-runSectionDefault' :: VisNumber -> VisNumber -> VisSection -> IO VisNumber
+section :: [Printer] -> Section
+section' :: Number -> [Printer] -> Section
+runSection :: Settings -> Section -> IO Number
+runSectionDefault :: Section -> IO Number
+runSectionDefault' :: Number -> Number -> Section -> IO Number
 ```
 
 `section` prints the printers in order. `section' n` also guarantees at least `n` lines: if the printers print fewer, the section is padded with empty lines.
 
 ```haskell
-simple :: VisSection
+simple :: Section
 simple = section
   [ printerLeft 2 (blockSimple "Hello" (bold cyan))
   , printerEmpty 1
@@ -26,8 +26,8 @@ simple = section
 ## Padding above and below
 
 ```haskell
-sectionBody :: VisNumber -> [VisPrinter] -> VisSection
-sectionBody' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
+sectionBody :: Number -> [Printer] -> Section
+sectionBody' :: Number -> Number -> [Printer] -> Section
 ```
 
 `sectionBody n ps` prints `n` empty lines before and after `ps`. `sectionBody' m n ps` is the same with a minimum of `m` lines.
@@ -35,8 +35,8 @@ sectionBody' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
 ## Padding below only
 
 ```haskell
-sectionTop :: VisNumber -> [VisPrinter] -> VisSection
-sectionTop' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
+sectionTop :: Number -> [Printer] -> Section
+sectionTop' :: Number -> Number -> [Printer] -> Section
 ```
 
 `sectionTop n ps` prints `ps` followed by `n` empty lines. Use it for headers.
@@ -44,13 +44,13 @@ sectionTop' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
 ## Rules
 
 ```haskell
-sectionRule :: VisRule -> VisSection
+sectionRule :: Rule -> Section
 
-sectionBodyRule :: VisNumber -> VisRule -> [VisPrinter] -> VisSection
-sectionBodyRule' :: VisNumber -> VisNumber -> VisRule -> [VisPrinter] -> VisSection
+sectionBodyRule :: Number -> Rule -> [Printer] -> Section
+sectionBodyRule' :: Number -> Number -> Rule -> [Printer] -> Section
 
-sectionTopRule :: VisNumber -> VisRule -> [VisPrinter] -> VisSection
-sectionTopRule' :: VisNumber -> VisNumber -> VisRule -> [VisPrinter] -> VisSection
+sectionTopRule :: Number -> Rule -> [Printer] -> Section
+sectionTopRule' :: Number -> Number -> Rule -> [Printer] -> Section
 ```
 
 - `sectionRule r` is a rule alone.
@@ -60,17 +60,17 @@ sectionTopRule' :: VisNumber -> VisNumber -> VisRule -> [VisPrinter] -> VisSecti
 The usual page skeleton is:
 
 ```haskell
-header :: VisSection
+header :: Section
 header = sectionTopRule 1 (rule '=' (bold black'))
   [ printerSolidLineCenter 0 1 blue
       [ blockSimple "My Program" (bold white') ]
   ]
 
-body :: VisSection
+body :: Section
 body = sectionBodyRule 1 (rule ':' (bold black'))
   [ printerLeft 2 (blockSimple "Content goes here." styleDefault) ]
 
-footer :: VisSection
+footer :: Section
 footer = sectionBodyRule 1 (rule ':' (bold black'))
   [ printerLeft 2 (blockSimple "Press Enter to continue." styleDefault) ]
 ```

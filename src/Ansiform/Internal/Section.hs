@@ -11,47 +11,47 @@ import           Ansiform.Printer
 
 -- Section Type
 --------------------------------------------------------------------------------
--- A VisSection is a list of VisPrinters.
+-- A Section is a list of Printers.
 --    The section takes a number as a minimum number of lines. If the printing
 --    of the section doesn't reach that number, empty lines will be printed.
-newtype VisSection = VisSection (VisNumber,[VisPrinter])
+newtype Section = Section (Number,[Printer])
                      deriving (Eq, Show)
 
-instance VisSample VisSection where
-    sampleShow n (VisSection (m,ps)) = "VisSection (minimum lines: " ++ sampleShow 0 m ++ ")\n" ++ sampleShow n ps
+instance Sample Section where
+    sampleShow n (Section (m,ps)) = "Section (minimum lines: " ++ sampleShow 0 m ++ ")\n" ++ sampleShow n ps
 
 -- Wrappers
-visSection :: VisNumber -> [VisPrinter] -> VisSection
-visSection n ps = VisSection (n,ps)
+visSection :: Number -> [Printer] -> Section
+visSection n ps = Section (n,ps)
 
-unSectionPrinters :: VisSection -> [VisPrinter]
-unSectionPrinters (VisSection (_,ps)) = ps
+unSectionPrinters :: Section -> [Printer]
+unSectionPrinters (Section (_,ps)) = ps
 
-unSectionNumber :: VisSection -> VisNumber
-unSectionNumber (VisSection (n,_)) = n
+unSectionNumber :: Section -> Number
+unSectionNumber (Section (n,_)) = n
 
 -- Section Runners
 --------------------------------------------------------------------------------
 
--- Function to run the list of VisPrinters with the user settings.
-runSection :: VisSettings -> VisSection -> IO VisNumber
+-- Function to run the list of Printers with the user settings.
+runSection :: Settings -> Section -> IO Number
 runSection s = calcSection (runPrinter s) 
 
 -- Version of runSection with settings in IO.
-runSectionIO :: IO VisConfig -> VisSection -> IO VisNumber
+runSectionIO :: IO Config -> Section -> IO Number
 runSectionIO cfg = calcSection (runPrinterIO cfg)
 
 -- Uses default settings.
-runSectionDefault :: VisSection -> IO VisNumber
+runSectionDefault :: Section -> IO Number
 runSectionDefault = calcSection runPrinterDefault
 
 -- Uses default settings, with given width and minSpace.
-runSectionDefault' :: VisNumber -> VisNumber -> VisSection -> IO VisNumber
+runSectionDefault' :: Number -> Number -> Section -> IO Number
 runSectionDefault' w m = calcSection (runPrinterDefault' w m)
 
 
 -- Runs the Printers and calculates the total number of lines.
-calcSection :: (VisPrinter -> IO VisNumber) -> VisSection -> IO VisNumber
+calcSection :: (Printer -> IO Number) -> Section -> IO Number
 calcSection f vs = foldM runCalc 0 (unSectionPrinters vs) >>= enforceMin
    where 
       runCalc acc p = f p >>= \n -> return (acc + n)

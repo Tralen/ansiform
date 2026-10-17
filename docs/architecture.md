@@ -37,26 +37,26 @@ The `Ansiform.Internal.*` modules are implementation details. They are not expos
 +--------------------------------------------------------------+
 ```
 
-`VisPrinter` stores a function `VisConfig -> IO VisNumber`. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor.
+`Printer` stores a function `Config -> IO Number`. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor.
 
 ## Invariants
 
 The builders enforce these invariants:
 
-- `VisNumber` is never negative. Negative inputs are capped at zero.
-- A `VisBlock` contains no empty items. Non-printable characters are removed from item text.
-- A `VisGroup` is a header block followed by zero or more body blocks.
-- A `VisTable` is a list of groups with the same number of blocks. Table builders return `Nothing` when this does not hold.
-- A `VisPage` is a list of sections. Drawing returns one line count per section, in order.
+- `Number` is never negative. Negative inputs are capped at zero.
+- A `Block` contains no empty items. Non-printable characters are removed from item text.
+- A `Group` is a header block followed by zero or more body blocks.
+- A `Table` is a list of groups with the same number of blocks. Table builders return `Nothing` when this does not hold.
+- A `Page` is a list of sections. Drawing returns one line count per section, in order.
 
 ## Errors as data
 
-There is one expected error in the model: a malformed table. It is represented by `Maybe VisTable`:
+There is one expected error in the model: a malformed table. It is represented by `Maybe Table`:
 
 ```haskell
-tableBlocks :: [VisBlock] -> [[VisBlock]] -> Maybe VisTable
-tableSimple :: [VisBlock] -> VisStyle -> [[String]] -> Maybe VisTable
-tableGroups :: [VisGroup] -> Maybe VisTable
+tableBlocks :: [Block] -> [[Block]] -> Maybe Table
+tableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
+tableGroups :: [Group] -> Maybe Table
 ```
 
 No public function throws an exception for malformed input. Layout functions are total: empty lists and narrow terminals produce empty or overflowing output rather than a runtime failure.

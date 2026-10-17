@@ -1,8 +1,8 @@
 -- | Non-negative numbers used for widths, offsets and padding.
-module Ansiform.Number ( VisNumber
-                  , VisWidth
-                  , VisPadding
-                  , VisOffset
+module Ansiform.Number ( Number
+                  , Width
+                  , Padding
+                  , Offset
                   , visNumber
                   , unNumber
                   ) where
@@ -11,10 +11,10 @@ module Ansiform.Number ( VisNumber
 import           Ansiform.Internal.Number hiding (visNumber, unNumber)
 
 
--- | Builds a 'VisNumber', capping negative values at zero.
-visNumber :: Int -> VisNumber
+-- | Builds a 'Number', capping negative values at zero.
+visNumber :: Int -> Number
 visNumber = visNum
 
--- | Converts a 'VisNumber' back to an 'Int'.
-unNumber :: VisNumber -> Int
+-- | Converts a 'Number' back to an 'Int'.
+unNumber :: Number -> Int
 unNumber = unn

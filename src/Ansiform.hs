@@ -2,8 +2,8 @@
 --
 --   The library is split in two layers:
 --
---   * Pure builders produce immutable values such as 'VisBlock', 'VisTable',
---     'VisSection' and 'VisPage'.
+--   * Pure builders produce immutable values such as 'Block', 'Table',
+--     'Section' and 'Page'.
 --
 --   * The drawing layer ('Ansiform.Draw') writes those values to the terminal and
 --     keeps track of the number of lines printed, so pages can be redrawn.

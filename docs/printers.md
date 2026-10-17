@@ -1,40 +1,40 @@
 # Printers
 
-A `VisPrinter` describes one printable element. Builders are pure; the printer only runs when a section or page is drawn. Every printer returns the number of lines it printed.
+A `Printer` describes one printable element. Builders are pure; the printer only runs when a section or page is drawn. Every printer returns the number of lines it printed.
 
 ```haskell
 -- Run a printer directly, useful for tests and small scripts.
-runPrinter :: VisSettings -> VisPrinter -> IO VisNumber
+runPrinter :: Settings -> Printer -> IO Number
 
 -- Run with the default settings.
-runPrinterDefault :: VisPrinter -> IO VisNumber
+runPrinterDefault :: Printer -> IO Number
 
 -- Run with the default settings and an explicit width and minimum space.
-runPrinterDefault' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
+runPrinterDefault' :: Width -> Width -> Printer -> IO Number
 ```
 
 ## Arguments
 
-- `VisOffset`: indentation from the left, in columns. Some printers also use it as an offset from both sides.
-- `VisPadding`: space between the text and the edge of a solid background.
-- `VisNumber`: a non-negative count, such as a number of lines or rows.
+- `Offset`: indentation from the left, in columns. Some printers also use it as an offset from both sides.
+- `Padding`: space between the text and the edge of a solid background.
+- `Number`: a non-negative count, such as a number of lines or rows.
 
 ## Basic printing
 
 ```haskell
-printerEmpty :: VisNumber -> VisPrinter
-printerItem :: VisItem -> VisPrinter
+printerEmpty :: Number -> Printer
+printerItem :: Item -> Printer
 ```
 
-`printerEmpty n` prints `n` empty lines. `printerItem` prints one `VisItem` followed by a newline.
+`printerEmpty n` prints `n` empty lines. `printerItem` prints one `Item` followed by a newline.
 
 ## Rules and solid lines
 
 ```haskell
-printerRule :: VisRule -> VisPrinter
-printerRule' :: VisOffset -> VisRule -> VisPrinter
-printerSolid :: VisColor -> VisPrinter
-printerSolid' :: VisOffset -> VisColor -> VisPrinter
+printerRule :: Rule -> Printer
+printerRule' :: Offset -> Rule -> Printer
+printerSolid :: Color -> Printer
+printerSolid' :: Offset -> Color -> Printer
 ```
 
 `printerRule` fills the whole width with the rule character. `printerRule'` leaves the offset free on both sides. `printerSolid` and `printerSolid'` do the same with a background color.
@@ -42,13 +42,13 @@ printerSolid' :: VisOffset -> VisColor -> VisPrinter
 ## Single lines
 
 ```haskell
-printerLeft :: VisOffset -> VisBlock -> VisPrinter
-printerRight :: VisOffset -> VisBlock -> VisPrinter
-printerCenter :: VisOffset -> VisBlock -> VisPrinter
+printerLeft :: Offset -> Block -> Printer
+printerRight :: Offset -> Block -> Printer
+printerCenter :: Offset -> Block -> Printer
 
-printerLineLeft :: VisOffset -> [VisBlock] -> VisPrinter
-printerLineRight :: VisOffset -> [VisBlock] -> VisPrinter
-printerLineCenter :: VisOffset -> [VisBlock] -> VisPrinter
+printerLineLeft :: Offset -> [Block] -> Printer
+printerLineRight :: Offset -> [Block] -> Printer
+printerLineCenter :: Offset -> [Block] -> Printer
 ```
 
 The `Line` variants print several blocks on the same line with the minimum space from the settings between them. The first group takes a single block. Centered lines respect the minimum space and overflow rather than overlapping when the blocks do not fit.
@@ -63,13 +63,13 @@ printerLineCenter 4
 ## Solid text lines
 
 ```haskell
-printerSolidLeft :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
-printerSolidRight :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
-printerSolidCenter :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
+printerSolidLeft :: Offset -> Padding -> Color -> Block -> Printer
+printerSolidRight :: Offset -> Padding -> Color -> Block -> Printer
+printerSolidCenter :: Offset -> Padding -> Color -> Block -> Printer
 
-printerSolidLineLeft :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
-printerSolidLineRight :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
-printerSolidLineCenter :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
+printerSolidLineLeft :: Offset -> Padding -> Color -> [Block] -> Printer
+printerSolidLineRight :: Offset -> Padding -> Color -> [Block] -> Printer
+printerSolidLineCenter :: Offset -> Padding -> Color -> [Block] -> Printer
 ```
 
 These printers fill a whole line with the background color and then print the text on top, with the given padding. They are useful for title bars and selected rows.
@@ -77,9 +77,9 @@ These printers fill a whole line with the background color and then print the te
 ## Columns and lists
 
 ```haskell
-printerColumn :: VisOffset -> [VisBlock] -> VisPrinter
-printerList :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
-printerList' :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
+printerColumn :: Offset -> [Block] -> Printer
+printerList :: Offset -> Number -> [Block] -> Printer
+printerList' :: Offset -> Number -> [Block] -> Printer
 ```
 
 `printerColumn` prints one block per line. `printerList` tries to reach a target number of rows and grows the number of columns as needed. `printerList'` takes a target number of columns instead. If the terminal is too narrow, the printer falls back to a single column.
@@ -87,11 +87,11 @@ printerList' :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
 ## Groups
 
 ```haskell
-printerGroup :: VisOffset -> VisGroup -> VisPrinter
-printerGroups :: VisOffset -> [VisGroup] -> VisPrinter
-printerGroups' :: VisOffset -> [VisGroup] -> VisPrinter
-printerGroupsLimited :: VisOffset -> VisNumber -> [VisGroup] -> VisPrinter
-printerGroupsLimited' :: VisOffset -> VisNumber -> [VisGroup] -> VisPrinter
+printerGroup :: Offset -> Group -> Printer
+printerGroups :: Offset -> [Group] -> Printer
+printerGroups' :: Offset -> [Group] -> Printer
+printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
+printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 ```
 
 - `printerGroup` prints one group as a column.
@@ -104,10 +104,10 @@ Groups that exceed the configured overflow ratio are split into extra rows by th
 ## Tables
 
 ```haskell
-printerTable :: VisOffset -> VisPadding -> Maybe VisTable -> VisPrinter
-printerTable' :: VisOffset -> VisPadding -> Maybe VisTable -> VisPrinter
-printerTableLimited :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -> VisPrinter
-printerTableLimited' :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -> VisPrinter
+printerTable :: Offset -> Padding -> Maybe Table -> Printer
+printerTable' :: Offset -> Padding -> Maybe Table -> Printer
+printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
 ```
 
 - `printerTable` uses minimum column spacing and a zebra background.
@@ -118,14 +118,14 @@ printerTableLimited' :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -
 ## Paragraphs and articles
 
 ```haskell
-printerParagraph :: VisOffset -> VisOffset -> VisParagraph -> VisPrinter
-printerArticle :: VisOffset -> VisOffset -> VisArticle -> VisPrinter
+printerParagraph :: Offset -> Offset -> Paragraph -> Printer
+printerArticle :: Offset -> Offset -> Article -> Printer
 
-printerSequence :: VisOffset -> VisOffset -> VisPadding -> [VisParagraph] -> VisPrinter
-printerSequence' :: VisOffset -> VisOffset -> VisPadding -> [VisParagraph] -> VisPrinter
-printerSequenceSel :: VisOffset -> VisOffset -> VisPadding -> VisNumber -> [VisParagraph] -> VisPrinter
-printerSequenceAfter :: VisOffset -> VisOffset -> VisPadding -> VisNumber -> [VisParagraph] -> VisPrinter
-printerSequencePred :: VisOffset -> VisOffset -> VisPadding -> (Int -> Bool) -> [VisParagraph] -> VisPrinter
+printerSequence :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
+printerSequence' :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
+printerSequenceSel :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
+printerSequenceAfter :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
+printerSequencePred :: Offset -> Offset -> Padding -> (Int -> Bool) -> [Paragraph] -> Printer
 ```
 
 The first offset indents the whole paragraph. The second offset indents only the first line.

@@ -13,11 +13,11 @@ import           Ansiform.Internal.Number
 --------------------------------------------------------------------------------
 
 -- Places the cursor at an absolute indentation level.
-ind :: VisOffset -> IO ()
+ind :: Offset -> IO ()
 ind = indR . unn
 
 -- Places the cursor at a relative indentation level.
-ind' :: VisOffset -> IO ()
+ind' :: Offset -> IO ()
 ind' = indR' . unn
 
 -- Places the cursor at an absolute indentation level, raw version.
@@ -33,7 +33,7 @@ indR' = cursorForward
 --------------------------------------------------------------------------------
 
 -- Clear Screen from line.
-clr :: VisNumber -> IO ()
+clr :: Number -> IO ()
 clr n = setCursorPosition (unn n) 0 >> clearFromCursorToScreenEnd
 
 clr0 :: IO ()

@@ -1,5 +1,5 @@
 module Ansiform.Section ( module Ansiform.Section
-                   , Internal.VisSection, Internal.runSection
+                   , Internal.Section, Internal.runSection
                    , Internal.runSectionDefault, Internal.runSectionDefault'
                    ) where
 
@@ -13,51 +13,51 @@ import           Ansiform.Printer
 -- Section Builders
 --------------------------------------------------------------------------------
 
--- Builds the most basic VisSection, with just the list of Printers.
-section ::  [VisPrinter] -> VisSection
+-- Builds the most basic Section, with just the list of Printers.
+section ::  [Printer] -> Section
 section = section' 0
 
--- Builds a basic VisSection with minimum of lines set.
-section' ::  VisNumber -> [VisPrinter] -> VisSection
+-- Builds a basic Section with minimum of lines set.
+section' ::  Number -> [Printer] -> Section
 section' n = visSection n
 
 
--- Builds a VisSection that just prints a single VisRule.
-sectionRule :: VisRule -> VisSection
+-- Builds a Section that just prints a single Rule.
+sectionRule :: Rule -> Section
 sectionRule r = visSection 1 [ printerRule r ]
 
 
--- Builds a VisSection with a number of empty lines above and below.
-sectionBody :: VisNumber -> [VisPrinter] -> VisSection
+-- Builds a Section with a number of empty lines above and below.
+sectionBody :: Number -> [Printer] -> Section
 sectionBody n ps = sectionBody' 0 n ps
 
 -- Like sectionBody, but allows to set the minimum number of lines.
-sectionBody' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
+sectionBody' :: Number -> Number -> [Printer] -> Section
 sectionBody' m n ps = visSection m $ [ printerEmpty n ] ++ ps ++ [ printerEmpty n ]
 
 
--- Builds a VisSection with a number of empty lines above and below, preceded by a VisRule.
-sectionBodyRule :: VisNumber -> VisRule -> [VisPrinter] -> VisSection
+-- Builds a Section with a number of empty lines above and below, preceded by a Rule.
+sectionBodyRule :: Number -> Rule -> [Printer] -> Section
 sectionBodyRule n r ps = sectionBodyRule' 0 n r ps
 
 -- Like sectionBodyRule, but allows to set the minimum number of lines.
-sectionBodyRule' :: VisNumber -> VisNumber -> VisRule -> [VisPrinter] -> VisSection
+sectionBodyRule' :: Number -> Number -> Rule -> [Printer] -> Section
 sectionBodyRule' m n r ps = visSection m $ [ printerRule r, printerEmpty n ] ++ ps ++ [ printerEmpty n ]
 
 
--- Builds a VisSection with a number of empty lines only below.
-sectionTop :: VisNumber -> [VisPrinter] -> VisSection
+-- Builds a Section with a number of empty lines only below.
+sectionTop :: Number -> [Printer] -> Section
 sectionTop n ps = sectionTop' 0 n ps
 
 -- Like sectionTop, but allows to set the minimum number of lines.
-sectionTop' :: VisNumber -> VisNumber -> [VisPrinter] -> VisSection
+sectionTop' :: Number -> Number -> [Printer] -> Section
 sectionTop' m n ps = visSection m $ ps ++ [ printerEmpty n ]
 
 
--- Builds a VisSection with a number of empty lines only below, preceded by a VisRule.
-sectionTopRule :: VisNumber -> VisRule -> [VisPrinter] -> VisSection
+-- Builds a Section with a number of empty lines only below, preceded by a Rule.
+sectionTopRule :: Number -> Rule -> [Printer] -> Section
 sectionTopRule n r ps = sectionTopRule' 0 n r ps
 
 -- Like sectionTopRule, but allows to set the minimum number of lines.
-sectionTopRule' :: VisNumber -> VisNumber -> VisRule -> [VisPrinter] -> VisSection
+sectionTopRule' :: Number -> Number -> Rule -> [Printer] -> Section
 sectionTopRule' m n r ps = visSection m $ [ printerRule r ] ++ ps ++ [ printerEmpty n ]

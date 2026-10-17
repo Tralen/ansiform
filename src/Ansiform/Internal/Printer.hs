@@ -17,70 +17,70 @@ import           Ansiform.Style
 
 -- Printer Type
 --------------------------------------------------------------------------------
--- A printer is a function, from Config to IO VisNumber, that prints on the screen.
+-- A printer is a function, from Config to IO Number, that prints on the screen.
 --    It is expected that a Printer will print at least one line.
---    The Printer should return the number of lines printed as an IO VisNumber.
+--    The Printer should return the number of lines printed as an IO Number.
 --    An String is passed to identify the specific printer function used.
 --    The Printer cant't show its content since it is restructured on the fly.
-newtype VisPrinter = VisPrinter (String, (VisConfig -> IO VisNumber))
+newtype Printer = Printer (String, (Config -> IO Number))
 
-instance Eq VisPrinter where
-    VisPrinter (n1,_) == VisPrinter (n2,_) = n1 == n2
+instance Eq Printer where
+    Printer (n1,_) == Printer (n2,_) = n1 == n2
 
-instance Show VisPrinter where
-    show (VisPrinter (nm,_)) = "VisPrinter <" ++ nm ++ ">"
+instance Show Printer where
+    show (Printer (nm,_)) = "Printer <" ++ nm ++ ">"
 
-instance VisSample VisPrinter where
+instance Sample Printer where
     sampleShow _ vp = show vp
 
 
 -- Wrapper
-visPrinter :: String -> (VisConfig -> IO VisNumber) -> VisPrinter
-visPrinter nm fio = VisPrinter (nm,fio)
+visPrinter :: String -> (Config -> IO Number) -> Printer
+visPrinter nm fio = Printer (nm,fio)
 
 
 -- Function to execute the printer by passing the user settings.
-runPrinter :: VisSettings -> VisPrinter -> IO VisNumber
-runPrinter s (VisPrinter (_,fio)) = runSettings s >>= fio 
+runPrinter :: Settings -> Printer -> IO Number
+runPrinter s (Printer (_,fio)) = runSettings s >>= fio 
 
--- Equivalent to runPrinter, but with just the VisConfig in IO.
-runPrinterIO :: IO VisConfig -> VisPrinter -> IO VisNumber
-runPrinterIO cfg (VisPrinter (_,fio)) = cfg >>= fio
+-- Equivalent to runPrinter, but with just the Config in IO.
+runPrinterIO :: IO Config -> Printer -> IO Number
+runPrinterIO cfg (Printer (_,fio)) = cfg >>= fio
 
 -- Uses default settings.
-runPrinterDefault :: VisPrinter -> IO VisNumber
-runPrinterDefault (VisPrinter (_,fio)) = initialConfig >>= fio
+runPrinterDefault :: Printer -> IO Number
+runPrinterDefault (Printer (_,fio)) = initialConfig >>= fio
 
 -- Uses default settings, with given width and minSpace.
-runPrinterDefault' :: VisWidth -> VisWidth -> VisPrinter -> IO VisNumber
-runPrinterDefault' w m (VisPrinter (_,fio)) = initialConfig >>= \dft -> fio $ setWidth w $ setMinSpace m dft
+runPrinterDefault' :: Width -> Width -> Printer -> IO Number
+runPrinterDefault' w m (Printer (_,fio)) = initialConfig >>= \dft -> fio $ setWidth w $ setMinSpace m dft
 
 
 -- Basic Printing
 --------------------------------------------------------------------------------
 
 -- Prints a number of empty lines.
-printEmpty :: VisNumber -> IO VisNumber
+printEmpty :: Number -> IO Number
 printEmpty n = vis0 >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
 
 -- Prints the end of line character.
-printEnd :: IO VisNumber
+printEnd :: IO Number
 printEnd = vis0 >> putStr "\n" >> return 1
 
--- Prints a VisItem with the proper visual style.
-printItem :: VisItem -> IO ()
+-- Prints a Item with the proper visual style.
+printItem :: Item -> IO ()
 printItem v = vis (unItemStyle v) >> putStr (unItemText v)
 
--- Prints each VisItem of a VisBlock, with the proper visual style.
-printBlock :: VisBlock -> IO ()
+-- Prints each Item of a Block, with the proper visual style.
+printBlock :: Block -> IO ()
 printBlock b = mapM_ printItem (unBlock b)
 
--- Prints a VisBlock, left aligned, with proper indentation and line ending.
-printLeft :: VisOffset -> VisBlock -> IO VisNumber
+-- Prints a Block, left aligned, with proper indentation and line ending.
+printLeft :: Offset -> Block -> IO Number
 printLeft o b = ind o >> printBlock b >> printEnd
 
 -- Function to execute the printing functions that sums the line counts.
-printCounter :: (a -> IO VisNumber) -> [a] -> IO VisNumber
+printCounter :: (a -> IO Number) -> [a] -> IO Number
 printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 
 
@@ -88,12 +88,12 @@ printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 --------------------------------------------------------------------------------
 
 -- Prints a horizontal rule with an offset on both sides.
-printRule :: VisOffset -> VisRule -> VisConfig -> IO VisNumber
+printRule :: Offset -> Rule -> Config -> IO Number
 printRule o r s = ind o >> printItem (visRuleItem r (w - o*2)) >> printEnd
               where w = unWidth s
 
 -- Prints a line filled with spaces with the background color given.
-printSolid :: VisOffset -> VisColor -> VisConfig -> IO VisNumber
+printSolid :: Offset -> Color -> Config -> IO Number
 printSolid o c s = printRule o (ruleSolid c) s
 
 
@@ -102,19 +102,19 @@ printSolid o c s = printRule o (ruleSolid c) s
 --------------------------------------------------------------------------------
 
 -- Prints a single Item as a line, left aligned.
-printSingleItem :: VisItem -> IO VisNumber
+printSingleItem :: Item -> IO Number
 printSingleItem i = printItem i >> printEnd
 
 
--- Prints a line of VisBlocks, left aligned.
-printLineLeft :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
+-- Prints a line of Blocks, left aligned.
+printLineLeft :: Offset -> [Block] -> Config -> IO Number
 printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd
         where 
            m = unMinSpace s
            mainPrinter vb = printBlock vb >> ind' m
 
--- Prints a line of VisBlocks, right aligned.
-printLineRight :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
+-- Prints a line of Blocks, right aligned.
+printLineRight :: Offset -> [Block] -> Config -> IO Number
 printLineRight o bs s = printLineLeft finalOffset bs s
        where
           w = unWidth s ; m =  unMinSpace s ; m' = unn m
@@ -122,11 +122,11 @@ printLineRight o bs s = printLineLeft finalOffset bs s
           totalWidth = visNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
 
--- Prints a list of VisBlocks in a single line, centered and spread across
+-- Prints a list of Blocks in a single line, centered and spread across
 --    the available width. Adjacent blocks are separated by at least the
 --    minimum space setting. If the content does not fit, the line overflows
 --    instead of overlapping.
-printLineCenter :: VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber
+printLineCenter :: Offset -> [Block] -> Config -> IO Number
 printLineCenter _ [] _ = printEnd
 printLineCenter o [b] s = indR centered >> printBlock b >> printEnd
      where
@@ -153,16 +153,16 @@ printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd
         printAt (x,b) = indR x >> printBlock b
 
 
-type VisLineFunction = (VisOffset -> [VisBlock] -> VisConfig -> IO VisNumber)
+type LineFunction = (Offset -> [Block] -> Config -> IO Number)
 
 
 -- Solid Text Printing
 --------------------------------------------------------------------------------
 
--- Prints a list of VisBlocks in a single line, with a solid background.
+-- Prints a list of Blocks in a single line, with a solid background.
 --   The padding between background and text can be given as another offset.
-printSolidLine :: VisOffset -> VisPadding -> VisColor -> [VisBlock]
-               -> VisLineFunction -> VisConfig -> IO VisNumber
+printSolidLine :: Offset -> Padding -> Color -> [Block]
+               -> LineFunction -> Config -> IO Number
 printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
           where bs' = fmap (blockSetBG c) bs
 
@@ -170,14 +170,14 @@ printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
 -- List Printing
 --------------------------------------------------------------------------------
 
--- Prints a list of VisBlocks as a single Column, with the given offset.
-printColumn :: VisOffset -> [VisBlock] -> IO VisNumber
+-- Prints a list of Blocks as a single Column, with the given offset.
+printColumn :: Offset -> [Block] -> IO Number
 printColumn o bs = printCounter (printLeft o) bs
 
 
--- Prints a list of VisBlocks in several columns, aiming for a specified length.
+-- Prints a list of Blocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
-printList :: VisOffset -> VisNumber -> [VisBlock] -> VisConfig -> IO VisNumber
+printList :: Offset -> Number -> [Block] -> Config -> IO Number
 printList _ _ [] _ = return 0
 printList o l bs s
      | maxCols <= 0 = printColumn o bs
@@ -196,12 +196,12 @@ printList o l bs s
                                 | otherwise = quot numItems l''
                 numItems = length bs
         
-        mainPrinter :: Int -> [VisBlock] -> [IO VisNumber]
+        mainPrinter :: Int -> [Block] -> [IO Number]
         mainPrinter newL bs' = fmap printListColumn (zip splitCols [0..])
              where
                 splitCols = chunksOf newL bs'
                 
-                printListColumn :: ([VisBlock], Int) -> IO VisNumber
+                printListColumn :: ([Block], Int) -> IO Number
                 printListColumn (b,i)
                        | i == 0 = printCol
                        | i == length splitCols - 1 = 
@@ -213,7 +213,7 @@ printList o l bs s
 
 -- Version that allows to specify the number of columns.
 -- By nature of the List printer, it won't allow more columns than can fit.
-printList' :: VisOffset -> VisNumber -> [VisBlock] -> VisConfig -> IO VisNumber
+printList' :: Offset -> Number -> [Block] -> Config -> IO Number
 printList' o l bs s = printList o desiredLines bs s
           where desiredLines = visNumber $ quot (length bs) newL + 1
                 newL | l == 0 = 1
@@ -223,20 +223,20 @@ printList' o l bs s = printList o desiredLines bs s
 -- Group & Table Printing
 --------------------------------------------------------------------------------
 
--- Prints a single VisGroup as a column, with the given offset.
-printGroup :: VisOffset -> VisGroup -> IO VisNumber
+-- Prints a single Group as a column, with the given offset.
+printGroup :: Offset -> Group -> IO Number
 printGroup o g = printColumn o (unGroup g)
 
 
 -- Main function for printing groups and tables, used by the specialized versions.
 --    Configured by the arguments:
---       VisOffset -> Offset from both sides.
---       VisPadding -> Padding between text and background.
---       VisNumber -> Sets the number of rows printed, rest is discarded, 0 is max.
+--       Offset -> Offset from both sides.
+--       Padding -> Padding between text and background.
+--       Number -> Sets the number of rows printed, rest is discarded, 0 is max.
 --       Bool -> Sets the alignment to be evenly spaced if True, or max per row.
 --       Bool -> Table mode: zebra background and repeating index column.
-printGroups :: VisOffset -> VisPadding -> VisNumber -> Bool
-            -> Bool -> [VisGroup] -> VisConfig -> IO VisNumber
+printGroups :: Offset -> Padding -> Number -> Bool
+            -> Bool -> [Group] -> Config -> IO Number
 printGroups o p n bSpace bTable gs s = mainPrinter
     where
        w = unWidth s; m = unMinSpace s
@@ -253,7 +253,7 @@ printGroups o p n bSpace bTable gs s = mainPrinter
        initWidth = take 1 chosenWidthList
        mainPrinter = printLoop gs chosenWidthList 0 0
          where
-            printLoop :: [VisGroup] -> [Int] -> Int -> VisNumber -> IO VisNumber
+            printLoop :: [Group] -> [Int] -> Int -> Number -> IO Number
             printLoop rm wl ri nls
                     | null rm || (ri >= n' && n' /= 0) = return (nls + visNumber ri - 1)
                     | otherwise = executePrint >> restartLoop
@@ -293,7 +293,7 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                      | otherwise = max 1 (splitPoint chosenWidthList finalWidth)
 
                        
-                 printEach :: (VisGroup,Int,Int) -> IO ()
+                 printEach :: (Group,Int,Int) -> IO ()
                  printEach (g,wg,i)
                       | i + 1 == rowColumns = printGroupChangeBG
                                            >> cursorDown (rowLength - curLength)
@@ -307,10 +307,10 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                       printSpacing
                            | lastRow = return_ | otherwise = printEmpty 1 >> return_
 
-                      setBG :: VisGroup -> VisGroup
+                      setBG :: Group -> Group
                       setBG g' | bTable = visGroup' $ changeBlocks <$> zip (unGroup g') [0..]
                                   | otherwise = g'
-                               where changeBlocks :: (VisBlock, Int) -> VisBlock
+                               where changeBlocks :: (Block, Int) -> Block
                                      changeBlocks (b,ib)
                                        | even ib = b
                                        | otherwise = blockSetBG black b
@@ -319,13 +319,13 @@ printGroups o p n bSpace bTable gs s = mainPrinter
 -- Text Printing
 --------------------------------------------------------------------------------
 
--- Prints a list of VisBlocks as a continuous paragraph.
---     VisOffset -> Indentaion of the entire paragraph.
---     VisOffset -> Additional indentation for the first paragraph line.
---     VisPadding -> Padding between text and background.
+-- Prints a list of Blocks as a continuous paragraph.
+--     Offset -> Indentaion of the entire paragraph.
+--     Offset -> Additional indentation for the first paragraph line.
+--     Padding -> Padding between text and background.
 --     Bool -> Sets the Background to solid grey.
-printParagraph :: VisOffset -> VisOffset -> VisPadding -> Bool
-                       -> VisParagraph -> VisConfig -> IO VisNumber
+printParagraph :: Offset -> Offset -> Padding -> Bool
+                       -> Paragraph -> Config -> IO Number
 printParagraph o o1 p bZebra vbs s = printCounter printEachBlock 
                                          $ blockPublish (w' - offset' * 2) (unn o1) vbs
     where
@@ -344,13 +344,13 @@ printParagraph o o1 p bZebra vbs s = printCounter printEachBlock
 
 -- Prints a list of paragraphs, separated by a single line.
 --   Additional configuration can be given below.
---     VisOffset -> Indentaion of the entire paragraphs.
---     VisOffset -> Additional indentation for the first line of each paragraph.
---     VisPadding -> Padding between text and background.
+--     Offset -> Indentaion of the entire paragraphs.
+--     Offset -> Additional indentation for the first line of each paragraph.
+--     Padding -> Padding between text and background.
 --     Bool -> Controls background alternation.
 --     Function -> Predicate to test which paragraphs should have solid background.
-printSequence :: VisOffset -> VisOffset -> VisPadding -> Bool -> (Int -> Bool)
-             -> [VisParagraph] -> VisConfig -> IO VisNumber
+printSequence :: Offset -> Offset -> Padding -> Bool -> (Int -> Bool)
+             -> [Paragraph] -> Config -> IO Number
 printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..])
     where 
       printEach (vbs,i)
@@ -368,9 +368,9 @@ printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..]
 --------------------------------------------------------------------------------
 -- Prints a series of alternating lines, black and grey, for usage with tables.
 --   The offset and number of lines are given as parameters.
-printZebraBG :: VisOffset -> Int -> VisConfig -> IO ()
+printZebraBG :: Offset -> Int -> Config -> IO ()
 printZebraBG o n s = sequence_ $ take n $ cycle [printEmpty 1, printSolid o black s]
 
 -- Prints a solid background of several lines of the same color.
-printSolidBG :: VisOffset -> Int -> VisColor -> VisConfig -> IO ()
+printSolidBG :: Offset -> Int -> Color -> Config -> IO ()
 printSolidBG o n vc s = replicateM_ n (printSolid o vc s)

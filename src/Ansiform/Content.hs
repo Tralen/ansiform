@@ -1,7 +1,7 @@
 module Ansiform.Content ( module Ansiform.Content
-                   , Internal.VisItem, Internal.VisBlock, Internal.VisRule
-                   , Internal.VisGroup, Internal.VisTable
-                   , Internal.VisParagraph, Internal.VisArticle
+                   , Internal.Item, Internal.Block, Internal.Rule
+                   , Internal.Group, Internal.Table
+                   , Internal.Paragraph, Internal.Article
                    , Internal.blockEmpty, Internal.blockSimple ) where
 
 --------------------------------------------------------------------------------
@@ -13,27 +13,27 @@ import           Ansiform.Style
 -- Basic builders
 --------------------------------------------------------------------------------
 
-item :: String -> VisStyle -> VisItem
+item :: String -> Style -> Item
 item = visItem
 
-block :: [VisItem] -> VisBlock
+block :: [Item] -> Block
 block = visBlock
 
 -- Block Builders
 --------------------------------------------------------------------------------
 
--- VisBlock formed by a list of Elements, each with its VisStyle.
-blockCycle :: [(String, VisStyle)] -> VisBlock
+-- Block formed by a list of Elements, each with its Style.
+blockCycle :: [(String, Style)] -> Block
 blockCycle = visBlock . visItemList
 
--- VisBlock of the form 'Element1 S Element2 S Element3...',
+-- Block of the form 'Element1 S Element2 S Element3...',
 --    where S is a repeated separator.
-blockSeq :: [String] -> VisStyle -> String -> VisStyle -> VisBlock
+blockSeq :: [String] -> Style -> String -> Style -> Block
 blockSeq ss v sep va = visBlock $ intersperse sep' $ fmap (\s -> visItem s v) ss
       where sep' = visItem sep va
        
--- VisBlock of the form 'Element', where a given character has a different style.
-blockMark :: Char -> String -> VisStyle -> VisStyle -> VisBlock
+-- Block of the form 'Element', where a given character has a different style.
+blockMark :: Char -> String -> Style -> Style -> Block
 blockMark e t ve vt = blockCycle testFirst
                      where splitted = span (/= e) t
                            rest = snd splitted
@@ -46,53 +46,53 @@ blockMark e t ve vt = blockCycle testFirst
 -- Derivative Block Builders
 --------------------------------------------------------------------------------
 
--- VisBlock of the form 'Index Element' to be used on groups and lists.
-blockEnum :: String -> String -> VisColor -> VisBlock
+-- Block of the form 'Index Element' to be used on groups and lists.
+blockEnum :: String -> String -> Color -> Block
 blockEnum i t c = blockCycle [(i, normal c)
                              ,(" ", styleDefault)
                              ,(t, normal colorDefault)]
 
--- VisBlock of the form 'Element / Element'.
-blockSlash :: String -> String -> VisColor -> VisBlock
+-- Block of the form 'Element / Element'.
+blockSlash :: String -> String -> Color -> Block
 blockSlash t1 t2 c = blockCycle [(t1, normal c)
                                 ,(" / ", normal black')
                                 ,(t2, normal c)]
 
--- VisBlock of the form 'Index: Element' to be used on menus.
-blockMenu :: String -> String -> VisColor -> VisBlock
+-- Block of the form 'Index: Element' to be used on menus.
+blockMenu :: String -> String -> Color -> Block
 blockMenu i t c = blockCycle [(i, bold c)
                              ,(": ", normal black')
                              ,(t, normal colorDefault)]
 
--- VisBlock of the form 'Element -> Val'.
-blockVal :: String -> String -> VisColor -> VisBlock
+-- Block of the form 'Element -> Val'.
+blockVal :: String -> String -> Color -> Block
 blockVal t v c = blockCycle [(t, styleDefault)
                             ,(" -> ", normal black')
                             ,(v, normal c)]
 
--- VisBlock of the form 'Element1 -> Element2 -> Element3...'.
-blockAssoc :: [String] -> VisStyle -> VisStyle -> VisBlock
+-- Block of the form 'Element1 -> Element2 -> Element3...'.
+blockAssoc :: [String] -> Style -> Style -> Block
 blockAssoc ss v va = blockSeq ss v " -> " va
 
--- VisBlock of the form 'Element1 <- Element2 <- Element3...'.
-blockAssoc' :: [String] -> VisStyle -> VisStyle -> VisBlock
+-- Block of the form 'Element1 <- Element2 <- Element3...'.
+blockAssoc' :: [String] -> Style -> Style -> Block
 blockAssoc' ss v va = blockSeq ss v " <- " va
 
--- VisBlock of the form 'Element1 | Element2 | Element3...'.
-blockBars :: [String] -> VisStyle -> VisStyle -> VisBlock
+-- Block of the form 'Element1 | Element2 | Element3...'.
+blockBars :: [String] -> Style -> Style -> Block
 blockBars ss v va = blockSeq ss v " | " va
 
 
--- VisBlock of the form 'Element' where one letter is of a different style.
-blockMarked :: Char -> String -> VisStyle -> VisBlock
+-- Block of the form 'Element' where one letter is of a different style.
+blockMarked :: Char -> String -> Style -> Block
 blockMarked e t ve = blockMark e t ve styleDefault
 
 
 -- Group Builders
 --------------------------------------------------------------------------------
 
--- VisGroup builder, taking group header and contents separately.
-groupSimple :: VisBlock -> [VisBlock] -> VisGroup
+-- Group builder, taking group header and contents separately.
+groupSimple :: Block -> [Block] -> Group
 groupSimple = visGroup
 
 
@@ -100,27 +100,27 @@ groupSimple = visGroup
 --------------------------------------------------------------------------------
 
 -- Builds a table where each element has its own style and composition.
---   Each element is a VisBlock so it can use composite styles.
-tableBlocks :: [VisBlock] -> [[VisBlock]] -> Maybe VisTable
+--   Each element is a Block so it can use composite styles.
+tableBlocks :: [Block] -> [[Block]] -> Maybe Table
 tableBlocks = visTableBlocks
 
--- Builds a table where every column has a single VisStyle, given in the header.
---   An additional VisStyle is used to style the header itself.
-tableSimple :: [VisBlock] -> VisStyle -> [[String]] -> Maybe VisTable
+-- Builds a table where every column has a single Style, given in the header.
+--   An additional Style is used to style the header itself.
+tableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
 tableSimple = visTableSimple
 
--- Builds a table that is already properly built, with a VisGroup for each column,
-tableGroups :: [VisGroup] -> Maybe VisTable
+-- Builds a table that is already properly built, with a Group for each column,
+tableGroups :: [Group] -> Maybe Table
 tableGroups = visTableGroups
 
 
 -- Rule Builders
 --------------------------------------------------------------------------------
-rule :: Char -> VisStyle -> VisRule
+rule :: Char -> Style -> Rule
 rule = visRule
 
-ruleDefault :: VisStyle -> VisRule
+ruleDefault :: Style -> Rule
 ruleDefault v = visRule '.' v
 
-ruleSolid :: VisColor -> VisRule
+ruleSolid :: Color -> Rule
 ruleSolid c = visRule ' ' (solid c) 

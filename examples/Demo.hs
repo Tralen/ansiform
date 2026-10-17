@@ -19,7 +19,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.4.0"
+demoVersion = "0.5.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -40,7 +40,7 @@ main = do
     state <- start (screenPage Menu) demoSettings
     loop Menu state
 
-loop :: Screen -> VisState -> IO ()
+loop :: Screen -> State -> IO ()
 loop screen state = do
   eof <- isEOF
   if eof
@@ -69,21 +69,21 @@ loop screen state = do
       loop next st'
     finish = putStrLn "\nAnsiform demo finished."
 
-demoSettings :: VisSettings
+demoSettings :: Settings
 demoSettings = settings [minSpace 2]
 
 --------------------------------------------------------------------------------
 -- Reusable components
 --------------------------------------------------------------------------------
 
-themeAccent, themeMuted :: VisStyle
+themeAccent, themeMuted :: Style
 themeAccent = bold cyan
 themeMuted = normal black'
 
-themeDanger :: VisColor
+themeDanger :: Color
 themeDanger = red'
 
-header :: VisSection
+header :: Section
 header = sectionTopRule 1 ruleHeader
   [ printerSolidLineCenter 0 1 blue
       [ blockSimple "Ansiform" (bold white')
@@ -95,16 +95,16 @@ header = sectionTopRule 1 ruleHeader
       , blockSimple "Demo" themeAccent ]
   ]
 
-bottom :: VisSection
+bottom :: Section
 bottom = sectionRule ruleBottom
 
-footer :: String -> [[VisBlock]] -> VisSection
+footer :: String -> [[Block]] -> Section
 footer message commandLines = sectionBodyRule 1 ruleFooter
   ( [ printerLeft 2 (blockSimple message styleDefault)
     , printerEmpty 1
     ] ++ fmap (printerLineCenter 4) commandLines )
 
-ruleHeader, ruleBody, ruleFooter, ruleBottom :: VisRule
+ruleHeader, ruleBody, ruleFooter, ruleBottom :: Rule
 ruleHeader = rule '=' (bold black')
 ruleBody = rule '%' (bold black')
 ruleFooter = rule ':' (bold black')
@@ -114,10 +114,10 @@ ruleBottom = ruleDefault (bold black')
 -- Screens
 --------------------------------------------------------------------------------
 
-screenPage :: Screen -> VisPage
+screenPage :: Screen -> Page
 screenPage screen = page [header, screenBody screen, screenFooter screen, bottom]
 
-screenBody :: Screen -> VisSection
+screenBody :: Screen -> Section
 screenBody Menu = sectionBodyRule 1 ruleBody [printerColumn 8 menuBlocks]
 screenBody List = sectionBodyRule 1 ruleBody [printerList 8 6 composers]
 screenBody Groups = sectionBodyRule 1 ruleBody [printerGroups' 4 groups]
@@ -126,11 +126,11 @@ screenBody Rich = sectionBodyRule 1 ruleBody [printerTable 8 1 richTable]
 screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
 
-screenFooter :: Screen -> VisSection
+screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
-menuCommands, pageCommands :: [[VisBlock]]
+menuCommands, pageCommands :: [[Block]]
 menuCommands =
   [ [ blockMenu "L" "List" cyan
     , blockMenu "G" "Groups" cyan
@@ -151,7 +151,7 @@ pageCommands =
 -- Menu and content
 --------------------------------------------------------------------------------
 
-menuBlocks :: [VisBlock]
+menuBlocks :: [Block]
 menuBlocks =
   [ blockMenu "L" "List composers" cyan
   , blockMenu "G" "Group philosophers" cyan
@@ -162,9 +162,9 @@ menuBlocks =
   , blockMenu "X" "Exit" themeDanger
   ]
 
-blocksBody :: VisSection
+blocksBody :: Section
 blocksBody = sectionBodyRule 1 ruleBody
-  [ printerItem (item "A single VisItem" (solid cyan))
+  [ printerItem (item "A single Item" (solid cyan))
   , printerEmpty 1
   , printerColumn 4
       [ blockSimple "Content builders" (bold yellow)
@@ -184,7 +184,7 @@ blocksBody = sectionBodyRule 1 ruleBody
   , printerRight 4 (blockSimple "right aligned line" (normal cyan))
   ]
 
-composers :: [VisBlock]
+composers :: [Block]
 composers =
   [ blockEnum "00" "Tchaikovsky" blue
   , blockEnum "01" "Sibelius" blue
@@ -204,7 +204,7 @@ composers =
 -- Groups
 --------------------------------------------------------------------------------
 
-groups :: [VisGroup]
+groups :: [Group]
 groups =
   [ groupSimple (blockSimple "Greek" (normal yellow))
       [ blockEnum "01" "Socrates" black
@@ -230,10 +230,10 @@ groups =
 -- Tables
 --------------------------------------------------------------------------------
 
-richTable :: Maybe VisTable
+richTable :: Maybe Table
 richTable = tableBlocks richHeader richRows
 
-richHeader :: [VisBlock]
+richHeader :: [Block]
 richHeader =
   [ blockSimple "Flight" (bold yellow)
   , blockSimple "Company" (normal yellow)
@@ -242,7 +242,7 @@ richHeader =
   , blockSimple "Arrival" (normal red)
   ]
 
-richRows :: [[VisBlock]]
+richRows :: [[Block]]
 richRows =
   [ [ blockSimple "1929" (bold green)
     , blockSimple "American Airlines" (normal green)
@@ -271,10 +271,10 @@ richRows =
     , blockSimple "23:00" (normal red) ]
   ]
 
-simpleTable :: Maybe VisTable
+simpleTable :: Maybe Table
 simpleTable = tableSimple simpleHeader (normal blue') simpleRows
 
-simpleHeader :: [VisBlock]
+simpleHeader :: [Block]
 simpleHeader =
   [ blockSimple "Composer" (bold white)
   , blockSimple "Country" (bold cyan)
@@ -299,10 +299,10 @@ simpleRows =
 -- Article
 --------------------------------------------------------------------------------
 
-article :: VisArticle
+article :: Article
 article = [paragraph1, paragraph2]
 
-paragraph1, paragraph2 :: VisParagraph
+paragraph1, paragraph2 :: Paragraph
 paragraph1 =
   [ blockSimple "Ansiform " textBold
   , blockSimple "is a formatting DSL for command line interfaces. " textRegular

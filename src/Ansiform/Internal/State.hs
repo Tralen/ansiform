@@ -9,21 +9,21 @@ import           Ansiform.Internal.Settings
 -- State Type
 --------------------------------------------------------------------------------
 
--- VisState carries the data needed to print each page correctly.
-newtype VisState = VisState (VisSettings,VisPage,[VisNumber])
+-- State carries the data needed to print each page correctly.
+newtype State = State (Settings,Page,[Number])
 
 
-visState :: VisSettings -> VisPage -> [VisNumber] -> VisState
-visState s p ns = VisState (s,p,ns)
+visState :: Settings -> Page -> [Number] -> State
+visState s p ns = State (s,p,ns)
 
-unStateSettings :: VisState -> IO VisConfig
-unStateSettings (VisState (s,_,_)) = runSettings s
+unStateSettings :: State -> IO Config
+unStateSettings (State (s,_,_)) = runSettings s
 
-unStatePage :: VisState -> VisPage
-unStatePage (VisState (_,p,_)) = p
+unStatePage :: State -> Page
+unStatePage (State (_,p,_)) = p
 
-unStateResults :: VisState -> [VisNumber]
-unStateResults (VisState (_,_,ns)) = ns
+unStateResults :: State -> [Number]
+unStateResults (State (_,_,ns)) = ns
 
-updateState :: VisState -> VisPage -> [VisNumber] -> VisState
-updateState (VisState (s,_,_)) p ns = visState s p ns
+updateState :: State -> Page -> [Number] -> State
+updateState (State (s,_,_)) p ns = visState s p ns

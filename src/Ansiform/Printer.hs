@@ -1,5 +1,5 @@
 module Ansiform.Printer ( module Ansiform.Printer 
-                   , Internal.VisPrinter, Internal.runPrinter
+                   , Internal.Printer, Internal.runPrinter
                    , Internal.runPrinterDefault
                    , Internal.runPrinterDefault'
                    ) where
@@ -16,10 +16,10 @@ import           Ansiform.Style
 --------------------------------------------------------------------------------
 
 -- Printer for a number of empty lines.
-printerEmpty :: VisNumber -> VisPrinter
+printerEmpty :: Number -> Printer
 printerEmpty n = visPrinter "Empty" $ \_ -> printEmpty n
 
-printerItem :: VisItem -> VisPrinter
+printerItem :: Item -> Printer
 printerItem i = visPrinter "Item" $ \_ -> printSingleItem i
 
 
@@ -27,112 +27,112 @@ printerItem i = visPrinter "Item" $ \_ -> printSingleItem i
 --------------------------------------------------------------------------------
 
 -- Printer for a horizontal rule that spans the whole screen.
-printerRule :: VisRule -> VisPrinter
+printerRule :: Rule -> Printer
 printerRule r = visPrinter "Rule" $ \s -> printRule 0 r s
 
 -- Printer for a horizontal rule with an offset on both sides.
-printerRule' :: VisOffset -> VisRule -> VisPrinter
+printerRule' :: Offset -> Rule -> Printer
 printerRule' o r = visPrinter "Rule'" $ \s -> printRule o r s
 
 -- Printer for a line filled with spaces with the background color given.
-printerSolid :: VisColor -> VisPrinter
+printerSolid :: Color -> Printer
 printerSolid c = visPrinter "Solid" $ \s -> printRule 0 (ruleSolid c) s
 
 -- Printer for a line filled with spaces with an offset from both sides.
-printerSolid' :: VisOffset -> VisColor -> VisPrinter
+printerSolid' :: Offset -> Color -> Printer
 printerSolid' o c = visPrinter "Solid'" $ \s -> printRule o (ruleSolid c) s
 
 
 -- Line Printing
 --------------------------------------------------------------------------------
 
--- Printer for a VisBlock in single line, left aligned.
-printerLeft :: VisOffset -> VisBlock -> VisPrinter
+-- Printer for a Block in single line, left aligned.
+printerLeft :: Offset -> Block -> Printer
 printerLeft o b = visPrinter "Left" $ \_ -> printLeft o b
 
--- Printer for single VisBlock, right aligned.
-printerRight :: VisOffset -> VisBlock -> VisPrinter
+-- Printer for single Block, right aligned.
+printerRight :: Offset -> Block -> Printer
 printerRight o b = visPrinter "Right" $ \s -> printLineRight o [b] s
 
--- Printer for single VisBlock, center aligned.
-printerCenter :: VisOffset -> VisBlock -> VisPrinter
+-- Printer for single Block, center aligned.
+printerCenter :: Offset -> Block -> Printer
 printerCenter o b = visPrinter "Center" $ \s -> printLineCenter o [b] s
 
--- Printer for list of VisBlocks in a single line, center aligned.
-printerLineLeft :: VisOffset -> [VisBlock] -> VisPrinter
+-- Printer for list of Blocks in a single line, center aligned.
+printerLineLeft :: Offset -> [Block] -> Printer
 printerLineLeft o bs = visPrinter "LineLeft" $ \s -> printLineLeft o bs s
 
--- Printer for list of VisBlocks in a single line, center aligned.
-printerLineRight :: VisOffset -> [VisBlock] -> VisPrinter
+-- Printer for list of Blocks in a single line, center aligned.
+printerLineRight :: Offset -> [Block] -> Printer
 printerLineRight o bs = visPrinter "LineRight" $ \s -> printLineRight o bs s
 
--- Printer for list of VisBlocks in a single line, center aligned.
-printerLineCenter :: VisOffset -> [VisBlock] -> VisPrinter
+-- Printer for list of Blocks in a single line, center aligned.
+printerLineCenter :: Offset -> [Block] -> Printer
 printerLineCenter o bs = visPrinter "LineCenter" $ \s -> printLineCenter o bs s
 
 
 -- Solid Text Printing
 --------------------------------------------------------------------------------
 
-printerSolidLeft :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
+printerSolidLeft :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidLeft o p c b = visPrinter "SolidLeft" $ \s -> printSolidLine o p c [b] printLineLeft s
 
-printerSolidRight :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
+printerSolidRight :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidRight o p c b = visPrinter "SolidRight" $ \s -> printSolidLine o p c [b] printLineRight s
 
-printerSolidCenter :: VisOffset -> VisPadding -> VisColor -> VisBlock -> VisPrinter
+printerSolidCenter :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidCenter o p c b = visPrinter "SolidCenter" $ \s -> printSolidLine o p c [b] printLineCenter s
 
-printerSolidLineLeft :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
+printerSolidLineLeft :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineLeft o p c bs = visPrinter "SolidLineLeft" $ \s -> printSolidLine o p c bs printLineLeft s
 
-printerSolidLineRight :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
+printerSolidLineRight :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineRight o p c bs = visPrinter "SolidLineRight" $ \s -> printSolidLine o p c bs printLineRight s
 
-printerSolidLineCenter :: VisOffset -> VisPadding -> VisColor -> [VisBlock] -> VisPrinter
+printerSolidLineCenter :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineCenter o p c bs = visPrinter "SolidLineCenter" $ \s -> printSolidLine o p c bs printLineCenter s
 
 
 -- List Printing
 --------------------------------------------------------------------------------
 
--- Printer for a column of VisBlocks, with indentation.
-printerColumn :: VisOffset -> [VisBlock] -> VisPrinter
+-- Printer for a column of Blocks, with indentation.
+printerColumn :: Offset -> [Block] -> Printer
 printerColumn o bs = visPrinter "Column" $ \_ -> printColumn o bs
 
--- Printer for a list of VisBlocks, aiming for a specified number of rows.
-printerList :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
+-- Printer for a list of Blocks, aiming for a specified number of rows.
+printerList :: Offset -> Number -> [Block] -> Printer
 printerList o l bs = visPrinter "List" $ \s -> printList o l bs s
 
--- Printer for a list of VisBlocks, aiming for a specified number of columns.
-printerList' :: VisOffset -> VisNumber -> [VisBlock] -> VisPrinter
+-- Printer for a list of Blocks, aiming for a specified number of columns.
+printerList' :: Offset -> Number -> [Block] -> Printer
 printerList' o l bs = visPrinter "List'" $ \s -> printList' o l bs s
 
 
 -- Group Printing
 --------------------------------------------------------------------------------
 
--- Printer for a single VisGroup, printed as a column with the given offset.
-printerGroup :: VisOffset -> VisGroup -> VisPrinter
+-- Printer for a single Group, printed as a column with the given offset.
+printerGroup :: Offset -> Group -> Printer
 printerGroup o g = visPrinter "Group" $ \_ -> printGroup o g
 
--- Printer for a list of VisGroups with evenly spaced columns.
-printerGroups :: VisOffset -> [VisGroup] -> VisPrinter
+-- Printer for a list of Groups with evenly spaced columns.
+printerGroups :: Offset -> [Group] -> Printer
 printerGroups o gs = visPrinter "Groups" $ \s -> 
               printGroups o 0 0 True False (groupAverage s gs) s
 
--- Printer for a list of VisGroups with minimum spaced columns.
-printerGroups' :: VisOffset -> [VisGroup] -> VisPrinter
+-- Printer for a list of Groups with minimum spaced columns.
+printerGroups' :: Offset -> [Group] -> Printer
 printerGroups' o gs = visPrinter "Groups'" $ \s -> 
               printGroups o 0 0 False False (groupAverage s gs) s
 
--- Printer for a list of VisGroups with evenly spaced columns, limiting number of rows.
-printerGroupsLimited :: VisOffset -> VisNumber -> [VisGroup] -> VisPrinter
+-- Printer for a list of Groups with evenly spaced columns, limiting number of rows.
+printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited o r gs = visPrinter "GroupsLimited" $ \s -> 
               printGroups o 0 r True False (groupAverage s gs) s
 
--- Printer for a list of VisGroups with minimum spaced columns, limiting number of rows.
-printerGroupsLimited' :: VisOffset -> VisNumber -> [VisGroup] -> VisPrinter
+-- Printer for a list of Groups with minimum spaced columns, limiting number of rows.
+printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' o r gs = visPrinter "GroupsLimited'" $ \s -> 
               printGroups o 0 r False False (groupAverage s gs) s
 
@@ -140,23 +140,23 @@ printerGroupsLimited' o r gs = visPrinter "GroupsLimited'" $ \s ->
 -- Table Printing
 --------------------------------------------------------------------------------
 
--- Prints a VisTable with alternating background, with minimum spaced columns.
-printerTable :: VisOffset -> VisPadding -> Maybe VisTable -> VisPrinter
+-- Prints a Table with alternating background, with minimum spaced columns.
+printerTable :: Offset -> Padding -> Maybe Table -> Printer
 printerTable o p mt = visPrinter "Table" $ \s -> 
                  printGroups o p 0 False True (unMaybeTable mt) s
 
--- Prints a VisTable with alternating background, with evenly spaced columns.
-printerTable' :: VisOffset -> VisPadding -> Maybe VisTable -> VisPrinter
+-- Prints a Table with alternating background, with evenly spaced columns.
+printerTable' :: Offset -> Padding -> Maybe Table -> Printer
 printerTable' o p mt = visPrinter "Table'" $ \s -> 
                  printGroups o p 0 True True (unMaybeTable mt) s
 
--- Prints a VisTable limiting the number of rows, with minimum spaced columns.
-printerTableLimited :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -> VisPrinter
+-- Prints a Table limiting the number of rows, with minimum spaced columns.
+printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited o p r mt = visPrinter "TableLimited" $ \s -> 
                  printGroups o p r False True (unMaybeTable mt) s
 
--- Prints a VisTable limiting the number of rows, with evenly spaced columns.
-printerTableLimited' :: VisOffset -> VisPadding -> VisNumber -> Maybe VisTable -> VisPrinter
+-- Prints a Table limiting the number of rows, with evenly spaced columns.
+printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited' o p r mt = visPrinter "TableLimited'" $ \s -> 
                  printGroups o p r True True (unMaybeTable mt) s
 
@@ -164,41 +164,41 @@ printerTableLimited' o p r mt = visPrinter "TableLimited'" $ \s ->
 -- Text Printing
 --------------------------------------------------------------------------------
 
--- Printer for a continuous paragraph, made from a list of VisBlocks.
-printerParagraph :: VisOffset -> VisOffset -> VisParagraph -> VisPrinter
+-- Printer for a continuous paragraph, made from a list of Blocks.
+printerParagraph :: Offset -> Offset -> Paragraph -> Printer
 printerParagraph o o1 vbs = visPrinter "Paragraph" $ \s -> 
                                 printParagraph o o1 0 False vbs s
 
 -- Printer for a list of paragraphs, separated by a single line, in the simplest manner.
-printerArticle :: VisOffset -> VisOffset -> VisArticle -> VisPrinter
+printerArticle :: Offset -> Offset -> Article -> Printer
 printerArticle o o1 vbss = visPrinter "Article" $ \s -> 
                                 printSequence o o1 0 False odd vbss s
 
 
 -- Printer for a sequence of paragraphs, separated by a single line,
 --    alternating the background to solid on odd entries.
-printerSequence :: VisOffset -> VisOffset -> VisPadding -> [VisParagraph] -> VisPrinter
+printerSequence :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
 printerSequence o o1 p vbss = visPrinter "Sequence" $ \s -> 
                                       printSequence o o1 p True odd vbss s
 
 -- Version of the Sequence Printer that changes the background of even items.
-printerSequence' :: VisOffset -> VisOffset -> VisPadding -> [VisParagraph] -> VisPrinter
+printerSequence' :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
 printerSequence' o o1 p vbss = visPrinter "Sequence'" $ \s -> 
                                       printSequence o o1 p True even vbss s
 
 -- Version of the Sequence Printer that changes the background of a selected item.
---    The selection is given by the VisNumber, 0 indexed.
-printerSequenceSel :: VisOffset -> VisOffset -> VisPadding -> VisNumber -> [VisParagraph] -> VisPrinter
+--    The selection is given by the Number, 0 indexed.
+printerSequenceSel :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
 printerSequenceSel o o1 p i vbss = visPrinter "SequenceSel" $ \s -> 
                                       printSequence o o1 p True (==unn i) vbss s
 
 -- Version of the Sequence Printer that changes the background of items after a certain number.
-printerSequenceAfter :: VisOffset -> VisOffset -> VisPadding -> VisNumber -> [VisParagraph] -> VisPrinter
+printerSequenceAfter :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
 printerSequenceAfter o o1 p i vbss = visPrinter "SequenceAfter" $ \s -> 
                                       printSequence o o1 p True (>=unn i) vbss s
 
 -- Version of the Sequence Printer that changes the background based on a predicate.
-printerSequencePred :: VisOffset -> VisOffset -> VisPadding -> (Int -> Bool) -> [VisParagraph] -> VisPrinter
+printerSequencePred :: Offset -> Offset -> Padding -> (Int -> Bool) -> [Paragraph] -> Printer
 printerSequencePred o o1 p f vbss = visPrinter "SequencePred" $ \s -> 
                                       printSequence o o1 p True f vbss s
 

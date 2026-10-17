@@ -10,38 +10,38 @@ import           Ansiform.Internal.Settings
 -- Page Type
 --------------------------------------------------------------------------------
 
--- A VisPage is just a list of VisSections.
-newtype VisPage = VisPage [VisSection]
+-- A Page is just a list of Sections.
+newtype Page = Page [Section]
                 deriving (Eq,Show)
 
 
-instance VisSample VisPage where
-    sampleShow n (VisPage sns) = sampleFormat "VisPage" n sns
+instance Sample Page where
+    sampleShow n (Page sns) = sampleFormat "Page" n sns
     
 
 -- Wrappers
-visPage :: [VisSection] -> VisPage
-visPage = VisPage
+visPage :: [Section] -> Page
+visPage = Page
 
-unPage :: VisPage -> [VisSection]
-unPage (VisPage ss) = ss
+unPage :: Page -> [Section]
+unPage (Page ss) = ss
 
 
 -- Page Runners
 --------------------------------------------------------------------------------
 -- Functions to print the page with the user settings.
-runPage :: VisSettings -> VisPage -> IO [VisNumber]
+runPage :: Settings -> Page -> IO [Number]
 runPage s = mapM (runSection s) . unPage
 
 -- Prints the page with the given settings still in IO.
-runPageIO :: IO VisConfig -> VisPage -> IO [VisNumber]
+runPageIO :: IO Config -> Page -> IO [Number]
 runPageIO cfg = mapM (runSectionIO cfg) . unPage
 
 -- Uses default settings.
-runPageDefault :: VisPage -> IO [VisNumber]
+runPageDefault :: Page -> IO [Number]
 runPageDefault = mapM runSectionDefault . unPage
 
 -- Uses default settings, with given width and minSpace.
-runPageDefault' :: VisNumber -> VisNumber -> VisPage -> IO [VisNumber]
+runPageDefault' :: Number -> Number -> Page -> IO [Number]
 runPageDefault' w m = mapM (runSectionDefault' w m) . unPage
 

@@ -1,21 +1,21 @@
 # Styles
 
-A `VisStyle` combines a foreground color, a background color and a text format. Styles are values; applying a style never mutates it.
+A `Style` combines a foreground color, a background color and a text format. Styles are values; applying a style never mutates it.
 
 ## Colors
 
 The public color values are ANSI colors with two intensities. The primed names are the vivid variants.
 
 ```haskell
-colorDefault :: VisColor
-black, black' :: VisColor
-red, red' :: VisColor
-green, green' :: VisColor
-yellow, yellow' :: VisColor
-blue, blue' :: VisColor
-magenta, magenta' :: VisColor
-cyan, cyan' :: VisColor
-white, white' :: VisColor
+colorDefault :: Color
+black, black' :: Color
+red, red' :: Color
+green, green' :: Color
+yellow, yellow' :: Color
+blue, blue' :: Color
+magenta, magenta' :: Color
+cyan, cyan' :: Color
+white, white' :: Color
 ```
 
 `colorDefault` leaves the terminal color unchanged.
@@ -23,21 +23,21 @@ white, white' :: VisColor
 ## Formats
 
 ```haskell
-formatDefault :: VisFormat
-formatRegular :: VisFormat
-formatBold, formatItalic, formatUnderline :: VisFormat
-formatBoldItalic, formatBoldUnderline :: VisFormat
-formatItalicUnderline, formatBoldItalicUnderline :: VisFormat
+formatDefault :: Format
+formatRegular :: Format
+formatBold, formatItalic, formatUnderline :: Format
+formatBoldItalic, formatBoldUnderline :: Format
+formatItalicUnderline, formatBoldItalicUnderline :: Format
 ```
 
 ## Styles
 
 ```haskell
-styleDefault :: VisStyle
-normal, bold, italic, underline :: VisColor -> VisStyle
-boldItalic, boldUnderline :: VisColor -> VisStyle
-italicUnderline, boldItalicUnderline :: VisColor -> VisStyle
-solid, solidBold :: VisColor -> VisStyle
+styleDefault :: Style
+normal, bold, italic, underline :: Color -> Style
+boldItalic, boldUnderline :: Color -> Style
+italicUnderline, boldItalicUnderline :: Color -> Style
+solid, solidBold :: Color -> Style
 ```
 
 - `normal c` sets the foreground to `c` and leaves the background default.
@@ -46,13 +46,13 @@ solid, solidBold :: VisColor -> VisStyle
 - `styleDefault` resets color and format.
 
 ```haskell
-title :: VisStyle
+title :: Style
 title = bold cyan
 
-selected :: VisStyle
+selected :: Style
 selected = solid blue'
 
-warning :: VisStyle
+warning :: Style
 warning = bold red
 ```
 
@@ -61,17 +61,17 @@ warning = bold red
 Text styles are convenient values for paragraph fragments. They use the terminal default foreground instead of fixing a color.
 
 ```haskell
-textRegular :: VisStyle
-textBold, textItalic, textUnderline :: VisStyle
-textBoldItalic, textBoldUnderline :: VisStyle
-textItalicUnderline, textBoldItalicUnderline :: VisStyle
-textColor, textMark :: VisColor -> VisStyle
+textRegular :: Style
+textBold, textItalic, textUnderline :: Style
+textBoldItalic, textBoldUnderline :: Style
+textItalicUnderline, textBoldItalicUnderline :: Style
+textColor, textMark :: Color -> Style
 ```
 
 `textColor c` is `normal c`; `textMark c` is `solid c`.
 
 ```haskell
-paragraph :: VisParagraph
+paragraph :: Paragraph
 paragraph =
   [ blockSimple "Regular text, " textRegular
   , blockSimple "bold text, " textBold

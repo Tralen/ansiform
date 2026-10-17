@@ -16,121 +16,121 @@ import           Ansiform.Internal.Utils
 
 -- Content Types
 --------------------------------------------------------------------------------
--- Combination of text and a VisStyle for that text.
+-- Combination of text and a Style for that text.
 --   It should have no non-printable characters.
-newtype VisItem = VisItem (String,VisStyle)
+newtype Item = Item (String,Style)
                 deriving (Eq, Show)
 
--- List of VisItems to be printed as a block. 
+-- List of Items to be printed as a block. 
 --   It should have no empty items, to avoid setting styles unnecessarely.
 --   It is treated as a block and can only be separated by paragraph formatting.
-newtype VisBlock = VisBlock [VisItem]
+newtype Block = Block [Item]
                 deriving (Eq, Show)
 
--- List of VisBlocks that start with a title for that list.
-newtype VisGroup = VisGroup [VisBlock]
+-- List of Blocks that start with a title for that list.
+newtype Group = Group [Block]
                  deriving (Eq, Show)
 
--- List of VisGroups where each group has the same length.
-newtype VisTable = VisTable [VisGroup]
+-- List of Groups where each group has the same length.
+newtype Table = Table [Group]
                  deriving (Eq, Show)
 
--- A VisParagraph is just a suggestive name for a list of VisBlocks.
-type VisParagraph = [VisBlock]
+-- A Paragraph is just a suggestive name for a list of Blocks.
+type Paragraph = [Block]
 
--- An article is just a list of VisParagraphs.
-type VisArticle = [VisParagraph]
+-- An article is just a list of Paragraphs.
+type Article = [Paragraph]
 
 -- Sample Instances
 --------------------------------------------------------------------------------
 
-instance VisSample VisItem where
-  sampleShow _ (VisItem (s,v)) = "VisItem " ++ show s ++ " " ++ sampleShow 0 v  
+instance Sample Item where
+  sampleShow _ (Item (s,v)) = "Item " ++ show s ++ " " ++ sampleShow 0 v  
 
-instance VisSample VisBlock where
-  sampleShow n (VisBlock is) = sampleFormat "VisBlock" n is
+instance Sample Block where
+  sampleShow n (Block is) = sampleFormat "Block" n is
 
-instance VisSample VisGroup where
-  sampleShow n (VisGroup bs) = sampleFormat "VisGroup" n bs
+instance Sample Group where
+  sampleShow n (Group bs) = sampleFormat "Group" n bs
 
-instance VisSample VisTable where
-  sampleShow n (VisTable gs) = sampleFormat "VisTable" n gs
+instance Sample Table where
+  sampleShow n (Table gs) = sampleFormat "Table" n gs
 
 
 -- Wrappers
 --------------------------------------------------------------------------------
-visItem :: String -> VisStyle -> VisItem
-visItem s v = VisItem (itemTextClean s, v)
+visItem :: String -> Style -> Item
+visItem s v = Item (itemTextClean s, v)
 
-visItemList :: [(String, VisStyle)] -> [VisItem]
+visItemList :: [(String, Style)] -> [Item]
 visItemList = fmap (uncurry visItem)
 
--- VisBlock builder, removes empty items beforehand.
-visBlock :: [VisItem] -> VisBlock
-visBlock = VisBlock . itemsEmptyFilter
+-- Block builder, removes empty items beforehand.
+visBlock :: [Item] -> Block
+visBlock = Block . itemsEmptyFilter
 
-visBlockList :: [[VisItem]] -> [VisBlock]
+visBlockList :: [[Item]] -> [Block]
 visBlockList = fmap visBlock
 
--- VisGroup builder, taking group header and contents separately.
-visGroup :: VisBlock -> [VisBlock] -> VisGroup
-visGroup h b = VisGroup (h:b)
+-- Group builder, taking group header and contents separately.
+visGroup :: Block -> [Block] -> Group
+visGroup h b = Group (h:b)
 
--- Allows to build a VisGroup without a separate header.
-visGroup' :: [VisBlock] -> VisGroup
-visGroup' = VisGroup
+-- Allows to build a Group without a separate header.
+visGroup' :: [Block] -> Group
+visGroup' = Group
 
--- Allows to build any VisTable, with length checking previously done.
-visTable :: [VisGroup] -> Bool -> Maybe VisTable
-visTable gs b | b = Just (VisTable gs) | otherwise = Nothing
+-- Allows to build any Table, with length checking previously done.
+visTable :: [Group] -> Bool -> Maybe Table
+visTable gs b | b = Just (Table gs) | otherwise = Nothing
 
 -- Unrwappers
 --------------------------------------------------------------------------------
-unItem :: VisItem -> (String, VisStyle)
-unItem (VisItem (s,v)) = (s,v)
+unItem :: Item -> (String, Style)
+unItem (Item (s,v)) = (s,v)
 
-unItemText :: VisItem -> String
-unItemText (VisItem (t,_)) = t
+unItemText :: Item -> String
+unItemText (Item (t,_)) = t
 
-unItemStyle :: VisItem -> VisStyle
-unItemStyle (VisItem (_,v)) = v
+unItemStyle :: Item -> Style
+unItemStyle (Item (_,v)) = v
 
-unBlock :: VisBlock -> [VisItem]
-unBlock (VisBlock xs) = xs 
+unBlock :: Block -> [Item]
+unBlock (Block xs) = xs 
 
-unItemList :: [VisItem] -> [(String, VisStyle)]
+unItemList :: [Item] -> [(String, Style)]
 unItemList = fmap unItem
 
-unBlockList :: [VisBlock] -> [[VisItem]]
+unBlockList :: [Block] -> [[Item]]
 unBlockList = fmap unBlock
 
-unGroup :: VisGroup -> [VisBlock]
-unGroup (VisGroup bs) = bs
+unGroup :: Group -> [Block]
+unGroup (Group bs) = bs
 
-unTable :: VisTable -> [VisGroup]
-unTable (VisTable gs) = gs
+unTable :: Table -> [Group]
+unTable (Table gs) = gs
 
-unMaybeTable :: Maybe VisTable -> [VisGroup]
+unMaybeTable :: Maybe Table -> [Group]
 unMaybeTable mt = maybe[groupEmpty] unTable mt
 
 
 -- Basic Builders
 --------------------------------------------------------------------------------
 
--- Trivial VisItem, not allowed in VisBlocks.
-itemEmpty :: VisItem
+-- Trivial Item, not allowed in Blocks.
+itemEmpty :: Item
 itemEmpty = visItem "" visDefault
 
--- Trivial VisBlock.
-blockEmpty :: VisBlock
+-- Trivial Block.
+blockEmpty :: Block
 blockEmpty = visBlock []
 
--- VisBlock with a single text and custom VisStyle.
-blockSimple :: String -> VisStyle -> VisBlock
+-- Block with a single text and custom Style.
+blockSimple :: String -> Style -> Block
 blockSimple s v = visBlock [visItem s v]
 
--- Trivial VisGroup.
-groupEmpty :: VisGroup
+-- Trivial Group.
+groupEmpty :: Group
 groupEmpty = visGroup' [blockEmpty]
 
 
@@ -141,68 +141,68 @@ groupEmpty = visGroup' [blockEmpty]
 itemTextClean :: String -> String
 itemTextClean = filter isPrint
 
--- Removes empty Items from a list of VisItems.
---    Enforces the VisBlock invariant, when used to build them.
-itemsEmptyFilter :: [VisItem] -> [VisItem]
+-- Removes empty Items from a list of Items.
+--    Enforces the Block invariant, when used to build them.
+itemsEmptyFilter :: [Item] -> [Item]
 itemsEmptyFilter = filter (not . isItemNull)
   
--- Checks if a VisBlock is empty.
-isBlockNull :: VisBlock -> Bool
+-- Checks if a Block is empty.
+isBlockNull :: Block -> Bool
 isBlockNull vb
      | null items = True
      | otherwise = and $ fmap isItemNull items
    where
      items = unBlock vb
 
--- Checks if a VisItem is empty.
-isItemNull :: VisItem -> Bool
+-- Checks if a Item is empty.
+isItemNull :: Item -> Bool
 isItemNull = null . unItemText
 
 
--- Calculates the maximum length of the text in a list of VisBlocks.
-blockTextMax :: [VisBlock] -> Int
+-- Calculates the maximum length of the text in a list of Blocks.
+blockTextMax :: [Block] -> Int
 blockTextMax bs = maximum' 0
     $ (return . blockTextWidth . visBlock) =<< unBlockList bs
 
--- Calculates the length of a VisBlock text, summing each VisItem.
-blockTextWidth :: VisBlock -> Int
+-- Calculates the length of a Block text, summing each Item.
+blockTextWidth :: Block -> Int
 blockTextWidth vb = sum $ blockTextWidthList vb
 
--- Calculates the length of a VisBlock text,
-blockTextWidthList :: VisBlock -> [Int]
+-- Calculates the length of a Block text,
+blockTextWidthList :: Block -> [Int]
 blockTextWidthList vb = fmap itemTextWidth (unBlock vb)
 
--- Calculates the length of the text in a VisItem.
-itemTextWidth :: VisItem -> Int
+-- Calculates the length of the text in a Item.
+itemTextWidth :: Item -> Int
 itemTextWidth vi = length $ unItemText vi
 
--- Changes the background of each item in a VisBlock.
-blockSetBG :: VisColor -> VisBlock -> VisBlock
+-- Changes the background of each item in a Block.
+blockSetBG :: Color -> Block -> Block
 blockSetBG c b = visBlock $ fmap (itemSetBG c) (unBlock b)
 
--- Swaps the background of each item in a VisBlock.
-blockSwapBG :: VisBlock -> VisBlock
+-- Swaps the background of each item in a Block.
+blockSwapBG :: Block -> Block
 blockSwapBG b = visBlock $ fmap itemSwapBG (unBlock b)
 
--- Changes the background color of a VisItem.
-itemSetBG :: VisColor -> VisItem -> VisItem
+-- Changes the background color of a Item.
+itemSetBG :: Color -> Item -> Item
 itemSetBG c i = itemChangeStyle i $ visSetBG c $ unItemStyle i
 
--- Swaps the background of a VisItem.
-itemSwapBG :: VisItem -> VisItem
+-- Swaps the background of a Item.
+itemSwapBG :: Item -> Item
 itemSwapBG i = itemChangeStyle i $ visSwapBG $ unItemStyle i
   
--- Changes the visual style of a VisItem.
-itemChangeStyle :: VisItem -> VisStyle -> VisItem
+-- Changes the visual style of a Item.
+itemChangeStyle :: Item -> Style -> Item
 itemChangeStyle i s = visItem (unItemText i) s
 
 -- Applies the Item prettifier to a whole block.
-blockPrettify :: VisBlock -> VisBlock
+blockPrettify :: Block -> Block
 blockPrettify vb = visBlock $ concatMap itemPrettify $ unBlock vb
 
 
--- Improves the styling of a VisItem so as to not style punctuation or spaces.
-itemPrettify :: VisItem -> [VisItem]
+-- Improves the styling of a Item so as to not style punctuation or spaces.
+itemPrettify :: Item -> [Item]
 itemPrettify vi
       | isSpecial vs = [ visItem (fst splitHead) visDefault
                        , visItem (reverse (snd splitMiddle)) vs
@@ -220,11 +220,11 @@ itemPrettify vi
 -- Text Formatting
 --------------------------------------------------------------------------------
 
--- Reformats a list of VisBlocks so they respect the same maximum width.
+-- Reformats a list of Blocks so they respect the same maximum width.
 --    The first line can be indented using the padding given.
 --    The function always makes progress, even when a single word is wider
 --    than the available space, so narrow terminals cannot cause a loop.
-blockPublish :: Int -> Int -> [VisBlock] -> [VisBlock] 
+blockPublish :: Int -> Int -> [Block] -> [Block] 
 blockPublish w p vbs
       | w <= 0 = vbs
       | otherwise = fmap (visBlock . reverse) $ publish firstLine p items
@@ -232,7 +232,7 @@ blockPublish w p vbs
         firstLine = if p > 0 then [visItem (replicate p ' ') visDefault] else []
         items = concatMap unBlock vbs
 
-        publish :: [VisItem] -> Int -> [VisItem] -> [[VisItem]]
+        publish :: [Item] -> Int -> [Item] -> [[Item]]
         publish line _ [] = [line]
         publish line cw (item:rest)
             | itemWidth <= remaining = publish (item:line) (cw + itemWidth) rest
@@ -253,8 +253,8 @@ blockPublish w p vbs
             itemWidth = itemTextWidth item
 
 
--- Splits a VisBlock into two, splitting on a desired text length.
-blockSplit :: Int -> VisBlock -> (VisBlock, VisBlock)
+-- Splits a Block into two, splitting on a desired text length.
+blockSplit :: Int -> Block -> (Block, Block)
 blockSplit w vb = ( visBlock (fst processItems)
                   , visBlock (snd processItems) )
       where
@@ -273,8 +273,8 @@ blockSplit w vb = ( visBlock (fst processItems)
                 splitItem = itemSplit (w - cw) vi
 
 
--- Splits a VisItem into two, splitting on a desired text length, but keeping words atomic.
-itemSplit :: Int -> VisItem -> (VisItem, VisItem)
+-- Splits a Item into two, splitting on a desired text length, but keeping words atomic.
+itemSplit :: Int -> Item -> (Item, Item)
 itemSplit w vi = ( visItem (fst processText) vs
                  , visItem (snd processText) vs )
      where 
@@ -297,9 +297,9 @@ itemSplit w vi = ( visItem (fst processText) vs
 -- A table is simply a list of Groups of the same length.
 
 
--- Reduces the length of groups in a list of VisGroups so that they don't exceed
+-- Reduces the length of groups in a list of Groups so that they don't exceed
 --   the average length too much, based on the excess configuration constant.
-groupAverage :: VisConfig -> [VisGroup] -> [VisGroup]
+groupAverage :: Config -> [Group] -> [Group]
 groupAverage s gs = foldr groupProcess [] gs
     where 
        gof = unGroupOverflow s
@@ -318,19 +318,19 @@ groupAverage s gs = foldr groupProcess [] gs
 
 
 -- Builds a table where each element has its own style and composition.
---   Each element is a VisBlock so it can use composite styles.
+--   Each element is a Block so it can use composite styles.
 --   The header and body must follow the table invariant or the build will fail.
-visTableBlocks :: [VisBlock] -> [[VisBlock]] -> Maybe VisTable
+visTableBlocks :: [Block] -> [[Block]] -> Maybe Table
 visTableBlocks h rs = visTable fullTable (isTableBalanced h rs)
      where
        fullTable = zip h (transpose rs) >>= \(h', r) -> return $ visGroup h' r
 
 
--- Builds a table where every column has a single VisStyle, given in the header.
--- An additional VisStyle is used to style the header itself.
+-- Builds a table where every column has a single Style, given in the header.
+-- An additional Style is used to style the header itself.
 -- Each row is given simply as a list of strings.
 -- The header and body must follow the table invariant or the build will fail.
-visTableSimple :: [VisBlock] -> VisStyle -> [[String]] -> Maybe VisTable
+visTableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
 visTableSimple h v sss = visTable fullTable (isTableBalanced h sss)
     where 
        headerList = unBlockList h
@@ -341,9 +341,9 @@ visTableSimple h v sss = visTable fullTable (isTableBalanced h sss)
        fullTable = fmap (uncurry visGroup) (zip header body)
 
 
--- Builds a table that is already properly built, with a VisGroup for each column,
+-- Builds a table that is already properly built, with a Group for each column,
 --     just lacking the invariant check.
-visTableGroups :: [VisGroup] -> Maybe VisTable
+visTableGroups :: [Group] -> Maybe Table
 visTableGroups vgs = visTable vgs vgsLengthMatch
     where 
        headLength = maybe 0 (length . unGroup) $ headMaybe vgs
@@ -352,34 +352,34 @@ visTableGroups vgs = visTable vgs vgsLengthMatch
 
 -- Enforces the invariant that the header and each row 
 --    must have the same length.
-isTableBalanced :: [VisBlock] -> [[a]] -> Bool
+isTableBalanced :: [Block] -> [[a]] -> Bool
 isTableBalanced h rs = and $ fmap (\r -> headLength == length r) rs
             where headLength = length (unBlockList h) 
 
 
 -- Rules && Solid
 --------------------------------------------------------------------------------
-newtype VisRule = VisRule (Char, VisStyle)
+newtype Rule = Rule (Char, Style)
                   deriving (Eq, Show)
 
-instance VisSample VisRule where
-    sampleShow _ (VisRule (c,v)) = "VisRule " ++ show c ++ " " ++ sampleShow 0 v
+instance Sample Rule where
+    sampleShow _ (Rule (c,v)) = "Rule " ++ show c ++ " " ++ sampleShow 0 v
 
-unRuleChar :: VisRule -> Char
-unRuleChar (VisRule (c,_)) = c
+unRuleChar :: Rule -> Char
+unRuleChar (Rule (c,_)) = c
 
-unRuleStyle :: VisRule -> VisStyle
-unRuleStyle (VisRule (_,s)) = s
+unRuleStyle :: Rule -> Style
+unRuleStyle (Rule (_,s)) = s
 
-visRule :: Char -> VisStyle -> VisRule
+visRule :: Char -> Style -> Rule
 visRule c v
-          | isPrint c = VisRule (c,v)
-          | otherwise = VisRule ('.',v)
+          | isPrint c = Rule (c,v)
+          | otherwise = Rule ('.',v)
 
 
--- Creates a VisItem for rules and solid spaces from a VisRule.
+-- Creates a Item for rules and solid spaces from a Rule.
 --   Must be called direct from printing, as it calculates the width on the fly.
-visRuleItem :: VisRule -> VisNumber -> VisItem
+visRuleItem :: Rule -> Number -> Item
 visRuleItem r n = visItem (replicate (unn n) (unRuleChar r)) (unRuleStyle r)
 
 
