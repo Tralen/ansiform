@@ -35,8 +35,8 @@ instance Sample Printer where
 
 
 -- Wrapper
-visPrinter :: String -> (Config -> IO Number) -> Printer
-visPrinter nm fio = Printer (nm,fio)
+formPrinter :: String -> (Config -> IO Number) -> Printer
+formPrinter nm fio = Printer (nm,fio)
 
 
 -- Function to execute the printer by passing the user settings.
@@ -61,15 +61,15 @@ runPrinterDefault' w m (Printer (_,fio)) = initialConfig >>= \dft -> fio $ setWi
 
 -- Prints a number of empty lines.
 printEmpty :: Number -> IO Number
-printEmpty n = vis0 >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
+printEmpty n = resetStyle >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
 
 -- Prints the end of line character.
 printEnd :: IO Number
-printEnd = vis0 >> putStr "\n" >> return 1
+printEnd = resetStyle >> putStr "\n" >> return 1
 
 -- Prints a Item with the proper visual style.
 printItem :: Item -> IO ()
-printItem v = vis (unItemStyle v) >> putStr (unItemText v)
+printItem v = applyStyle (unItemStyle v) >> putStr (unItemText v)
 
 -- Prints each Item of a Block, with the proper visual style.
 printBlock :: Block -> IO ()
@@ -89,7 +89,7 @@ printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 
 -- Prints a horizontal rule with an offset on both sides.
 printRule :: Offset -> Rule -> Config -> IO Number
-printRule o r s = ind o >> printItem (visRuleItem r (w - o*2)) >> printEnd
+printRule o r s = ind o >> printItem (formRuleItem r (w - o*2)) >> printEnd
               where w = unWidth s
 
 -- Prints a line filled with spaces with the background color given.
@@ -119,7 +119,7 @@ printLineRight o bs s = printLineLeft finalOffset bs s
        where
           w = unWidth s ; m =  unMinSpace s ; m' = unn m
           finalOffset = w - o - totalWidth + m
-          totalWidth = visNumber . sum $ fmap ((+m') . blockTextWidth) bs
+          totalWidth = formNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
 
 -- Prints a list of Blocks in a single line, centered and spread across
@@ -208,14 +208,14 @@ printList o l bs s
                             cursorUp newL >> printCol >>= \n -> cursorDown (newL - length b) >> return n
                        | otherwise = cursorUp newL >> printCol
                      where printCol = printColumn currentOffset b
-                           currentOffset = visNumber (i * maxWidth + o')
+                           currentOffset = formNumber (i * maxWidth + o')
 
 
 -- Version that allows to specify the number of columns.
 -- By nature of the List printer, it won't allow more columns than can fit.
 printList' :: Offset -> Number -> [Block] -> Config -> IO Number
 printList' o l bs s = printList o desiredLines bs s
-          where desiredLines = visNumber $ quot (length bs) newL + 1
+          where desiredLines = formNumber $ quot (length bs) newL + 1
                 newL | l == 0 = 1
                      | otherwise = unn l
 
@@ -255,10 +255,10 @@ printGroups o p n bSpace bTable gs s = mainPrinter
          where
             printLoop :: [Group] -> [Int] -> Int -> Number -> IO Number
             printLoop rm wl ri nls
-                    | null rm || (ri >= n' && n' /= 0) = return (nls + visNumber ri - 1)
+                    | null rm || (ri >= n' && n' /= 0) = return (nls + formNumber ri - 1)
                     | otherwise = executePrint >> restartLoop
               where                 
-                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (nls + visNumber rowLength)
+                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (nls + formNumber rowLength)
 
                  executePrint :: IO ()
                  executePrint
@@ -303,12 +303,12 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                       printGroupChangeBG = printGroup' $ setBG g
                       colOffset = wg + offset
                       curLength = length (unGroup g)
-                      printGroup' g' = printGroup (visNumber colOffset) g'
+                      printGroup' g' = printGroup (formNumber colOffset) g'
                       printSpacing
                            | lastRow = return_ | otherwise = printEmpty 1 >> return_
 
                       setBG :: Group -> Group
-                      setBG g' | bTable = visGroup' $ changeBlocks <$> zip (unGroup g') [0..]
+                      setBG g' | bTable = formGroup' $ changeBlocks <$> zip (unGroup g') [0..]
                                   | otherwise = g'
                                where changeBlocks :: (Block, Int) -> Block
                                      changeBlocks (b,ib)
@@ -331,7 +331,7 @@ printParagraph o o1 p bZebra vbs s = printCounter printEachBlock
     where
       w = unWidth s; w' = unn w
       offset' = unn o + unn p
-      offset = visNumber offset'
+      offset = formNumber offset'
       printEachBlock vb
            | bZebra = printSolid o black s
                    >> cursorUp 1 

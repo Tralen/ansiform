@@ -17,8 +17,8 @@ instance Sample Settings where
     sample vs = sample =<< runSettings vs
     sampleShow _ (Settings _) = ""
 
-visSettings :: [Config -> Config] -> Settings
-visSettings = Settings
+formSettings :: [Config -> Config] -> Settings
+formSettings = Settings
 
 unSettings :: Settings -> [Config -> Config]
 unSettings (Settings fs) = fs
@@ -46,8 +46,8 @@ instance Sample Config where
                                ++ "\n  Group Overflow: " ++ show g ++ "%"
 
 -- Wrapper
-visConfig :: Width -> Width -> Number -> Config
-visConfig w m g = Config (w, m, g)
+formConfig :: Width -> Width -> Number -> Config
+formConfig w m g = Config (w, m, g)
 
 
 -- Unwrappers
@@ -66,7 +66,7 @@ unGroupOverflow (Config (_,_,g)) = g
 
 -- Generates the base settings to be configured.
 initialConfig :: IO Config
-initialConfig = termW >>= \w -> return $ visConfig (visNumber w) 2 25
+initialConfig = termW >>= \w -> return $ formConfig (formNumber w) 2 25
 
 -- Support Functions
 --------------------------------------------------------------------------------
@@ -78,13 +78,13 @@ groupOverflowRatio n | n <= 0 = 0 | n >= 100 = 1 | otherwise = div 100 (unn n)
 
 
 setWidth :: Width -> Config -> Config
-setWidth n (Config (_,m,g)) = visConfig n m g
+setWidth n (Config (_,m,g)) = formConfig n m g
 
 setMinSpace :: Width -> Config -> Config
-setMinSpace n (Config (w,_,g)) = visConfig w n g
+setMinSpace n (Config (w,_,g)) = formConfig w n g
 
 setGroupOverflow :: Number -> Config -> Config
-setGroupOverflow n (Config (w,m,_)) = visConfig w m n
+setGroupOverflow n (Config (w,m,_)) = formConfig w m n
 
 
 

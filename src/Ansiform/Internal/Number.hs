@@ -16,10 +16,10 @@ type Offset = Number
 
 
 instance Num Number where
-    fromInteger n = visNumber $ fromInteger n
-    n + m = visNumber $ unn n + unn m
-    n - m = visNumber $ unn n - unn m
-    n * m = visNumber $ unn n * unn m
+    fromInteger n = formNumber $ fromInteger n
+    n + m = formNumber $ unn n + unn m
+    n - m = formNumber $ unn n - unn m
+    n * m = formNumber $ unn n * unn m
     negate _ = 0
     abs n = n
     signum n | n <= 0 = 0 | otherwise = 1 
@@ -28,11 +28,11 @@ instance Sample Number where
     sampleShow _ (Number n) = show n
 
 
-visNumber :: Int -> Number
-visNumber n | n <= 0 = Number 0 | otherwise = Number n
+formNumber :: Int -> Number
+formNumber n | n <= 0 = Number 0 | otherwise = Number n
 
-visNum :: Int -> Number
-visNum = visNumber
+formNum :: Int -> Number
+formNum = formNumber
 
 unNumber :: Number -> Int
 unNumber (Number n) = n

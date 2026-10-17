@@ -19,7 +19,7 @@ import           Ansiform.Page
 
 -- Prints the first page and generates the initial state.
 start :: Page -> Settings -> IO State 
-start p s = draw p $ visState s p []
+start p s = draw p $ formState s p []
 
 
 -- Draws a new page erasing the current printed page.

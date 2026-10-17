@@ -11,9 +11,9 @@ main :: IO ()
 main = do
   results <- sequence
     [ test "Number caps negative values"
-        (unNumber (visNumber (-7)) == 0)
+        (unNumber (formNumber (-7)) == 0)
     , test "Number keeps positive values"
-        (unNumber (visNumber 12) == 12)
+        (unNumber (formNumber 12) == 12)
     , test "Number addition"
         (unNumber (3 + 4 :: Number) == 7)
     , test "Number subtraction caps at zero"

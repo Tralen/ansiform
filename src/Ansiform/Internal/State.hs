@@ -13,8 +13,8 @@ import           Ansiform.Internal.Settings
 newtype State = State (Settings,Page,[Number])
 
 
-visState :: Settings -> Page -> [Number] -> State
-visState s p ns = State (s,p,ns)
+formState :: Settings -> Page -> [Number] -> State
+formState s p ns = State (s,p,ns)
 
 unStateSettings :: State -> IO Config
 unStateSettings (State (s,_,_)) = runSettings s
@@ -26,4 +26,4 @@ unStateResults :: State -> [Number]
 unStateResults (State (_,_,ns)) = ns
 
 updateState :: State -> Page -> [Number] -> State
-updateState (State (s,_,_)) p ns = visState s p ns
+updateState (State (s,_,_)) p ns = formState s p ns

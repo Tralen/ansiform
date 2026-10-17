@@ -20,8 +20,8 @@ instance Sample Page where
     
 
 -- Wrappers
-visPage :: [Section] -> Page
-visPage = Page
+formPage :: [Section] -> Page
+formPage = Page
 
 unPage :: Page -> [Section]
 unPage (Page ss) = ss

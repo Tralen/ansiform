@@ -14,23 +14,23 @@ import           Ansiform.Style
 --------------------------------------------------------------------------------
 
 item :: String -> Style -> Item
-item = visItem
+item = formItem
 
 block :: [Item] -> Block
-block = visBlock
+block = formBlock
 
 -- Block Builders
 --------------------------------------------------------------------------------
 
 -- Block formed by a list of Elements, each with its Style.
 blockCycle :: [(String, Style)] -> Block
-blockCycle = visBlock . visItemList
+blockCycle = formBlock . formItemList
 
 -- Block of the form 'Element1 S Element2 S Element3...',
 --    where S is a repeated separator.
 blockSeq :: [String] -> Style -> String -> Style -> Block
-blockSeq ss v sep va = visBlock $ intersperse sep' $ fmap (\s -> visItem s v) ss
-      where sep' = visItem sep va
+blockSeq ss v sep va = formBlock $ intersperse sep' $ fmap (\s -> formItem s v) ss
+      where sep' = formItem sep va
        
 -- Block of the form 'Element', where a given character has a different style.
 blockMark :: Char -> String -> Style -> Style -> Block
@@ -93,7 +93,7 @@ blockMarked e t ve = blockMark e t ve styleDefault
 
 -- Group builder, taking group header and contents separately.
 groupSimple :: Block -> [Block] -> Group
-groupSimple = visGroup
+groupSimple = formGroup
 
 
 -- Table Builders
@@ -102,25 +102,25 @@ groupSimple = visGroup
 -- Builds a table where each element has its own style and composition.
 --   Each element is a Block so it can use composite styles.
 tableBlocks :: [Block] -> [[Block]] -> Maybe Table
-tableBlocks = visTableBlocks
+tableBlocks = formTableBlocks
 
 -- Builds a table where every column has a single Style, given in the header.
 --   An additional Style is used to style the header itself.
 tableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
-tableSimple = visTableSimple
+tableSimple = formTableSimple
 
 -- Builds a table that is already properly built, with a Group for each column,
 tableGroups :: [Group] -> Maybe Table
-tableGroups = visTableGroups
+tableGroups = formTableGroups
 
 
 -- Rule Builders
 --------------------------------------------------------------------------------
 rule :: Char -> Style -> Rule
-rule = visRule
+rule = formRule
 
 ruleDefault :: Style -> Rule
-ruleDefault v = visRule '.' v
+ruleDefault v = formRule '.' v
 
 ruleSolid :: Color -> Rule
-ruleSolid c = visRule ' ' (solid c) 
+ruleSolid c = formRule ' ' (solid c) 

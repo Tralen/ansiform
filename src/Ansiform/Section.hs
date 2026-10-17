@@ -19,12 +19,12 @@ section = section' 0
 
 -- Builds a basic Section with minimum of lines set.
 section' ::  Number -> [Printer] -> Section
-section' n = visSection n
+section' n = formSection n
 
 
 -- Builds a Section that just prints a single Rule.
 sectionRule :: Rule -> Section
-sectionRule r = visSection 1 [ printerRule r ]
+sectionRule r = formSection 1 [ printerRule r ]
 
 
 -- Builds a Section with a number of empty lines above and below.
@@ -33,7 +33,7 @@ sectionBody n ps = sectionBody' 0 n ps
 
 -- Like sectionBody, but allows to set the minimum number of lines.
 sectionBody' :: Number -> Number -> [Printer] -> Section
-sectionBody' m n ps = visSection m $ [ printerEmpty n ] ++ ps ++ [ printerEmpty n ]
+sectionBody' m n ps = formSection m $ [ printerEmpty n ] ++ ps ++ [ printerEmpty n ]
 
 
 -- Builds a Section with a number of empty lines above and below, preceded by a Rule.
@@ -42,7 +42,7 @@ sectionBodyRule n r ps = sectionBodyRule' 0 n r ps
 
 -- Like sectionBodyRule, but allows to set the minimum number of lines.
 sectionBodyRule' :: Number -> Number -> Rule -> [Printer] -> Section
-sectionBodyRule' m n r ps = visSection m $ [ printerRule r, printerEmpty n ] ++ ps ++ [ printerEmpty n ]
+sectionBodyRule' m n r ps = formSection m $ [ printerRule r, printerEmpty n ] ++ ps ++ [ printerEmpty n ]
 
 
 -- Builds a Section with a number of empty lines only below.
@@ -51,7 +51,7 @@ sectionTop n ps = sectionTop' 0 n ps
 
 -- Like sectionTop, but allows to set the minimum number of lines.
 sectionTop' :: Number -> Number -> [Printer] -> Section
-sectionTop' m n ps = visSection m $ ps ++ [ printerEmpty n ]
+sectionTop' m n ps = formSection m $ ps ++ [ printerEmpty n ]
 
 
 -- Builds a Section with a number of empty lines only below, preceded by a Rule.
@@ -60,4 +60,4 @@ sectionTopRule n r ps = sectionTopRule' 0 n r ps
 
 -- Like sectionTopRule, but allows to set the minimum number of lines.
 sectionTopRule' :: Number -> Number -> Rule -> [Printer] -> Section
-sectionTopRule' m n r ps = visSection m $ [ printerRule r ] ++ ps ++ [ printerEmpty n ]
+sectionTopRule' m n r ps = formSection m $ [ printerRule r ] ++ ps ++ [ printerEmpty n ]

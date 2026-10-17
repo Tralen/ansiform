@@ -13,10 +13,10 @@ import           Ansiform.Internal.Settings as Internal
 --------------------------------------------------------------------------------
 
 settings :: [Config -> Config] -> Settings
-settings = visSettings
+settings = formSettings
 
 defaultSettings :: Settings
-defaultSettings = visSettings []
+defaultSettings = formSettings []
 
 
 -- Configuration modifiers

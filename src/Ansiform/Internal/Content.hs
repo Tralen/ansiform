@@ -59,30 +59,30 @@ instance Sample Table where
 
 -- Wrappers
 --------------------------------------------------------------------------------
-visItem :: String -> Style -> Item
-visItem s v = Item (itemTextClean s, v)
+formItem :: String -> Style -> Item
+formItem s v = Item (itemTextClean s, v)
 
-visItemList :: [(String, Style)] -> [Item]
-visItemList = fmap (uncurry visItem)
+formItemList :: [(String, Style)] -> [Item]
+formItemList = fmap (uncurry formItem)
 
 -- Block builder, removes empty items beforehand.
-visBlock :: [Item] -> Block
-visBlock = Block . itemsEmptyFilter
+formBlock :: [Item] -> Block
+formBlock = Block . itemsEmptyFilter
 
-visBlockList :: [[Item]] -> [Block]
-visBlockList = fmap visBlock
+formBlockList :: [[Item]] -> [Block]
+formBlockList = fmap formBlock
 
 -- Group builder, taking group header and contents separately.
-visGroup :: Block -> [Block] -> Group
-visGroup h b = Group (h:b)
+formGroup :: Block -> [Block] -> Group
+formGroup h b = Group (h:b)
 
 -- Allows to build a Group without a separate header.
-visGroup' :: [Block] -> Group
-visGroup' = Group
+formGroup' :: [Block] -> Group
+formGroup' = Group
 
 -- Allows to build any Table, with length checking previously done.
-visTable :: [Group] -> Bool -> Maybe Table
-visTable gs b | b = Just (Table gs) | otherwise = Nothing
+formTable :: [Group] -> Bool -> Maybe Table
+formTable gs b | b = Just (Table gs) | otherwise = Nothing
 
 -- Unrwappers
 --------------------------------------------------------------------------------
@@ -119,25 +119,25 @@ unMaybeTable mt = maybe[groupEmpty] unTable mt
 
 -- Trivial Item, not allowed in Blocks.
 itemEmpty :: Item
-itemEmpty = visItem "" visDefault
+itemEmpty = formItem "" defaultStyle
 
 -- Trivial Block.
 blockEmpty :: Block
-blockEmpty = visBlock []
+blockEmpty = formBlock []
 
 -- Block with a single text and custom Style.
 blockSimple :: String -> Style -> Block
-blockSimple s v = visBlock [visItem s v]
+blockSimple s v = formBlock [formItem s v]
 
 -- Trivial Group.
 groupEmpty :: Group
-groupEmpty = visGroup' [blockEmpty]
+groupEmpty = formGroup' [blockEmpty]
 
 
 -- Utilities
 --------------------------------------------------------------------------------
 
--- Removes non-printable characters from the text of a visItem.
+-- Removes non-printable characters from the text of a formItem.
 itemTextClean :: String -> String
 itemTextClean = filter isPrint
 
@@ -162,7 +162,7 @@ isItemNull = null . unItemText
 -- Calculates the maximum length of the text in a list of Blocks.
 blockTextMax :: [Block] -> Int
 blockTextMax bs = maximum' 0
-    $ (return . blockTextWidth . visBlock) =<< unBlockList bs
+    $ (return . blockTextWidth . formBlock) =<< unBlockList bs
 
 -- Calculates the length of a Block text, summing each Item.
 blockTextWidth :: Block -> Int
@@ -178,35 +178,35 @@ itemTextWidth vi = length $ unItemText vi
 
 -- Changes the background of each item in a Block.
 blockSetBG :: Color -> Block -> Block
-blockSetBG c b = visBlock $ fmap (itemSetBG c) (unBlock b)
+blockSetBG c b = formBlock $ fmap (itemSetBG c) (unBlock b)
 
 -- Swaps the background of each item in a Block.
 blockSwapBG :: Block -> Block
-blockSwapBG b = visBlock $ fmap itemSwapBG (unBlock b)
+blockSwapBG b = formBlock $ fmap itemSwapBG (unBlock b)
 
 -- Changes the background color of a Item.
 itemSetBG :: Color -> Item -> Item
-itemSetBG c i = itemChangeStyle i $ visSetBG c $ unItemStyle i
+itemSetBG c i = itemChangeStyle i $ setBackground c $ unItemStyle i
 
 -- Swaps the background of a Item.
 itemSwapBG :: Item -> Item
-itemSwapBG i = itemChangeStyle i $ visSwapBG $ unItemStyle i
+itemSwapBG i = itemChangeStyle i $ swapBackground $ unItemStyle i
   
 -- Changes the visual style of a Item.
 itemChangeStyle :: Item -> Style -> Item
-itemChangeStyle i s = visItem (unItemText i) s
+itemChangeStyle i s = formItem (unItemText i) s
 
 -- Applies the Item prettifier to a whole block.
 blockPrettify :: Block -> Block
-blockPrettify vb = visBlock $ concatMap itemPrettify $ unBlock vb
+blockPrettify vb = formBlock $ concatMap itemPrettify $ unBlock vb
 
 
 -- Improves the styling of a Item so as to not style punctuation or spaces.
 itemPrettify :: Item -> [Item]
 itemPrettify vi
-      | isSpecial vs = [ visItem (fst splitHead) visDefault
-                       , visItem (reverse (snd splitMiddle)) vs
-                       , visItem (reverse (fst splitMiddle)) visDefault
+      | isSpecial vs = [ formItem (fst splitHead) defaultStyle
+                       , formItem (reverse (snd splitMiddle)) vs
+                       , formItem (reverse (fst splitMiddle)) defaultStyle
                        ]
       | otherwise = [vi]
    where 
@@ -227,9 +227,9 @@ itemPrettify vi
 blockPublish :: Int -> Int -> [Block] -> [Block] 
 blockPublish w p vbs
       | w <= 0 = vbs
-      | otherwise = fmap (visBlock . reverse) $ publish firstLine p items
+      | otherwise = fmap (formBlock . reverse) $ publish firstLine p items
       where
-        firstLine = if p > 0 then [visItem (replicate p ' ') visDefault] else []
+        firstLine = if p > 0 then [formItem (replicate p ' ') defaultStyle] else []
         items = concatMap unBlock vbs
 
         publish :: [Item] -> Int -> [Item] -> [[Item]]
@@ -255,8 +255,8 @@ blockPublish w p vbs
 
 -- Splits a Block into two, splitting on a desired text length.
 blockSplit :: Int -> Block -> (Block, Block)
-blockSplit w vb = ( visBlock (fst processItems)
-                  , visBlock (snd processItems) )
+blockSplit w vb = ( formBlock (fst processItems)
+                  , formBlock (snd processItems) )
       where
         items = unBlock vb
         processItems = go [] 0 items
@@ -275,8 +275,8 @@ blockSplit w vb = ( visBlock (fst processItems)
 
 -- Splits a Item into two, splitting on a desired text length, but keeping words atomic.
 itemSplit :: Int -> Item -> (Item, Item)
-itemSplit w vi = ( visItem (fst processText) vs
-                 , visItem (snd processText) vs )
+itemSplit w vi = ( formItem (fst processText) vs
+                 , formItem (snd processText) vs )
      where 
        vs = unItemStyle vi
        splitWords = split (keepDelimsR (whenElt isSpace)) $ unItemText vi
@@ -304,7 +304,7 @@ groupAverage s gs = foldr groupProcess [] gs
     where 
        gof = unGroupOverflow s
        groupProcess g a
-           | grpLength > tgtLength = fmap visGroup' headerBlocks ++ a
+           | grpLength > tgtLength = fmap formGroup' headerBlocks ++ a
            | otherwise = g : a
           where grpLength = length blocks
                 headerBlocks = take 1 splitBlocks ++ fmap (blockEmpty :) (drop 1 splitBlocks)
@@ -320,31 +320,31 @@ groupAverage s gs = foldr groupProcess [] gs
 -- Builds a table where each element has its own style and composition.
 --   Each element is a Block so it can use composite styles.
 --   The header and body must follow the table invariant or the build will fail.
-visTableBlocks :: [Block] -> [[Block]] -> Maybe Table
-visTableBlocks h rs = visTable fullTable (isTableBalanced h rs)
+formTableBlocks :: [Block] -> [[Block]] -> Maybe Table
+formTableBlocks h rs = formTable fullTable (isTableBalanced h rs)
      where
-       fullTable = zip h (transpose rs) >>= \(h', r) -> return $ visGroup h' r
+       fullTable = zip h (transpose rs) >>= \(h', r) -> return $ formGroup h' r
 
 
 -- Builds a table where every column has a single Style, given in the header.
 -- An additional Style is used to style the header itself.
 -- Each row is given simply as a list of strings.
 -- The header and body must follow the table invariant or the build will fail.
-visTableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
-visTableSimple h v sss = visTable fullTable (isTableBalanced h sss)
+formTableSimple :: [Block] -> Style -> [[String]] -> Maybe Table
+formTableSimple h v sss = formTable fullTable (isTableBalanced h sss)
     where 
        headerList = unBlockList h
        header = headerList >>= \b -> return $ blockSimple (concatMap (fst . unItem) b) v
-       bodyVis = fmap (maybe visDefault (snd . unItem) . headMaybe) headerList
+       bodyVis = fmap (maybe defaultStyle (snd . unItem) . headMaybe) headerList
        body = transpose $
               fmap (\ss -> fmap (uncurry blockSimple)(zip ss bodyVis)) sss
-       fullTable = fmap (uncurry visGroup) (zip header body)
+       fullTable = fmap (uncurry formGroup) (zip header body)
 
 
 -- Builds a table that is already properly built, with a Group for each column,
 --     just lacking the invariant check.
-visTableGroups :: [Group] -> Maybe Table
-visTableGroups vgs = visTable vgs vgsLengthMatch
+formTableGroups :: [Group] -> Maybe Table
+formTableGroups vgs = formTable vgs vgsLengthMatch
     where 
        headLength = maybe 0 (length . unGroup) $ headMaybe vgs
        vgsLengthMatch = and $ fmap ((==) headLength . length . unGroup) (drop 1 vgs)
@@ -371,16 +371,16 @@ unRuleChar (Rule (c,_)) = c
 unRuleStyle :: Rule -> Style
 unRuleStyle (Rule (_,s)) = s
 
-visRule :: Char -> Style -> Rule
-visRule c v
+formRule :: Char -> Style -> Rule
+formRule c v
           | isPrint c = Rule (c,v)
           | otherwise = Rule ('.',v)
 
 
 -- Creates a Item for rules and solid spaces from a Rule.
 --   Must be called direct from printing, as it calculates the width on the fly.
-visRuleItem :: Rule -> Number -> Item
-visRuleItem r n = visItem (replicate (unn n) (unRuleChar r)) (unRuleStyle r)
+formRuleItem :: Rule -> Number -> Item
+formRuleItem r n = formItem (replicate (unn n) (unRuleChar r)) (unRuleStyle r)
 
 
 

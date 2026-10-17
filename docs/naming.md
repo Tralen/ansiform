@@ -25,15 +25,19 @@ The exact lowercase `vis` was not listed on Hackage, but names that differ only 
 
 There is no compatibility module named `Vis`. The rename is a breaking change for users of the old package.
 
-## Type names
+## Public types
 
 The 0.5.0 release removed the `Vis` prefix from the public types. The public API now uses `Item`, `Block`, `Group`, `Table`, `Paragraph`, `Article`, `Rule`, `Number`, `Width`, `Padding`, `Offset`, `Color`, `Format`, `Style`, `Printer`, `Section`, `Page`, `Settings`, `Config`, `State` and `Sample`.
 
-The internal builder helpers (`visItem`, `visBlock`, `visGroup`, etc.) keep their names. They are implementation details, hidden behind the public builders, and can be renamed later without changing the public API.
+## Builder names
+
+The 0.6.0 release removed the `vis` prefix from the internal builder helpers. They now use the `form` prefix: `formItem`, `formBlock`, `formGroup`, `formTable`, `formRule`, `formPrinter`, `formSection`, `formPage`, `formSettings`, `formConfig`, `formState`, `formNumber`, `formColor`, `formFormat` and `formStyle`. The low-level style helpers use descriptive names: `applyStyle`, `resetStyle`, `styleCommands`, `colorCommands`, `formatCommands`, `setBackground` and `swapBackground`. The public `visNumber` is now `formNumber`.
+
+The public builders remain unprefixed (`item`, `block`, `groupSimple`, `tableBlocks`, `printerLeft`, `section`, `page`, etc.).
 
 ## Remaining names to avoid confusion
 
-The old package name remains in the ChangeLog for historical context. The public API no longer uses the `Vis` prefix, and the README explains that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
+The old package name remains in the ChangeLog for historical context. The public API no longer uses the `Vis` prefix, nor does it export the `vis` builder prefix. The README explains that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
 
 ## Other candidates
 

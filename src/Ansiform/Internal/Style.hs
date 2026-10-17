@@ -46,11 +46,11 @@ instance Sample Color where
 
 
 -- Wrapper and Default
-visColor :: ColorIntensity -> ANSI.Color -> Color
-visColor = Color
+formColor :: ColorIntensity -> ANSI.Color -> Color
+formColor = Color
 
-visColorDefault :: Color
-visColorDefault = ColorDefault
+defaultColor :: Color
+defaultColor = ColorDefault
 
 -- Unwrappers
 unColor :: Color -> ANSI.Color
@@ -87,11 +87,11 @@ instance Sample Format where
 
 
 -- Wrapper and Default
-visFormat :: ConsoleIntensity -> Bool -> Underlining -> Format 
-visFormat = Format
+formFormat :: ConsoleIntensity -> Bool -> Underlining -> Format 
+formFormat = Format
 
-visFormatDefault :: Format
-visFormatDefault = FormatDefault
+defaultFormat :: Format
+defaultFormat = FormatDefault
 
 -- Unwrappers
 unBold :: Format -> ConsoleIntensity
@@ -133,38 +133,35 @@ instance Sample Style where
   sampleShow _ (Style fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
 
 -- Main function to apply SGR styles to the terminal.
-vis :: MonadIO m => Style -> m ()
-vis s = liftIO $ setSGR (Reset : visBuilder s)
+applyStyle :: MonadIO m => Style -> m ()
+applyStyle s = liftIO $ setSGR (Reset : styleCommands s)
 
 -- Resets visual styles.
-visZero :: IO ()
-visZero = vis Zero
-
-vis0 :: IO ()
-vis0 = visZero
+resetStyle :: IO ()
+resetStyle = applyStyle Zero
 
 -- Constructs the final list of SGR instructions for Ansiform.
-visBuilder ::  Style -> [SGR]
-visBuilder s = case s of
+styleCommands ::  Style -> [SGR]
+styleCommands s = case s of
                    Zero -> []
                    Style fc bc f ->
-                        visColorBuilder fc bc ++ visFormatBuilder f
+                        colorCommands fc bc ++ formatCommands f
 
 -- Builds the color SGR list.
-visColorBuilder :: Color -> Color -> [SGR]
-visColorBuilder fc bc
+colorCommands :: Color -> Color -> [SGR]
+colorCommands fc bc
     | isColorDefault fc && isColorDefault bc = []
-    | isColorDefault bc = [ setForeground fc ]
-    | isColorDefault fc = [ setBackground bc ]
-    | otherwise = [ setForeground fc, setBackground bc ]
+    | isColorDefault bc = [ foregroundCommand fc ]
+    | isColorDefault fc = [ backgroundCommand bc ]
+    | otherwise = [ foregroundCommand fc, backgroundCommand bc ]
  where 
-    setForeground c = SetColor Foreground (unIntensity c) (unColor c)
-    setBackground c = SetColor Background (unIntensity c) (unColor c)
+    foregroundCommand c = SetColor Foreground (unIntensity c) (unColor c)
+    backgroundCommand c = SetColor Background (unIntensity c) (unColor c)
 
 
 -- Builds the formatting SGR list.
-visFormatBuilder :: Format -> [SGR]
-visFormatBuilder f
+formatCommands :: Format -> [SGR]
+formatCommands f
       | isFormatDefault f = []
       | otherwise = [ SetConsoleIntensity (unBold f)
                     , SetItalicized (unItalic f)
@@ -172,21 +169,21 @@ visFormatBuilder f
                     ]
 
 -- Wrapper and Defaults
-visStyle :: Color -> Color -> Format -> Style
-visStyle = Style
+formStyle :: Color -> Color -> Format -> Style
+formStyle = Style
 
-visDefault :: Style
-visDefault = visStyle visColorDefault visColorDefault visFormatDefault
+defaultStyle :: Style
+defaultStyle = formStyle defaultColor defaultColor defaultFormat
 
 -- Unwrappers
 unStyleForeground :: Style -> Color
-unStyleForeground s = case s of Zero -> visColorDefault ; Style fc _ _ -> fc
+unStyleForeground s = case s of Zero -> defaultColor ; Style fc _ _ -> fc
 
 unStyleBackground :: Style -> Color
-unStyleBackground s = case s of Zero -> visColorDefault ; Style _ bc _ -> bc
+unStyleBackground s = case s of Zero -> defaultColor ; Style _ bc _ -> bc
 
 unStyleFormat :: Style -> Format
-unStyleFormat s = case s of Zero -> visFormatDefault ; Style _ _ f -> f
+unStyleFormat s = case s of Zero -> defaultFormat ; Style _ _ f -> f
 
 
 -- Style checks
@@ -204,18 +201,18 @@ isColored :: Style -> Bool
 isColored vs = not . isColorDefault $ unStyleForeground vs
 
 -- Sets the background color to a given color, respects if there is already one.
-visSetBG :: Color -> Style -> Style
-visSetBG c v = case v of
+setBackground :: Color -> Style -> Style
+setBackground c v = case v of
    Zero -> v
    Style fc bc f -> case bc of 
-                ColorDefault -> visStyle fc c f
+                ColorDefault -> formStyle fc c f
                 _ -> v
 
 -- Swaps the foreground and background color.
-visSwapBG :: Style -> Style
-visSwapBG v = case v of
+swapBackground :: Style -> Style
+swapBackground v = case v of
    Zero -> v
-   Style fc bc f -> visStyle bc fc f
+   Style fc bc f -> formStyle bc fc f
 
 
 

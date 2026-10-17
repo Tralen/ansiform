@@ -21,8 +21,8 @@ instance Sample Section where
     sampleShow n (Section (m,ps)) = "Section (minimum lines: " ++ sampleShow 0 m ++ ")\n" ++ sampleShow n ps
 
 -- Wrappers
-visSection :: Number -> [Printer] -> Section
-visSection n ps = Section (n,ps)
+formSection :: Number -> [Printer] -> Section
+formSection n ps = Section (n,ps)
 
 unSectionPrinters :: Section -> [Printer]
 unSectionPrinters (Section (_,ps)) = ps

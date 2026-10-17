@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.6.0 -- 2026-10-17
+* Renamed the internal vis* builders to form* (formItem, formBlock, formGroup, ...).
+* Renamed the low-level style helpers to descriptive names (applyStyle, resetStyle, styleCommands, colorCommands, formatCommands, setBackground, swapBackground).
+* Renamed the public visNumber to formNumber.
+* Updated the demo, tests and docs for the new builder names.
+
 ### 0.5.0 -- 2026-10-17
 * Removed the Vis prefix from all public types.
 * Renamed VisItem to Item, VisBlock to Block, and so on, including Color, Format, Style, Printer, Section, Page, Settings, Config, State and Sample.

@@ -3,17 +3,17 @@ module Ansiform.Number ( Number
                   , Width
                   , Padding
                   , Offset
-                  , visNumber
+                  , formNumber
                   , unNumber
                   ) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Number hiding (visNumber, unNumber)
+import           Ansiform.Internal.Number hiding (formNumber, unNumber)
 
 
 -- | Builds a 'Number', capping negative values at zero.
-visNumber :: Int -> Number
-visNumber = visNum
+formNumber :: Int -> Number
+formNumber = formNum
 
 -- | Converts a 'Number' back to an 'Int'.
 unNumber :: Number -> Int
