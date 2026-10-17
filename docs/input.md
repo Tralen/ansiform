@@ -8,6 +8,9 @@ readKey :: IO (Maybe Char)
 
 withLineInput :: IO a -> IO a
 readLine :: IO (Maybe String)
+
+readLineAt :: Number -> Offset -> IO (Maybe String)
+readLineAtOn :: Handle -> Number -> Offset -> IO (Maybe String)
 ```
 
 ## Setting up
@@ -53,6 +56,21 @@ promptNumber = withLineInput $ do
 ```
 
 `withLineInput` restores the immediate input settings when the action ends, so the same program can mix key-driven and line-driven screens. `readLine` returns `Nothing` at end of input.
+
+## Prompts inside a page
+
+When the prompt belongs to the screen, print it as part of the page instead of writing it after the footer. Draw the page with a prompt line, then place the input on that line with `readLineAt`:
+
+```haskell
+ask state = do
+  state' <- draw (screenPage GroupsPrompt) state
+  input <- readLineAt rowsUp column
+  open (chosenScreen input) state'
+```
+
+`readLineAt rowsUp column` moves the cursor up `rowsUp` lines, sets it to the absolute `column`, flushes the output and reads a line with echo. `rowsUp` counts the lines printed after the prompt plus the cursor row that follows them. `column` is the prompt offset plus the display width of the prompt text. Because the page is not redrawn until the input is complete, the typed text stays on the prompt line, above the command keys and with nothing printed below the footer.
+
+`readLineAtOn` writes the cursor movement to a given handle. Like `withLineInput`, it changes the cursor and echo only when stdin is a terminal.
 
 ## Terminal state
 

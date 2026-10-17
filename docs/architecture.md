@@ -18,7 +18,7 @@ The public modules are thin, documented facades over internal modules.
 | `Ansiform.Settings` | Settings and configuration modifiers. | `Ansiform.Internal.Settings` |
 | `Ansiform.Table` | Per-column table formatting. | `Ansiform.Internal.Table` |
 | `Ansiform.Theme` | Reusable styles for interface components. | `Ansiform.Internal.Theme` |
-| `Ansiform.Input` | Immediate single-key input. | `Ansiform.Internal.Input` |
+| `Ansiform.Input` | Immediate single-key and line input. | `Ansiform.Internal.Input` |
 | `Ansiform.Render` | Rendering to a `Handle` or a `String`. | `Ansiform.Internal.Output`, `Ansiform.Internal.Render` |
 | `Ansiform.Width` | Display width of characters and strings. | `Ansiform.Internal.Width` |
 | `Ansiform.Sample` | Inspection helpers for debugging. | `Ansiform.Internal.Sample` |
@@ -46,7 +46,7 @@ The `Ansiform.Internal.*` modules are implementation details. They are not expos
 
 The default runners write to stdout. The `On` variants accept any handle, and `Ansiform.Render` captures the same output in a `String` through a temporary handle.
 
-`Ansiform.Input` is the other IO boundary. It configures stdin for immediate single-key reads and restores the terminal state when the interaction ends.
+`Ansiform.Input` is the other IO boundary. It configures stdin for immediate single-key reads or line input and restores the terminal state when the interaction ends.
 
 ## Invariants
 

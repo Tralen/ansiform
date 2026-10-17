@@ -1,12 +1,15 @@
 -- | Immediate single-key input for interactive interfaces.
-module Ansiform.Internal.Input (withImmediateInput, readKey, withLineInput, readLine) where
+module Ansiform.Internal.Input (withImmediateInput, readKey, withLineInput, readLine,
+                                readLineAt, readLineAtOn) where
 
 --------------------------------------------------------------------------------
 import           Control.Exception (bracket_)
 import           Control.Monad (when)
-import           System.IO (BufferMode (..), hGetBuffering, hGetEcho,
-                            hIsTerminalDevice, hSetBuffering, hSetEcho,
-                            isEOF, stdin)
+import           System.Console.ANSI (hCursorUp, hSetCursorColumn)
+import           System.IO (BufferMode (..), Handle, hFlush, hGetBuffering,
+                            hGetEcho, hIsTerminalDevice, hSetBuffering,
+                            hSetEcho, isEOF, stdin, stdout)
+import           Ansiform.Internal.Number
 
 
 -- Terminal Input
@@ -56,3 +59,22 @@ readLine :: IO (Maybe String)
 readLine = do
     eof <- isEOF
     if eof then return Nothing else Just <$> getLine
+
+-- | Reads one line with echo after moving the cursor up and to a column.
+--   The first argument is the number of lines to move up from the current
+--   position; the second is the absolute column. This places the input on
+--   a prompt line that has other printed lines below it.
+readLineAt :: Number -> Offset -> IO (Maybe String)
+readLineAt = readLineAtOn stdout
+
+-- | Version of 'readLineAt' that moves the cursor on a given handle.
+--   Cursor movement happens only when stdin is a terminal, matching
+--   'withLineInput'.
+readLineAtOn :: Handle -> Number -> Offset -> IO (Maybe String)
+readLineAtOn h up column = do
+    interactive <- hIsTerminalDevice stdin
+    when interactive $ do
+        hCursorUp h (unn up)
+        hSetCursorColumn h (unn column)
+        hFlush h
+    withLineInput readLine

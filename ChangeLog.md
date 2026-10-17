@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.8.0 -- 2026-10-17
+* Added readLineAt and readLineAtOn to Ansiform.Input for prompts printed inside a page.
+* The demo Groups prompt now lives in the footer, above the command keys, so nothing is printed below the footer.
+* Fixed the demo losing immediate key input after returning from a philosopher article.
+* Translated the demo prompt and the E key label to English.
+
 ### 0.7.7.1 -- 2026-10-17
 * Updated the README dependency list and documentation index.
 * Recorded the initial push and roadmap completion in the release checklist.

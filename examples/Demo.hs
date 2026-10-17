@@ -7,7 +7,6 @@ module Main where
 
 import           Data.Char (isSpace, toLower)
 import           Data.List (elemIndex)
-import           System.IO (hFlush, stdout)
 import           Ansiform
 
 --------------------------------------------------------------------------------
@@ -16,7 +15,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.7.1"
+demoVersion = "0.7.8.0"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -26,8 +25,8 @@ data Philosopher
   deriving (Eq, Show)
 
 -- The demo is a small screen machine.
-data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
-            | PhilosopherPage Philosopher
+data Screen = Menu | List | Groups | GroupsPrompt | Tables | Rich | Article
+            | Blocks | PhilosopherPage Philosopher
   deriving (Eq, Show)
 
 main :: IO ()
@@ -61,15 +60,14 @@ loop screen state = do
       st' <- draw (screenPage next) st
       loop next st'
 
-    choosePhilosopher st = withLineInput $ do
-      putStr "Digite o número e aperte Enter: "
-      hFlush stdout
-      input <- readLine
-      case input >>= philosopherByNumber . trim of
-        Just p -> open (PhilosopherPage p) st
-        Nothing -> do
-          st' <- draw (screenPage Groups) st
-          loop Groups st'
+    choosePhilosopher st = do
+      st' <- draw (screenPage GroupsPrompt) st
+      input <- readLineAt promptRowsUp promptInputColumn
+      open (chosenScreen input) st'
+
+    chosenScreen input = case input >>= philosopherByNumber . trim of
+      Just p -> PhilosopherPage p
+      Nothing -> Groups
 
     finish = putStrLn "\nAnsiform demo finished."
 
@@ -104,10 +102,34 @@ bottom :: Section
 bottom = sectionRule ruleBottom
 
 footer :: String -> [[Block]] -> Section
-footer message commandLines = sectionBodyRule 1 ruleFooter
+footer message commandLines = footerWithPrompt message Nothing commandLines
+
+-- Footer with an optional prompt line above the command keys.
+footerWithPrompt :: String -> Maybe Block -> [[Block]] -> Section
+footerWithPrompt message prompt commandLines = sectionBodyRule 1 ruleFooter
   ( [ printerLeft 2 (blockSimple message (themeFooter demoTheme))
     , printerEmpty 1
-    ] ++ fmap (printerLineCenter 4) commandLines )
+    ] ++ promptLine ++ fmap (printerLineCenter 4) commandLines )
+  where
+    promptLine = case prompt of
+      Nothing -> []
+      Just b -> [ printerLeft promptOffset b ]
+
+promptOffset :: Offset
+promptOffset = 2
+
+promptMessage :: String
+promptMessage = "Enter a number and press Enter: "
+
+-- The input column is the prompt offset plus its display width.
+promptInputColumn :: Offset
+promptInputColumn = formNumber (unNumber promptOffset + textWidth promptMessage)
+
+-- Lines between the prompt row and the cursor after the page is drawn:
+-- the command rows, the footer trailing blank line, the bottom rule and
+-- the cursor row that follows it.
+promptRowsUp :: Number
+promptRowsUp = formNumber (length groupsCommands + 3)
 
 ruleHeader, ruleBody, ruleFooter, ruleBottom :: Rule
 ruleHeader = rule '=' (themeRule demoTheme)
@@ -132,10 +154,15 @@ screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
 screenBody (PhilosopherPage p) =
   sectionBodyRule 1 ruleBody [printerArticle 2 0 (philosopherArticle p)]
+screenBody GroupsPrompt = screenBody Groups
 
 screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
 screenFooter Groups = footer "Press E to choose a philosopher by number." groupsCommands
+screenFooter GroupsPrompt =
+  footerWithPrompt "Choose a philosopher by number."
+                   (Just (blockSimple promptMessage (themeFooter demoTheme)))
+                   groupsCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
 menuCommands, pageCommands, groupsCommands :: [[Block]]
@@ -156,7 +183,7 @@ pageCommands =
   ]
 
 groupsCommands =
-  [ [ blockMenuStyle "E" "Escolher" (themeAccent demoTheme)
+  [ [ blockMenuStyle "E" "Choose" (themeAccent demoTheme)
     , blockMenuStyle "B" "Back" (themeAccent demoTheme)
     , blockMenuStyle "R" "Reload" (themeAccent demoTheme) ]
   , [ blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
