@@ -6,7 +6,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.7.7.0**.
+Current version: **0.7.7.1**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -26,7 +26,7 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Paragraph and article wrapping with styled fragments.
 - Multi-section pages with amend, replace and redraw support.
 - Errors as data: malformed tables return `Nothing` instead of throwing.
-- Small dependency footprint: `ansi-terminal`, `terminal-size` and `split`.
+- Small dependency footprint: `ansi-terminal`, `terminal-size`, `split`, `transformers` and `directory`.
 
 ## Quick start
 
@@ -85,10 +85,10 @@ cabal run ansiform-demo
 - [Styles](docs/style.md): colors, formats and reusable text styles.
 - [Theme](docs/theme.md): reusable styles for headers, footers, menus and tables.
 - [Printers](docs/printers.md): every printer function and its arguments.
-- [Table formatting](docs/table-format.md): per-column alignment, maximum widths and truncation.
+- [Table formatting](docs/table-format.md): per-column alignment, maximum widths, truncation and borders.
 - [Sections](docs/sections.md): grouping printers and reserving minimum line counts.
 - [Pages and drawing](docs/pages.md): pages, state and the drawing lifecycle.
-- [Input](docs/input.md): immediate single-key input and the standard interaction loop.
+- [Input](docs/input.md): immediate and line input, and the standard interaction loop.
 - [Render](docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](docs/settings.md): width, spacing and group overflow configuration.
 - [Demo](docs/demo.md): what the executable showcases.

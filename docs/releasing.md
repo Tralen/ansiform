@@ -5,14 +5,15 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.7.0.
+- Version: 0.7.7.1.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
 - GitHub remote: `origin` uses SSH (`git@github.com:Tralen/ansiform.git`). The repository is private for now.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
-- Publication is deferred until the roadmap is complete.
+- Initial push: `master` is on GitHub and tracks `origin/master`.
+- The roadmap is complete. Publication is pending the repository visibility decision and the Hackage upload.
 
 ## Credentials
 

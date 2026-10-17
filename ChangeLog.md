@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.7.1 -- 2026-10-17
+* Updated the README dependency list and documentation index.
+* Recorded the initial push and roadmap completion in the release checklist.
+
 ### 0.7.7.0 -- 2026-10-17
 * Added withLineInput and readLine to Ansiform.Input.
 * Replaced the Cicero and Locke shortcuts with an E Escolher prompt that accepts any philosopher number.
