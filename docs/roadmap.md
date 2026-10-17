@@ -4,9 +4,7 @@ This is a prioritized list of possible features and adjustments. It records the 
 
 ## High value
 
-### Render to a string or handle
-
-The printers write directly to stdout. A renderer that returns a `String` or writes to a `Handle` would make the library testable without capturing stdout, embeddable in other applications and suitable for golden tests. This is a larger architectural change because `Printer` is currently `Config -> IO Number`.
+No pending high-value items.
 
 ## Medium value
 
@@ -43,6 +41,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Rendering to a handle or string
+
+Released in 0.7.2.0. All printers write to a `Handle`; the default runners use stdout and the `On` variants accept any handle. `Ansiform.Render` captures pages, sections and printers in a `String` through a temporary handle, which supports embedding and golden tests. See [Render](render.md).
 
 ### Immediate single-key input
 

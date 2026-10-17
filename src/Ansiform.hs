@@ -19,6 +19,7 @@ import           Ansiform.Input     as All
 import           Ansiform.Number    as All
 import           Ansiform.Page      as All
 import           Ansiform.Printer   as All
+import           Ansiform.Render    as All
 import           Ansiform.Sample    as All
 import           Ansiform.Section   as All
 import           Ansiform.Settings  as All

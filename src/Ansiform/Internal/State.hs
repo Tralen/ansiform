@@ -1,6 +1,7 @@
 module Ansiform.Internal.State where
 
 --------------------------------------------------------------------------------
+import           System.IO (Handle)
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Page
 import           Ansiform.Internal.Settings
@@ -10,6 +11,7 @@ import           Ansiform.Internal.Settings
 --------------------------------------------------------------------------------
 
 -- State carries the data needed to print each page correctly.
+-- | Drawing state: the settings, the page on screen and the line counts from the last draw.
 newtype State = State (Settings,Page,[Number])
 
 
@@ -18,6 +20,10 @@ formState s p ns = State (s,p,ns)
 
 unStateSettings :: State -> IO Config
 unStateSettings (State (s,_,_)) = runSettings s
+
+-- Resolves the state settings for a given output handle.
+unStateSettingsOn :: Handle -> State -> IO Config
+unStateSettingsOn h (State (s,_,_)) = runSettingsOn h s
 
 unStatePage :: State -> Page
 unStatePage (State (_,p,_)) = p

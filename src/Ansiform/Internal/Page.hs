@@ -1,6 +1,7 @@
 module Ansiform.Internal.Page where
 
 --------------------------------------------------------------------------------
+import           System.IO (Handle, stdout)
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Section
@@ -31,17 +32,33 @@ unPage (Page ss) = ss
 --------------------------------------------------------------------------------
 -- Functions to print the page with the user settings.
 runPage :: Settings -> Page -> IO [Number]
-runPage s = mapM (runSection s) . unPage
+runPage = runPageOn stdout
+
+-- Version of runPage that writes to a given Handle.
+runPageOn :: Handle -> Settings -> Page -> IO [Number]
+runPageOn h s = mapM (runSectionOn h s) . unPage
 
 -- Prints the page with the given settings still in IO.
 runPageIO :: IO Config -> Page -> IO [Number]
-runPageIO cfg = mapM (runSectionIO cfg) . unPage
+runPageIO = runPageIOOn stdout
+
+-- Version of runPageIO that writes to a given Handle.
+runPageIOOn :: Handle -> IO Config -> Page -> IO [Number]
+runPageIOOn h cfg = mapM (runSectionIOOn h cfg) . unPage
 
 -- Uses default settings.
 runPageDefault :: Page -> IO [Number]
-runPageDefault = mapM runSectionDefault . unPage
+runPageDefault = runPageDefaultOn stdout
+
+-- Version of runPageDefault that writes to a given Handle.
+runPageDefaultOn :: Handle -> Page -> IO [Number]
+runPageDefaultOn h = mapM (runSectionDefaultOn h) . unPage
 
 -- Uses default settings, with given width and minSpace.
 runPageDefault' :: Number -> Number -> Page -> IO [Number]
-runPageDefault' w m = mapM (runSectionDefault' w m) . unPage
+runPageDefault' = runPageDefaultOn' stdout
+
+-- Version of runPageDefault' that writes to a given Handle.
+runPageDefaultOn' :: Handle -> Number -> Number -> Page -> IO [Number]
+runPageDefaultOn' h w m = mapM (runSectionDefaultOn' h w m) . unPage
 

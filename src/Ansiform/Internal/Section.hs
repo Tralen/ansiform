@@ -2,6 +2,7 @@ module Ansiform.Internal.Section where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
+import           System.IO (Handle, stdout)
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Printer
 import           Ansiform.Internal.Sample
@@ -35,19 +36,35 @@ unSectionNumber (Section (n,_)) = n
 
 -- Function to run the list of Printers with the user settings.
 runSection :: Settings -> Section -> IO Number
-runSection s = calcSection (runPrinter s) 
+runSection = runSectionOn stdout
+
+-- Version of runSection that writes to a given Handle.
+runSectionOn :: Handle -> Settings -> Section -> IO Number
+runSectionOn h s = calcSection (runPrinterOn h s) 
 
 -- Version of runSection with settings in IO.
 runSectionIO :: IO Config -> Section -> IO Number
-runSectionIO cfg = calcSection (runPrinterIO cfg)
+runSectionIO = runSectionIOOn stdout
+
+-- Version of runSectionIO that writes to a given Handle.
+runSectionIOOn :: Handle -> IO Config -> Section -> IO Number
+runSectionIOOn h cfg = calcSection (runPrinterIOOn h cfg)
 
 -- Uses default settings.
 runSectionDefault :: Section -> IO Number
-runSectionDefault = calcSection runPrinterDefault
+runSectionDefault = runSectionDefaultOn stdout
+
+-- Version of runSectionDefault that writes to a given Handle.
+runSectionDefaultOn :: Handle -> Section -> IO Number
+runSectionDefaultOn h = calcSection (runPrinterDefaultOn h)
 
 -- Uses default settings, with given width and minSpace.
 runSectionDefault' :: Number -> Number -> Section -> IO Number
-runSectionDefault' w m = calcSection (runPrinterDefault' w m)
+runSectionDefault' = runSectionDefaultOn' stdout
+
+-- Version of runSectionDefault' that writes to a given Handle.
+runSectionDefaultOn' :: Handle -> Number -> Number -> Section -> IO Number
+runSectionDefaultOn' h w m = calcSection (runPrinterDefaultOn' h w m)
 
 
 -- Runs the Printers and calculates the total number of lines.

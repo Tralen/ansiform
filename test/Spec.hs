@@ -70,6 +70,14 @@ main = do
         (charWidth '\x1161' == 0)
     , test "Display width of fullwidth forms"
         (charWidth '\xFF21' == 2)
+    , testIO "Render printer without styling" $ do
+        out <- renderPrinter (printerItem (item "plain" (bold red)))
+                             (settings [neverColors])
+        return $ out == "plain\n"
+    , testIO "Page renders to a string" $ do
+        let p = page [section [printerLeft 0 (blockSimple "rendered" styleDefault)]]
+        out <- renderPage p (settings [width 20, neverColors])
+        return $ "rendered" `isInfixOf` out
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])

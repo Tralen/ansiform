@@ -1,13 +1,17 @@
 -- | Printer builders for lines, lists, groups, tables and text.
 module Ansiform.Printer ( module Ansiform.Printer 
                    , Internal.Printer, Internal.runPrinter
+                   , Internal.runPrinterOn
                    , Internal.runPrinterDefault
+                   , Internal.runPrinterDefaultOn
                    , Internal.runPrinterDefault'
+                   , Internal.runPrinterDefaultOn'
                    ) where
 
 --------------------------------------------------------------------------------
 import           Ansiform.Internal.Content
 import           Ansiform.Internal.Number
+import           Ansiform.Internal.Output (outputConfig)
 import           Ansiform.Internal.Printer as Internal
 import           Ansiform.Content
 import           Ansiform.Style
@@ -120,22 +124,22 @@ printerGroup o g = formPrinter "Group" $ \s -> printGroup s o g
 -- Printer for a list of Groups with evenly spaced columns.
 printerGroups :: Offset -> [Group] -> Printer
 printerGroups o gs = formPrinter "Groups" $ \s -> 
-              printGroups o 0 0 True False (groupAverage s gs) s
+              printGroups o 0 0 True False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with minimum spaced columns.
 printerGroups' :: Offset -> [Group] -> Printer
 printerGroups' o gs = formPrinter "Groups'" $ \s -> 
-              printGroups o 0 0 False False (groupAverage s gs) s
+              printGroups o 0 0 False False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with evenly spaced columns, limiting number of rows.
 printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited o r gs = formPrinter "GroupsLimited" $ \s -> 
-              printGroups o 0 r True False (groupAverage s gs) s
+              printGroups o 0 r True False (groupAverage (outputConfig s) gs) s
 
 -- Printer for a list of Groups with minimum spaced columns, limiting number of rows.
 printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s -> 
-              printGroups o 0 r False False (groupAverage s gs) s
+              printGroups o 0 r False False (groupAverage (outputConfig s) gs) s
 
 
 -- Table Printing

@@ -10,6 +10,7 @@ module Ansiform.Internal.Style
 import           Control.Monad.IO.Class
 import           System.Console.ANSI as ANSI hiding (Color)
 import qualified System.Console.ANSI as ANSI
+import           System.IO (Handle)
 import           Ansiform.Internal.Sample
 --------------------------------------------------------------------------------
 
@@ -133,15 +134,15 @@ instance Sample Style where
   sampleShow _ Zero = "Reset"
   sampleShow _ (Style fc bg f) = "{" ++ sampleShow 0 fc ++ " " ++ sampleShow 0 bg ++ " " ++ sampleShow 0 f ++ "}"
 
--- Main function to apply SGR styles to the terminal.
+-- Main function to apply SGR styles to a terminal handle.
 --   When styling is disabled, no escape sequence is emitted.
-applyStyle :: MonadIO m => Bool -> Style -> m ()
-applyStyle True s = liftIO $ setSGR (Reset : styleCommands s)
-applyStyle False _ = return ()
+applyStyle :: MonadIO m => Handle -> Bool -> Style -> m ()
+applyStyle h True s = liftIO $ ANSI.hSetSGR h (Reset : styleCommands s)
+applyStyle _ False _ = return ()
 
 -- Resets visual styles, when styling is enabled.
-resetStyle :: Bool -> IO ()
-resetStyle enabled = applyStyle enabled Zero
+resetStyle :: Handle -> Bool -> IO ()
+resetStyle h enabled = applyStyle h enabled Zero
 
 -- Constructs the final list of SGR instructions for Ansiform.
 styleCommands ::  Style -> [SGR]

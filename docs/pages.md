@@ -22,9 +22,10 @@ Both functions are pure; they do not draw anything.
 
 ```haskell
 start :: Page -> Settings -> IO State
+startOn :: Handle -> Page -> Settings -> IO State
 ```
 
-`start` clears the screen and draws the initial page.
+`start` clears the screen and draws the initial page. `startOn` does the same on a given handle.
 
 ## Drawing functions
 
@@ -32,11 +33,20 @@ start :: Page -> Settings -> IO State
 draw :: Page -> State -> IO State
 redraw :: State -> IO State
 
+drawOn :: Handle -> Page -> State -> IO State
+redrawOn :: Handle -> State -> IO State
+
 amend :: Section -> Number -> State -> IO State
 amend' :: [Section] -> Number -> State -> IO State
 
+amendOn :: Handle -> Section -> Number -> State -> IO State
+amendOn' :: Handle -> [Section] -> Number -> State -> IO State
+
 replace :: Section -> Number -> State -> IO State
 replace' :: [Section] -> Number -> State -> IO State
+
+replaceOn :: Handle -> Section -> Number -> State -> IO State
+replaceOn' :: Handle -> [Section] -> Number -> State -> IO State
 ```
 
 - `draw` clears from the top of the screen and draws a new page.
@@ -45,6 +55,8 @@ replace' :: [Section] -> Number -> State -> IO State
 - `replace` applies `amendPage'` but preserves the lines above the changed section and only reprints the remainder. It is faster for large pages, but it assumes the lines above still occupy the same rows; if the terminal width changed since the previous draw, use `amend` or `draw` instead.
 
 All drawing functions return a new state; the old state is never mutated.
+
+The `On` variants write to a given handle instead of stdout. See [Render](render.md) for `renderPage`, `renderSection` and `renderPrinter`, which capture output in a `String`.
 
 ## Example
 

@@ -14,7 +14,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.1.0"
+demoVersion = "0.7.2.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -282,9 +282,9 @@ simpleRows =
 --------------------------------------------------------------------------------
 
 article :: Article
-article = [paragraph1, paragraph2]
+article = [paragraph1, paragraph2, paragraph3]
 
-paragraph1, paragraph2 :: Paragraph
+paragraph1, paragraph2, paragraph3 :: Paragraph
 paragraph1 =
   [ blockSimple "Ansiform " textBold
   , blockSimple "is a formatting DSL for command line interfaces. " textRegular
@@ -298,4 +298,17 @@ paragraph2 =
   , blockSimple "Tables reject malformed input, " (textMark yellow)
   , blockSimple "and paragraphs always make progress, " (textColor cyan)
   , blockSimple "even when a single word is wider than the screen." textRegular
+  , blockSimple " Lists flow into columns, " textItalic
+  , blockSimple "groups share space evenly, " textBold
+  , blockSimple "and tables can mix independently styled cells." textRegular
+  ]
+
+paragraph3 =
+  [ blockSimple "The standard interaction is immediate: " textRegular
+  , blockSimple "press a key and the page changes, " textBold
+  , blockSimple "without a prompt and without Enter. " textRegular
+  , blockSimple "Styles are suppressed on redirected output, " textItalic
+  , blockSimple "and wide characters, combining marks and emoji " textRegular
+  , blockSimple "keep their alignment " (textMark cyan)
+  , blockSimple "because layout measures terminal columns, not code points." textRegular
   ]

@@ -2,11 +2,13 @@
 module Ansiform.Internal.Terminal 
                     ( module Ansiform.Internal.Terminal
                     , ANSI.cursorUp, ANSI.cursorDown
+                    , ANSI.hCursorUp, ANSI.hCursorDown
                     ) where
            
 --------------------------------------------------------------------------------
 import           System.Console.ANSI as ANSI
 import           System.Console.Terminal.Size
+import           System.IO (Handle, stdout)
 import           Ansiform.Internal.Number
 
 
@@ -14,37 +16,43 @@ import           Ansiform.Internal.Number
 --------------------------------------------------------------------------------
 
 -- Places the cursor at an absolute indentation level.
-ind :: Offset -> IO ()
-ind = indR . unn
+ind :: Handle -> Offset -> IO ()
+ind h = indR h . unn
 
 -- Places the cursor at a relative indentation level.
-ind' :: Offset -> IO ()
-ind' = indR' . unn
+ind' :: Handle -> Offset -> IO ()
+ind' h = indR' h . unn
 
 -- Places the cursor at an absolute indentation level, raw version.
-indR :: Int -> IO ()
-indR = setCursorColumn
+indR :: Handle -> Int -> IO ()
+indR = hSetCursorColumn
 
 -- Places the cursor at a relative indentation level, raw version.
-indR' :: Int -> IO ()
-indR' = cursorForward
+indR' :: Handle -> Int -> IO ()
+indR' = hCursorForward
 
 
 -- Clear
 --------------------------------------------------------------------------------
 
 -- Clear Screen from line.
-clr :: Number -> IO ()
-clr n = setCursorPosition (unn n) 0 >> clearFromCursorToScreenEnd
+clr :: Handle -> Number -> IO ()
+clr h n = hSetCursorPosition h (unn n) 0 >> hClearFromCursorToScreenEnd h
 
-clr0 :: IO ()
-clr0 = clr 0
+clr0 :: Handle -> IO ()
+clr0 h = clr h 0
 
 
 -- Terminal Size
 --------------------------------------------------------------------------------
 termW :: IO Int
-termW = size >>= \mr -> return $ maybe 80 width mr
+termW = termWOn stdout
+
+termWOn :: Handle -> IO Int
+termWOn h = hSize h >>= \mr -> return $ maybe 80 width mr
 
 termH :: IO Int
-termH = size >>= \mr -> return $ maybe 24 height mr
+termH = termHOn stdout
+
+termHOn :: Handle -> IO Int
+termHOn h = hSize h >>= \mr -> return $ maybe 24 height mr

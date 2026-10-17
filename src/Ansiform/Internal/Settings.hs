@@ -3,7 +3,7 @@ module Ansiform.Internal.Settings where
 --------------------------------------------------------------------------------
 import qualified Data.List as List
 import           System.Environment (lookupEnv)
-import           System.IO (hIsTerminalDevice, stdout)
+import           System.IO (Handle, hIsTerminalDevice, stdout)
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Terminal
@@ -28,8 +28,12 @@ unSettings (Settings fs) = fs
 
 -- Function to build the settings in a declarative style.
 runSettings :: Settings -> IO Config
-runSettings stgs = initialConfig >>= \dft ->
-                  resolveColors $ List.foldl' (\sets f -> f sets) dft $ unSettings stgs
+runSettings = runSettingsOn stdout
+
+-- Function to build the settings for a given output handle.
+runSettingsOn :: Handle -> Settings -> IO Config
+runSettingsOn h stgs = initialConfigOn h >>= \dft ->
+                  resolveColorsOn h $ List.foldl' (\sets f -> f sets) dft $ unSettings stgs
 
 -- Settings type
 --------------------------------------------------------------------------------
@@ -90,22 +94,34 @@ colorsEnabled v = unColorMode v == ColorAlways
 
 -- Generates the base settings to be configured.
 initialConfig :: IO Config
-initialConfig = termW >>= \w -> resolveColors $ formConfig (formNumber w) 2 25 ColorAuto
+initialConfig = initialConfigOn stdout
+
+-- Generates the base settings for a given output handle.
+initialConfigOn :: Handle -> IO Config
+initialConfigOn h = termWOn h >>= \w -> resolveColorsOn h $ formConfig (formNumber w) 2 25 ColorAuto
 
 -- Replaces 'ColorAuto' with the mode supported by the current output.
 resolveColors :: Config -> IO Config
-resolveColors v = case unColorMode v of
+resolveColors = resolveColorsOn stdout
+
+-- Replaces 'ColorAuto' with the mode supported by the given handle.
+resolveColorsOn :: Handle -> Config -> IO Config
+resolveColorsOn h v = case unColorMode v of
                     ColorAuto -> do
-                        supported <- colorsSupported
+                        supported <- colorsSupportedOn h
                         return $ setColorMode (if supported then ColorAlways else ColorNever) v
                     _ -> return v
 
--- Checks whether the current output can safely receive ANSI styles.
+-- Checks whether the given output can safely receive ANSI styles.
 colorsSupported :: IO Bool
-colorsSupported = do
+colorsSupported = colorsSupportedOn stdout
+
+-- Checks whether a handle can safely receive ANSI styles.
+colorsSupportedOn :: Handle -> IO Bool
+colorsSupportedOn h = do
     noColor <- lookupEnv "NO_COLOR"
     term <- lookupEnv "TERM"
-    terminal <- hIsTerminalDevice stdout
+    terminal <- hIsTerminalDevice h
     return $ terminal
           && not (maybe False (not . null) noColor)
           && term /= Just "dumb"

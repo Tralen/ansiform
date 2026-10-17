@@ -3,8 +3,10 @@ module Ansiform.Internal.Printer where
 --------------------------------------------------------------------------------
 import           Control.Monad
 import           Data.List.Split
+import           System.IO (Handle, hPutStr, hPutStrLn, stdout)
 import           Ansiform.Internal.Content
 import           Ansiform.Internal.Number
+import           Ansiform.Internal.Output
 import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Settings
 import           Ansiform.Internal.Style
@@ -17,12 +19,9 @@ import           Ansiform.Style
 
 -- Printer Type
 --------------------------------------------------------------------------------
--- A printer is a function, from Config to IO Number, that prints on the screen.
---    It is expected that a Printer will print at least one line.
---    The Printer should return the number of lines printed as an IO Number.
---    An String is passed to identify the specific printer function used.
---    The Printer cant't show its content since it is restructured on the fly.
-newtype Printer = Printer (String, (Config -> IO Number))
+-- | A printer is a function from the output target to the number of lines printed.
+--   The printer name is used for inspection and equality.
+newtype Printer = Printer (String, (Output -> IO Number))
 
 instance Eq Printer where
     Printer (n1,_) == Printer (n2,_) = n1 == n2
@@ -35,49 +34,72 @@ instance Sample Printer where
 
 
 -- Wrapper
-formPrinter :: String -> (Config -> IO Number) -> Printer
+formPrinter :: String -> (Output -> IO Number) -> Printer
 formPrinter nm fio = Printer (nm,fio)
 
 
--- Function to execute the printer by passing the user settings.
+-- | Runs a printer on stdout with the given settings.
 runPrinter :: Settings -> Printer -> IO Number
-runPrinter s (Printer (_,fio)) = runSettings s >>= fio 
+runPrinter = runPrinterOn stdout
 
--- Equivalent to runPrinter, but with just the Config in IO.
+-- | Runs a printer on a given handle.
+runPrinterOn :: Handle -> Settings -> Printer -> IO Number
+runPrinterOn h s (Printer (_,fio)) = runSettingsOn h s >>= \cfg -> fio (formOutput h cfg)
+
+-- | Runs a printer with a configuration resolved in IO, on stdout.
 runPrinterIO :: IO Config -> Printer -> IO Number
-runPrinterIO cfg (Printer (_,fio)) = cfg >>= fio
+runPrinterIO = runPrinterIOOn stdout
 
--- Uses default settings.
+-- | Runs a printer with a configuration resolved in IO, on a given handle.
+runPrinterIOOn :: Handle -> IO Config -> Printer -> IO Number
+runPrinterIOOn h cfg (Printer (_,fio)) = cfg >>= \c -> fio (formOutput h c)
+
+-- | Runs a printer on stdout with the default settings.
 runPrinterDefault :: Printer -> IO Number
-runPrinterDefault (Printer (_,fio)) = initialConfig >>= fio
+runPrinterDefault = runPrinterDefaultOn stdout
 
--- Uses default settings, with given width and minSpace.
+-- | Runs a printer on a given handle with the default settings.
+runPrinterDefaultOn :: Handle -> Printer -> IO Number
+runPrinterDefaultOn h (Printer (_,fio)) = initialConfigOn h >>= \cfg -> fio (formOutput h cfg)
+
+-- | Runs a printer on stdout with the default settings and explicit width and spacing.
 runPrinterDefault' :: Width -> Width -> Printer -> IO Number
-runPrinterDefault' w m (Printer (_,fio)) = initialConfig >>= \dft -> fio $ setWidth w $ setMinSpace m dft
+runPrinterDefault' = runPrinterDefaultOn' stdout
+
+-- | Runs a printer on a given handle with the default settings and explicit width and spacing.
+runPrinterDefaultOn' :: Handle -> Width -> Width -> Printer -> IO Number
+runPrinterDefaultOn' h w m (Printer (_,fio)) =
+              initialConfigOn h >>= \dft -> fio (formOutput h (setWidth w $ setMinSpace m dft))
 
 
 -- Basic Printing
 --------------------------------------------------------------------------------
 
 -- Prints a number of empty lines.
-printEmpty :: Config -> Number -> IO Number
-printEmpty s n = resetStyle (colorsEnabled s) >> sequence_ (putStrLn <$> replicate (unn n) "") >> return n
+printEmpty :: Output -> Number -> IO Number
+printEmpty o n = resetStyle h (outputColors o)
+              >> sequence_ (hPutStrLn h <$> replicate (unn n) "")
+              >> return n
+  where h = outputHandle o
 
 -- Prints the end of line character.
-printEnd :: Config -> IO Number
-printEnd s = resetStyle (colorsEnabled s) >> putStr "\n" >> return 1
+printEnd :: Output -> IO Number
+printEnd o = resetStyle h (outputColors o) >> hPutStr h "\n" >> return 1
+  where h = outputHandle o
 
 -- Prints a Item with the proper visual style.
-printItem :: Config -> Item -> IO ()
-printItem s v = applyStyle (colorsEnabled s) (unItemStyle v) >> putStr (unItemText v)
+printItem :: Output -> Item -> IO ()
+printItem o v = applyStyle h (outputColors o) (unItemStyle v) >> hPutStr h (unItemText v)
+  where h = outputHandle o
 
 -- Prints each Item of a Block, with the proper visual style.
-printBlock :: Config -> Block -> IO ()
-printBlock s b = mapM_ (printItem s) (unBlock b)
+printBlock :: Output -> Block -> IO ()
+printBlock o b = mapM_ (printItem o) (unBlock b)
 
 -- Prints a Block, left aligned, with proper indentation and line ending.
-printLeft :: Config -> Offset -> Block -> IO Number
-printLeft s o b = ind o >> printBlock s b >> printEnd s
+printLeft :: Output -> Offset -> Block -> IO Number
+printLeft o off b = ind h off >> printBlock o b >> printEnd o
+  where h = outputHandle o
 
 -- Function to execute the printing functions that sums the line counts.
 printCounter :: (a -> IO Number) -> [a] -> IO Number
@@ -88,13 +110,14 @@ printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 --------------------------------------------------------------------------------
 
 -- Prints a horizontal rule with an offset on both sides.
-printRule :: Offset -> Rule -> Config -> IO Number
-printRule o r s = ind o >> printItem s (formRuleItem r (w - o*2)) >> printEnd s
-              where w = unWidth s
+printRule :: Offset -> Rule -> Output -> IO Number
+printRule o r out = ind h o >> printItem out (formRuleItem r (w - o*2)) >> printEnd out
+              where w = unWidth (outputConfig out)
+                    h = outputHandle out
 
 -- Prints a line filled with spaces with the background color given.
-printSolid :: Offset -> Color -> Config -> IO Number
-printSolid o c s = printRule o (ruleSolid c) s
+printSolid :: Offset -> Color -> Output -> IO Number
+printSolid o c out = printRule o (ruleSolid c) out
 
 
 
@@ -102,22 +125,25 @@ printSolid o c s = printRule o (ruleSolid c) s
 --------------------------------------------------------------------------------
 
 -- Prints a single Item as a line, left aligned.
-printSingleItem :: Config -> Item -> IO Number
-printSingleItem s i = printItem s i >> printEnd s
+printSingleItem :: Output -> Item -> IO Number
+printSingleItem out i = printItem out i >> printEnd out
 
 
 -- Prints a line of Blocks, left aligned.
-printLineLeft :: Offset -> [Block] -> Config -> IO Number
-printLineLeft o bs s = ind o >> mapM_ mainPrinter bs >> printEnd s
+printLineLeft :: Offset -> [Block] -> Output -> IO Number
+printLineLeft o bs out = ind h o >> mapM_ mainPrinter bs >> printEnd out
         where 
-           m = unMinSpace s
-           mainPrinter vb = printBlock s vb >> ind' m
+           m = unMinSpace (outputConfig out)
+           h = outputHandle out
+           mainPrinter vb = printBlock out vb >> ind' h m
 
 -- Prints a line of Blocks, right aligned.
-printLineRight :: Offset -> [Block] -> Config -> IO Number
-printLineRight o bs s = printLineLeft finalOffset bs s
+printLineRight :: Offset -> [Block] -> Output -> IO Number
+printLineRight o bs out = printLineLeft finalOffset bs out
        where
-          w = unWidth s ; m =  unMinSpace s ; m' = unn m
+          w = unWidth (outputConfig out)
+          m = unMinSpace (outputConfig out)
+          m' = unn m
           finalOffset = w - o - totalWidth + m
           totalWidth = formNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
@@ -126,19 +152,23 @@ printLineRight o bs s = printLineLeft finalOffset bs s
 --    the available width. Adjacent blocks are separated by at least the
 --    minimum space setting. If the content does not fit, the line overflows
 --    instead of overlapping.
-printLineCenter :: Offset -> [Block] -> Config -> IO Number
-printLineCenter _ [] s = printEnd s
-printLineCenter o [b] s = indR centered >> printBlock s b >> printEnd s
+printLineCenter :: Offset -> [Block] -> Output -> IO Number
+printLineCenter _ [] out = printEnd out
+printLineCenter o [b] out = indR h centered >> printBlock out b >> printEnd out
      where
-        w' = unn (unWidth s)
+        cfg = outputConfig out
+        h = outputHandle out
+        w' = unn (unWidth cfg)
         o' = unn o
         width = blockTextWidth b
         centered = o' + max 0 (quot (w' - o' * 2 - width) 2)
-printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd s
+printLineCenter o bs out = mapM_ printAt (zip positions bs) >> printEnd out
      where
-        w' = unn (unWidth s)
+        cfg = outputConfig out
+        h = outputHandle out
+        w' = unn (unWidth cfg)
         o' = unn o
-        m = unn (unMinSpace s)
+        m = unn (unMinSpace cfg)
         widths = fmap blockTextWidth bs
         gaps = length bs - 1
         total = sum widths + m * gaps
@@ -150,10 +180,10 @@ printLineCenter o bs s = mapM_ printAt (zip positions bs) >> printEnd s
                    | i <- [0 .. gaps - 1] ]
         positions = scanl (\x (width,gap) -> x + width + gap) o'
                           (zip widths gapsList)
-        printAt (x,b) = indR x >> printBlock s b
+        printAt (x,b) = indR h x >> printBlock out b
 
 
-type LineFunction = (Offset -> [Block] -> Config -> IO Number)
+type LineFunction = (Offset -> [Block] -> Output -> IO Number)
 
 
 -- Solid Text Printing
@@ -162,28 +192,32 @@ type LineFunction = (Offset -> [Block] -> Config -> IO Number)
 -- Prints a list of Blocks in a single line, with a solid background.
 --   The padding between background and text can be given as another offset.
 printSolidLine :: Offset -> Padding -> Color -> [Block]
-               -> LineFunction -> Config -> IO Number
-printSolidLine o p c bs f s = printSolid o c s >> cursorUp 1 >> f (o + p) bs' s
+               -> LineFunction -> Output -> IO Number
+printSolidLine o p c bs f out = printSolid o c out >> hCursorUp h 1 >> f (o + p) bs' out
           where bs' = fmap (blockSetBG c) bs
+                h = outputHandle out
 
 
 -- List Printing
 --------------------------------------------------------------------------------
 
 -- Prints a list of Blocks as a single Column, with the given offset.
-printColumn :: Config -> Offset -> [Block] -> IO Number
-printColumn s o bs = printCounter (printLeft s o) bs
+printColumn :: Output -> Offset -> [Block] -> IO Number
+printColumn out o bs = printCounter (printLeft out o) bs
 
 
 -- Prints a list of Blocks in several columns, aiming for a specified length.
 -- If the number of columns overflows the width, a larger length is tried.
-printList :: Offset -> Number -> [Block] -> Config -> IO Number
+printList :: Offset -> Number -> [Block] -> Output -> IO Number
 printList _ _ [] _ = return 0
-printList o l bs s
-     | maxCols <= 0 = printColumn s o bs
+printList o l bs out
+     | maxCols <= 0 = printColumn out o bs
      | otherwise = fmap (head' 0) . sequence $ mainPrinter (new (unn l)) bs
      where 
-        w' = unn (unWidth s); m = unMinSpace s
+        cfg = outputConfig out
+        h = outputHandle out
+        w' = unn (unWidth cfg)
+        m = unMinSpace cfg
         o' = unn o ; m' = unn m
         maxWidth = max 1 (blockTextMax bs + m')
         maxCols = quot (w' - o' * 2 - quot maxWidth 2) maxWidth
@@ -205,16 +239,16 @@ printList o l bs s
                 printListColumn (b,i)
                        | i == 0 = printCol
                        | i == length splitCols - 1 = 
-                            cursorUp newL >> printCol >>= \n -> cursorDown (newL - length b) >> return n
-                       | otherwise = cursorUp newL >> printCol
-                     where printCol = printColumn s currentOffset b
+                            hCursorUp h newL >> printCol >>= \n -> hCursorDown h (newL - length b) >> return n
+                       | otherwise = hCursorUp h newL >> printCol
+                     where printCol = printColumn out currentOffset b
                            currentOffset = formNumber (i * maxWidth + o')
 
 
 -- Version that allows to specify the number of columns.
 -- By nature of the List printer, it won't allow more columns than can fit.
-printList' :: Offset -> Number -> [Block] -> Config -> IO Number
-printList' o l bs s = printList o desiredLines bs s
+printList' :: Offset -> Number -> [Block] -> Output -> IO Number
+printList' o l bs out = printList o desiredLines bs out
           where desiredLines = formNumber $ quot (length bs) newL + 1
                 newL | l == 0 = 1
                      | otherwise = unn l
@@ -224,8 +258,8 @@ printList' o l bs s = printList o desiredLines bs s
 --------------------------------------------------------------------------------
 
 -- Prints a single Group as a column, with the given offset.
-printGroup :: Config -> Offset -> Group -> IO Number
-printGroup s o g = printColumn s o (unGroup g)
+printGroup :: Output -> Offset -> Group -> IO Number
+printGroup out o g = printColumn out o (unGroup g)
 
 
 -- Main function for printing groups and tables, used by the specialized versions.
@@ -236,10 +270,13 @@ printGroup s o g = printColumn s o (unGroup g)
 --       Bool -> Sets the alignment to be evenly spaced if True, or max per row.
 --       Bool -> Table mode: zebra background and repeating index column.
 printGroups :: Offset -> Padding -> Number -> Bool
-            -> Bool -> [Group] -> Config -> IO Number
-printGroups o p n bSpace bTable gs s = mainPrinter
+            -> Bool -> [Group] -> Output -> IO Number
+printGroups o p n bSpace bTable gs out = mainPrinter
     where
-       w = unWidth s; m = unMinSpace s
+       cfg = outputConfig out
+       h = outputHandle out
+       w = unWidth cfg
+       m = unMinSpace cfg
        w' = unn w ; m' = unn m ; n' = unn n
        offset = unn o + unn p
        finalWidth = w' - offset*2 + m'
@@ -262,7 +299,7 @@ printGroups o p n bSpace bTable gs s = mainPrinter
 
                  executePrint :: IO ()
                  executePrint
-                        | bTable = printZebraBG o rowLength s >> cursorUp rowLength
+                        | bTable = printZebraBG o rowLength out >> hCursorUp h rowLength
                                 >> printContent
                         | otherwise = printContent
                       where 
@@ -296,16 +333,16 @@ printGroups o p n bSpace bTable gs s = mainPrinter
                  printEach :: (Group,Int,Int) -> IO ()
                  printEach (g,wg,i)
                       | i + 1 == rowColumns = printGroupChangeBG
-                                           >> cursorDown (rowLength - curLength)
+                                           >> hCursorDown h (rowLength - curLength)
                                            >> printSpacing
-                      | otherwise = printGroupChangeBG >> cursorUp curLength
+                      | otherwise = printGroupChangeBG >> hCursorUp h curLength
                    where
                       printGroupChangeBG = printGroup' $ setBG g
                       colOffset = wg + offset
                       curLength = length (unGroup g)
-                      printGroup' g' = printGroup s (formNumber colOffset) g'
+                      printGroup' g' = printGroup out (formNumber colOffset) g'
                       printSpacing
-                           | lastRow = return_ | otherwise = printEmpty s 1 >> return_
+                           | lastRow = return_ | otherwise = printEmpty out 1 >> return_
 
                       setBG :: Group -> Group
                       setBG g' | bTable = formGroup' $ changeBlocks <$> zip (unGroup g') [0..]
@@ -325,20 +362,22 @@ printGroups o p n bSpace bTable gs s = mainPrinter
 --     Padding -> Padding between text and background.
 --     Bool -> Sets the Background to solid grey.
 printParagraph :: Offset -> Offset -> Padding -> Bool
-                       -> Paragraph -> Config -> IO Number
-printParagraph o o1 p bZebra vbs s = printCounter printEachBlock 
+                       -> Paragraph -> Output -> IO Number
+printParagraph o o1 p bZebra vbs out = printCounter printEachBlock 
                                          $ blockPublish (w' - offset' * 2) (unn o1) vbs
     where
-      w = unWidth s; w' = unn w
+      cfg = outputConfig out
+      h = outputHandle out
+      w = unWidth cfg; w' = unn w
       offset' = unn o + unn p
       offset = formNumber offset'
       printEachBlock vb
-           | bZebra = printSolid o black s
-                   >> cursorUp 1 
+           | bZebra = printSolid o black out
+                   >> hCursorUp h 1 
                    >> printLeft' (blockSetBG black blockPretty)
            | otherwise = printLeft' blockPretty
         where
-          printLeft' vb' = printLeft s offset vb'
+          printLeft' vb' = printLeft out offset vb'
           blockPretty = blockPrettify vb
 
 
@@ -350,27 +389,27 @@ printParagraph o o1 p bZebra vbs s = printCounter printEachBlock
 --     Bool -> Controls background alternation.
 --     Function -> Predicate to test which paragraphs should have solid background.
 printSequence :: Offset -> Offset -> Padding -> Bool -> (Int -> Bool)
-             -> [Paragraph] -> Config -> IO Number
-printSequence o o1 p bZebra fInt vbss s = printCounter printEach (zip vbss [0..])
+             -> [Paragraph] -> Output -> IO Number
+printSequence o o1 p bZebra fInt vbss out = printCounter printEach (zip vbss [0..])
     where 
       printEach (vbs,i)
           | i == length vbss - 1 = printParagraph' predZebra
           | otherwise = printParagraph' predZebra >>= \n -> printSeparation >>= \n' -> return (n+n')
         where 
           predZebra = bZebra && fInt i
-          printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs s
+          printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs out
           printSeparation
-              | predZebra = printSolid o black s
-              | otherwise = printEmpty s 1  
+              | predZebra = printSolid o black out
+              | otherwise = printEmpty out 1  
 
 
 -- Background Printing
 --------------------------------------------------------------------------------
 -- Prints a series of alternating lines, black and grey, for usage with tables.
 --   The offset and number of lines are given as parameters.
-printZebraBG :: Offset -> Int -> Config -> IO ()
-printZebraBG o n s = sequence_ $ take n $ cycle [printEmpty s 1, printSolid o black s]
+printZebraBG :: Offset -> Int -> Output -> IO ()
+printZebraBG o n out = sequence_ $ take n $ cycle [printEmpty out 1, printSolid o black out]
 
 -- Prints a solid background of several lines of the same color.
-printSolidBG :: Offset -> Int -> Color -> Config -> IO ()
-printSolidBG o n vc s = replicateM_ n (printSolid o vc s)
+printSolidBG :: Offset -> Int -> Color -> Output -> IO ()
+printSolidBG o n vc out = replicateM_ n (printSolid o vc out)

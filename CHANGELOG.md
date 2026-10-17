@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.2.0 -- 2026-10-17
+* Added handle-aware runners: startOn, drawOn, redrawOn, amendOn, replaceOn and their variants.
+* Added runPrinterOn, runPrinterDefaultOn and runPrinterDefaultOn' for writing to a specific handle.
+* Added Ansiform.Render with renderPage, renderSection and renderPrinter.
+* Added docs/render.md and expanded the demo article for the Article screen.
+
 ### 0.7.1.0 -- 2026-10-17
 * Added Ansiform.Input with withImmediateInput and readKey, making single-key interaction the standard library pattern.
 * Updated the demo to use the shared input API and restore terminal state automatically.

@@ -11,7 +11,14 @@ runPrinterDefault :: Printer -> IO Number
 
 -- Run with the default settings and an explicit width and minimum space.
 runPrinterDefault' :: Width -> Width -> Printer -> IO Number
+
+-- Write to a specific handle instead of stdout.
+runPrinterOn :: Handle -> Settings -> Printer -> IO Number
+runPrinterDefaultOn :: Handle -> Printer -> IO Number
+runPrinterDefaultOn' :: Handle -> Width -> Width -> Printer -> IO Number
 ```
+
+The `On` variants are the base implementations; the others write to stdout. `renderPrinter` from `Ansiform.Render` captures the output in a `String`.
 
 ## Arguments
 
