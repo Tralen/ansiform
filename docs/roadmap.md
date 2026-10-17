@@ -18,11 +18,11 @@ No pending publication-quality items.
 
 ### Text and Seq
 
-Deliberately deferred. CLI content is small, and `String`/lists keep the API simple. Revisit only if large documents or incremental sequences become a requirement.
+Deliberately deferred. CLI content is small, and `String`/lists keep the API simple. Revisit only if large documents or incremental sequences become a requirement. See [Design notes](design-notes.md) for the original rationale.
 
 ### Monadic Printer and Section interface
 
-Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
+Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears. See [Design notes](design-notes.md) and [Architecture](architecture.md) for the rationale.
 
 ## Implemented
 

@@ -95,7 +95,7 @@ cabal run ansiform-demo
 - [Render](docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](docs/settings.md): width, spacing and group overflow configuration.
 - [Demo](docs/demo.md): what the executable showcases.
-- [Design notes](docs/design-notes.md): original project notes and their current status.
+- [Design notes](docs/design-notes.md): original project notes and historical context.
 - [Naming](docs/naming.md): name rationale and disambiguation.
 - [Releasing](docs/releasing.md): Hackage and GitHub publication checklist.
 - [Roadmap](docs/roadmap.md): prioritized feature suggestions.
