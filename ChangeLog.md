@@ -7,6 +7,7 @@
 ### 0.7.8.2 -- 2026-10-17
 * Changed the Groups shortcut for the philosopher prompt from E to C.
 * Added a blank line below the prompt and removed the choose shortcut from the prompt page.
+* Removed the local secrets file path from the release guide and repository history.
 
 ### 0.7.8.1 -- 2026-10-17
 * Merged the Groups prompt message and input line into a single footer line.
