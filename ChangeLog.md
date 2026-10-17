@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.8.2 -- 2026-10-17
+* Changed the Groups shortcut for the philosopher prompt from E to C.
+* Added a blank line below the prompt and removed the choose shortcut from the prompt page.
+
 ### 0.7.8.1 -- 2026-10-17
 * Merged the Groups prompt message and input line into a single footer line.
 

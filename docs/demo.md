@@ -17,15 +17,14 @@ The header and footer are shared components; only the body changes between scree
 | `T` | Simple table with right-aligned numeric columns and truncated composer names. |
 | `H` | Rich table with light box borders and independently styled cells. |
 | `A` | Article with styled paragraph fragments. |
-| `C` | Showcase of the composite content builders. |
-| `E` | On the Groups screen, prompts for a philosopher number on a line inside the footer. |
+| `C` | Content builders, or on the Groups screen, prompts for a philosopher number. |
 | `B` | Back. From a philosopher article, returns to Groups; elsewhere, returns to the menu. |
 | `R` | Redraw the current screen. |
 | `X` | Exit. |
 
 The menu lists each shortcut next to its option, and the footer shows the same keys. On the main menu, the footer commands are split into two rows so longer labels do not crowd. Press a key directly; the screen changes immediately, with no prompt and no Enter. The demo restores the terminal settings when it exits. When stdin is not a terminal, for example with piped input, line breaks are ignored and each character is handled as a key.
 
-On the Groups screen, the colored numbers 06 (Cicero) and 14 (Locke) identify selectable entries. The footer adds `E Choose`, which asks for a number on a single prompt line inside the footer; the command keys stay below it and nothing is printed below the footer. Type any philosopher number from 01 to 15 and press Enter. The demo draws the prompt page, uses `readLineAt` to type in place, then restores the immediate settings before opening the article. The article footer uses `B`/`R`/`X`, and `B` returns to the Groups screen, where `E` still works and another philosopher can be chosen.
+On the Groups screen, the colored numbers 06 (Cicero) and 14 (Locke) identify selectable entries. The footer adds `C Choose`, which asks for a number on a single prompt line inside the footer. A blank line follows the prompt, then the `B`/`R`/`X` commands, and nothing is printed below the footer. Type any philosopher number from 01 to 15 and press Enter. The demo draws the prompt page, uses `readLineAt` to type in place, then restores the immediate settings before opening the article. The article footer uses `B`/`R`/`X`, and `B` returns to the Groups screen, where `C` still works and another philosopher can be chosen.
 
 ## Source
 

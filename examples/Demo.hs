@@ -15,7 +15,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.8.1"
+demoVersion = "0.7.8.2"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -44,10 +44,9 @@ loop screen state = do
     Just 't' -> open Tables state
     Just 'h' -> open Rich state
     Just 'a' -> open Article state
-    Just 'c' -> open Blocks state
-    Just 'e' -> case screen of
+    Just 'c' -> case screen of
                   Groups -> choosePhilosopher state
-                  _ -> loop screen state
+                  _ -> open Blocks state
     Just 'r' -> do state' <- redraw state
                    loop screen state'
     Just 'b' -> open (backScreen screen) state
@@ -110,8 +109,9 @@ footer message commandLines = sectionBodyRule 1 ruleFooter
 -- Footer with a single prompt line above the command keys.
 footerPrompt :: String -> [[Block]] -> Section
 footerPrompt message commandLines = sectionBodyRule 1 ruleFooter
-  ( [ printerLeft promptOffset (blockSimple message (themeFooter demoTheme)) ]
-    ++ fmap (printerLineCenter 4) commandLines )
+  ( [ printerLeft promptOffset (blockSimple message (themeFooter demoTheme))
+    , printerEmpty 1
+    ] ++ fmap (printerLineCenter 4) commandLines )
 
 promptOffset :: Offset
 promptOffset = 2
@@ -124,10 +124,10 @@ promptInputColumn :: Offset
 promptInputColumn = formNumber (unNumber promptOffset + textWidth promptMessage)
 
 -- Lines between the prompt row and the cursor after the page is drawn:
--- the command rows, the footer trailing blank line, the bottom rule and
--- the cursor row that follows it.
+-- the blank line below the prompt, the command rows, the footer trailing
+-- blank line, the bottom rule and the cursor row that follows it.
 promptRowsUp :: Number
-promptRowsUp = formNumber (length groupsCommands + 3)
+promptRowsUp = formNumber (length pageCommands + 4)
 
 ruleHeader, ruleBody, ruleFooter, ruleBottom :: Rule
 ruleHeader = rule '=' (themeRule demoTheme)
@@ -156,9 +156,9 @@ screenBody GroupsPrompt = screenBody Groups
 
 screenFooter :: Screen -> Section
 screenFooter Menu = footer "Choose an option above: " menuCommands
-screenFooter Groups = footer "Press E to choose a philosopher by number." groupsCommands
+screenFooter Groups = footer "Press C to choose a philosopher by number." groupsCommands
 screenFooter GroupsPrompt =
-  footerPrompt promptMessage groupsCommands
+  footerPrompt promptMessage pageCommands
 screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
 menuCommands, pageCommands, groupsCommands :: [[Block]]
@@ -179,7 +179,7 @@ pageCommands =
   ]
 
 groupsCommands =
-  [ [ blockMenuStyle "E" "Choose" (themeAccent demoTheme)
+  [ [ blockMenuStyle "C" "Choose" (themeAccent demoTheme)
     , blockMenuStyle "B" "Back" (themeAccent demoTheme)
     , blockMenuStyle "R" "Reload" (themeAccent demoTheme) ]
   , [ blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
