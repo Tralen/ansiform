@@ -6,28 +6,29 @@ The package ships with an interactive gallery:
 cabal run vis-demo
 ```
 
-Press Enter at each prompt to advance. The demo keeps the same header and
-footer components across screens and changes only the body, which is the
-pattern recommended for applications built with Vis.
+The header and footer are shared components; only the body changes between
+screens. The footer always lists the keys accepted by the current screen.
 
-## Sequence
+## Keys
 
-1. **Menu page.** A column of marked menu items.
-2. **Rich table.** The body section is amended in place with a table whose
-   cells use independent styles.
-3. **Footer update.** The footer section is amended with a different command
-   line.
-4. **Redraw.** The current page is redrawn without changing its content.
-5. **List page.** A list of composers flows into multiple columns.
-6. **Groups page.** Three groups are spaced across the available width.
-7. **Simple table page.** A table built with `tableSimple`, reusing the header
-   styles for each column.
-8. **Article page.** Styled paragraph fragments wrap at the terminal width.
-9. **Replace.** The article body is replaced with a showcase of the composite
-   block builders, preserving the header and reprinting the rest.
+| Key | Action |
+| --- | --- |
+| `L` | List of composers, flowing into columns. |
+| `G` | Groups of philosophers, spaced across the width. |
+| `T` | Simple table, reusing the header styles for each column. |
+| `H` | Rich table, with independently styled cells. |
+| `A` | Article with styled paragraph fragments. |
+| `C` | Showcase of the composite content builders. |
+| `B` | Back to the main menu. |
+| `R` | Redraw the current screen. |
+| `X` | Exit. |
+
+The menu marks the shortcut letter of each option. A `vis-demo>` prompt appears
+below the page; type a key or a command word and press Enter.
 
 ## Source
 
-The executable lives in `examples/Demo.hs`. It uses only the public API and
-defines its version in `demoVersion`, next to the package version in
+The executable lives in `examples/Demo.hs`. It uses only the public API, defines
+its version in `demoVersion`, and keeps a small `Screen` data type to select
+the body for each page. The version follows the package version in
 `vis.cabal`.

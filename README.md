@@ -8,7 +8,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes
 those values to the terminal and keeps track of how many lines were printed,
 so a page can be amended, replaced or redrawn in place.
 
-Current version: **0.3.0**.
+Current version: **0.3.1**.
 
 ## Features
 
@@ -56,7 +56,9 @@ cabal test
 cabal run vis-demo
 ```
 
-`vis-demo` is an interactive gallery. Press Enter to advance through the pages.
+`vis-demo` is an interactive gallery. Use the keys shown in the footer to open
+list, group, table and article screens; `B` returns to the menu, `R` redraws
+the current screen and `X` exits.
 
 ## Documentation
 

@@ -1,6 +1,6 @@
 cabal-version:       2.0
 name:                vis
-version:             0.3.0
+version:             0.3.1
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.

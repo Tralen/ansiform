@@ -2,6 +2,11 @@
 
 ## Functional Versions
 
+### 0.3.1 -- 2026-10-17
+* Removed the extra solid bar from the demo header, which covered part of the second line.
+* Made the demo footer shortcuts functional with an interactive screen loop.
+* Documented the decision to defer the Text and Seq migrations.
+
 ### 0.3.0 -- 2026-10-17
 * Revival release: removed Example and internal modules from the public Vis module.
 * Added public Vis.Number and Vis.Sample modules.

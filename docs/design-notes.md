@@ -29,10 +29,14 @@ necessário, elaborar o erro para passá-lo para os níveis superiores.
 
 ## Current status
 
-- **Text**: content still uses `String`; the migration to `Text` remains future
-  work.
-- **Seq**: content still uses lists; the migration to `Seq` remains future
-  work.
+- **Text**: deliberately deferred. CLI content is small, `String` keeps the
+  public API simple, and the library only needs a handful of small
+  dependencies. Revisit only if large documents or Unicode-heavy processing
+  become a requirement; prefer a separate `Text`-based API over a breaking
+  change to the core.
+- **Seq**: deliberately deferred for the same reason. Lists are adequate for
+  the size of menus, tables and articles, and they keep the types simple.
+  Revisit only if incremental or very large sequences become a requirement.
 - **Printer**: `VisPrinter` is still a specialized configuration reader. The
   public API hides the function behind pure builders, so callers do not depend
   on the representation.

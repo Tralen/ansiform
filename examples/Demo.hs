@@ -5,6 +5,8 @@
 --   > cabal run vis-demo
 module Main where
 
+import           Data.Char (toLower)
+import           System.IO (hFlush, isEOF, stdout)
 import           Vis
 
 --------------------------------------------------------------------------------
@@ -13,35 +15,47 @@ import           Vis
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.3.0"
+demoVersion = "0.3.1"
+
+-- The demo is a small screen machine.
+data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
+  deriving (Eq, Show)
 
 main :: IO ()
 main = do
-  state <- start menuPage demoSettings
-  _ <- pause
-  state' <- amend richTableBody 1 state
-  _ <- pause
-  state'' <- amend richTableFooter 2 state'
-  _ <- pause
-  state''' <- redraw state''
-  _ <- pause
-  state4 <- draw listPage state'''
-  _ <- pause
-  state5 <- draw groupsPage state4
-  _ <- pause
-  state6 <- draw tablesPage state5
-  _ <- pause
-  state7 <- draw articlePage state6
-  _ <- pause
-  _ <- replace blocksBody 1 state7
-  _ <- pause
-  putStrLn "Vis demo finished."
+  state <- start (screenPage Menu) demoSettings
+  loop Menu state
+
+loop :: Screen -> VisState -> IO ()
+loop screen state = do
+  putStr "\nvis-demo> "
+  hFlush stdout
+  eof <- isEOF
+  if eof
+    then putStrLn "\nVis demo finished."
+    else do
+      line <- getLine
+      case take 1 (map toLower line) of
+        "l" -> open List state
+        "g" -> open Groups state
+        "t" -> open Tables state
+        "h" -> open Rich state
+        "a" -> open Article state
+        "c" -> open Blocks state
+        "r" -> do state' <- redraw state
+                  loop screen state'
+        "b" -> do state' <- draw (screenPage Menu) state
+                  loop Menu state'
+        "x" -> putStrLn "Vis demo finished."
+        _   -> do putStrLn "Unknown option. Use one of the keys shown in the footer."
+                  loop screen state
+  where
+    open next st = do
+      st' <- draw (screenPage next) st
+      loop next st'
 
 demoSettings :: VisSettings
 demoSettings = settings [minSpace 2]
-
-pause :: IO String
-pause = putStrLn "\nPress Enter to continue..." >> getLine
 
 --------------------------------------------------------------------------------
 -- Reusable components
@@ -57,7 +71,6 @@ header = sectionTopRule 1 ruleHeader
   [ printerSolidLineCenter 0 1 blue
       [ blockSimple "Vis" (bold white')
       , blockSimple demoVersion (bold white') ]
-  , printerSolid' 8 blue
   , printerLineCenter 4
       [ blockSimple "CLI UI Library" (bold yellow)
       , blockSimple "Gallery" themeMuted
@@ -81,22 +94,58 @@ ruleFooter = rule ':' (bold black')
 ruleBottom = ruleDefault (bold black')
 
 --------------------------------------------------------------------------------
--- Pages
+-- Screens
 --------------------------------------------------------------------------------
 
-menuPage, listPage, groupsPage, tablesPage, articlePage :: VisPage
-menuPage = page [header, menuBody, menuFooter, bottom]
-listPage = page [header, listBody, listFooter, bottom]
-groupsPage = page [header, groupsBody, groupsFooter, bottom]
-tablesPage = page [header, tablesBody, tablesFooter, bottom]
-articlePage = page [header, articleBody, articleFooter, bottom]
+screenPage :: Screen -> VisPage
+screenPage screen = page [header, screenBody screen, screenFooter screen, bottom]
 
-menuBody, listBody, groupsBody, tablesBody, articleBody, blocksBody :: VisSection
-menuBody = sectionBodyRule 1 ruleBody [printerColumn 8 menuBlocks]
-listBody = sectionBodyRule 1 ruleBody [printerList 8 6 composers]
-groupsBody = sectionBodyRule 1 ruleBody [printerGroups' 4 groups]
-tablesBody = sectionBodyRule 1 ruleBody [printerTable' 4 1 simpleTable]
-articleBody = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
+screenBody :: Screen -> VisSection
+screenBody Menu = sectionBodyRule 1 ruleBody [printerColumn 8 menuBlocks]
+screenBody List = sectionBodyRule 1 ruleBody [printerList 8 6 composers]
+screenBody Groups = sectionBodyRule 1 ruleBody [printerGroups' 4 groups]
+screenBody Tables = sectionBodyRule 1 ruleBody [printerTable' 4 1 simpleTable]
+screenBody Rich = sectionBodyRule 1 ruleBody [printerTable 8 1 richTable]
+screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
+screenBody Blocks = blocksBody
+
+screenFooter :: Screen -> VisSection
+screenFooter Menu = footer "Choose an option above: " menuCommands
+screenFooter _ = footer "Press B to go back or R to reload." pageCommands
+
+menuCommands, pageCommands :: [VisBlock]
+menuCommands =
+  [ blockMenu "L" "List" cyan
+  , blockMenu "G" "Groups" cyan
+  , blockMenu "T" "Tables" cyan
+  , blockMenu "H" "Rich table" cyan
+  , blockMenu "A" "Article" cyan
+  , blockMenu "C" "Content builders" cyan
+  , blockMenu "X" "Exit" red
+  ]
+
+pageCommands =
+  [ blockMenu "B" "Back" cyan
+  , blockMenu "R" "Reload" cyan
+  , blockMenu "X" "Exit" red
+  ]
+
+--------------------------------------------------------------------------------
+-- Menu and content
+--------------------------------------------------------------------------------
+
+menuBlocks :: [VisBlock]
+menuBlocks =
+  [ blockMarked 'L' "List composers" themeAccent
+  , blockMarked 'G' "Group philosophers" themeAccent
+  , blockMarked 'T' "Tabulate composers" themeAccent
+  , blockMarked 'H' "RicH flight table" themeAccent
+  , blockMarked 'A' "Article about Vis" themeAccent
+  , blockMarked 'C' "Content builders" themeAccent
+  , blockMarked 'X' "Exit" themeDanger
+  ]
+
+blocksBody :: VisSection
 blocksBody = sectionBodyRule 1 ruleBody
   [ printerItem (item "A single VisItem" (solid cyan))
   , printerEmpty 1
@@ -116,42 +165,6 @@ blocksBody = sectionBodyRule 1 ruleBody
   , printerCenter 4 (blockSimple "center aligned line" (normal yellow))
   , printerRight 4 (blockSimple "right aligned line" (normal cyan))
   ]
-
-menuFooter, listFooter, groupsFooter, tablesFooter, articleFooter :: VisSection
-menuFooter = footer "Choose an option above: " commands
-listFooter = footer "Lists flow into multiple columns: " commands'
-groupsFooter = footer "Groups share the available width: " commands
-tablesFooter = footer "Simple tables reuse the header styles: " commands'
-articleFooter = footer "Paragraphs flow and wrap automatically: " commands
-
-richTableBody, richTableFooter :: VisSection
-richTableBody = sectionBodyRule 1 ruleBody [printerTable 8 1 richTable]
-richTableFooter = footer "Rich tables style every cell independently: " commands'
-
---------------------------------------------------------------------------------
--- Blocks
---------------------------------------------------------------------------------
-
-menuBlocks :: [VisBlock]
-menuBlocks =
-  [ blockMarked 'I' "Introduction" themeAccent
-  , blockMarked 'H' "History" themeAccent
-  , blockMarked 'G' "Geography" themeAccent
-  , blockMarked 'P' "Philosophy" themeAccent
-  , blockMarked 'L' "Linguistics" themeAccent
-  , blockMarked 'C' "Culture" themeAccent
-  , blockMarked 'f' "Configuration" themeDanger
-  ]
-
-commands, commands' :: [VisBlock]
-commands =
-  [ blockMenu "S" "Search" cyan
-  , blockMenu "D" "Display" cyan
-  , blockMenu "R" "Reload" cyan
-  , blockMenu "X" "Exit" red
-  ]
-
-commands' = take 3 commands ++ [blockMenu "G" "Generate" cyan] ++ drop 3 commands
 
 composers :: [VisBlock]
 composers =
