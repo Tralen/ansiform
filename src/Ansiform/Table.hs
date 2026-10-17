@@ -1,6 +1,7 @@
 -- | Per-column alignment and truncation for tables.
 module Ansiform.Table
     ( Align(..)
+    , Borders(..)
     , Ellipsis(..)
     , ColumnSpec(..)
     , TableFormat

@@ -5,13 +5,13 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.4.0.
+- Version: 0.7.5.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, CHANGELOG and LICENSE.
 - Haddock builds. Function-level documentation coverage is still being improved.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
-- GitHub remote: not configured yet.
-- `source-repository`, `homepage` and `bug-reports` are not set because the repository URL is not known yet.
+- GitHub remote: `origin` points to https://github.com/Tralen/ansiform.git. The repository is private for now.
+- `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 
 ## Credentials
 
@@ -24,29 +24,28 @@ Load the private secrets file in the shell that runs the release commands, and c
 
 ## Before the first release
 
-1. Create the GitHub repository.
-2. Add the remote:
+1. Confirm access to the GitHub repository and decide when it becomes public.
+2. Verify the remote:
 
    ```sh
-   git remote add origin https://github.com/<user>/ansiform.git
+   git remote -v
    git push -u origin master
    ```
 
-3. Add the repository metadata to `ansiform.cabal`:
+3. The repository metadata is already set in `ansiform.cabal`:
 
    ```cabal
-   homepage:       https://github.com/<user>/ansiform
-   bug-reports:    https://github.com/<user>/ansiform/issues
+   homepage:       https://github.com/Tralen/ansiform
+   bug-reports:    https://github.com/Tralen/ansiform/issues
    source-repository head
      type:     git
-     location: https://github.com/<user>/ansiform.git
+     location: https://github.com/Tralen/ansiform.git
    ```
 
    The `source-repository` section removes the `no-repository` warning from `cabal check`.
 
-4. Optionally remove the old `.hg` directory if the project is now Git-only.
-5. Check the package name on Hackage again. Names are only guaranteed at upload time.
-6. Run the local checks:
+4. Check the package name on Hackage again. Names are only guaranteed at upload time.
+5. Run the local checks:
 
    ```sh
    cabal build all
@@ -56,7 +55,7 @@ Load the private secrets file in the shell that runs the release commands, and c
    cabal sdist
    ```
 
-7. Inspect the source distribution:
+6. Inspect the source distribution:
 
    ```sh
    tar -tzf dist-newstyle/sdist/ansiform-<version>.tar.gz

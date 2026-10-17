@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.7.4.0
+version:             0.7.5.0
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -10,6 +10,8 @@ author:              Tunai Raiol
 maintainer:          tunairaiol@yahoo.co.uk
 copyright:           2018-2026 Tunai Raiol
 category:            User Interfaces
+homepage:            https://github.com/Tralen/ansiform
+bug-reports:         https://github.com/Tralen/ansiform/issues
 tested-with:         GHC == 9.14.1
 extra-doc-files:     CHANGELOG.md
                      README.md
@@ -96,3 +98,7 @@ test-suite ansiform-test
   hs-source-dirs:      test
   build-depends:       ansiform
                      , directory
+
+source-repository head
+  type:                git
+  location:            https://github.com/Tralen/ansiform.git

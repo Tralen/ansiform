@@ -14,7 +14,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.4.0"
+demoVersion = "0.7.5.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -43,8 +43,7 @@ loop screen state = do
     Just 'x' -> finish
     Just '\n' -> loop screen state
     Just ' ' -> loop screen state
-    Just _   -> do putStrLn "Unknown option. Use one of the keys shown in the footer."
-                   loop screen state
+    Just _   -> loop screen state
   where
     open next st = do
       st' <- draw (screenPage next) st
@@ -100,7 +99,7 @@ screenBody Menu = sectionBodyRule 1 ruleBody [printerColumn 8 menuBlocks]
 screenBody List = sectionBodyRule 1 ruleBody [printerList 8 6 composers]
 screenBody Groups = sectionBodyRule 1 ruleBody [printerGroups' 4 groups]
 screenBody Tables = sectionBodyRule 1 ruleBody [printerTableFormat' demoTablesFormat 4 1 simpleTable]
-screenBody Rich = sectionBodyRule 1 ruleBody [printerTable 8 1 richTable]
+screenBody Rich = sectionBodyRule 1 ruleBody [printerTableBordered BordersLight defaultTableFormat 8 0 richTable]
 screenBody Article = sectionBodyRule 1 ruleBody [printerArticle 2 0 article]
 screenBody Blocks = blocksBody
 

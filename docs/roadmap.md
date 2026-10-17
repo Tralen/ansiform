@@ -8,9 +8,7 @@ No pending high-value items.
 
 ## Medium value
 
-### Table borders
-
-Add optional box-drawing borders around tables and groups. This is mostly a rendering feature and should not complicate the content model.
+No pending medium-value items.
 
 ## Publication quality
 
@@ -33,6 +31,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Table borders
+
+Released in 0.7.5.0. `Borders` selects ASCII, light, heavy or double box characters, and the `printerTableBordered` and `printerGroupsBordered` families draw full borders around tables and groups. See [Table formatting](table-format.md).
 
 ### Theme record
 

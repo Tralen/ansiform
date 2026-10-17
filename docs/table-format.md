@@ -60,6 +60,35 @@ screen = sectionBodyRule 1 (rule ':' (bold black'))
 
 In this example the first column is capped at 12 columns, the second is left-aligned, and the last two, usually numbers, are right-aligned.
 
+## Borders
+
+```haskell
+data Borders = BordersNone | BordersAscii | BordersLight | BordersHeavy | BordersDouble
+```
+
+`BordersNone` is the default when no border-specific printer is used. The other constructors select ASCII, light, heavy or double box-drawing characters.
+
+```haskell
+printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableBordered' :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+
+printerTableBorderedLimited :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableBorderedLimited' :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+```
+
+The primed variants space columns evenly. The `Limited` variants stop after a number of rows. The padding is applied inside each cell, between the cell content and the vertical border.
+
+For groups, use the corresponding family:
+
+```haskell
+printerGroupsBordered :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBordered' :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
+printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
+```
+
+Bordered tables and groups do not split into column bands; they overflow when they are wider than the terminal. They also do not apply the zebra background, leaving the border and cell styles explicit.
+
 ## Truncation
 
 A cell longer than `columnMaxWidth` is cut at the display width. If the ellipsis is a character and it fits, it is appended to the truncated cell. Truncation preserves the style of the last kept item.

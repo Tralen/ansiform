@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.5.0 -- 2026-10-17
+* Added Borders with ASCII, light, heavy and double styles.
+* Added the printerTableBordered and printerGroupsBordered families.
+* Added the GitHub repository metadata and configured the origin remote.
+* The demo Rich screen now uses a light bordered table and unknown keys are ignored without a message.
+
 ### 0.7.4.0 -- 2026-10-17
 * Added Ansiform.Theme with Theme and defaultTheme.
 * Added blockMenuStyle for menu keys that use a Style instead of a Color.

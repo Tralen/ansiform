@@ -107,6 +107,16 @@ main = do
         out <- renderPrinter (printerTableFormat fmt 0 0 tbl)
                              (settings [width 20, neverColors])
         return $ " ab " `isInfixOf` out
+    , testIO "Bordered table draws a box" $ do
+        let tbl = tableSimple
+              [ blockSimple "A" styleDefault
+              , blockSimple "B" styleDefault ]
+              styleDefault
+              [ ["x", "y"] ]
+        out <- renderPrinter
+          (printerTableBordered BordersLight defaultTableFormat 0 0 tbl)
+          (settings [width 40, neverColors])
+        return $ all (`isInfixOf` out) ["┌", "│", "└", "x", "y"]
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])

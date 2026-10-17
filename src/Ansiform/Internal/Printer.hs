@@ -2,7 +2,7 @@ module Ansiform.Internal.Printer where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
-import           Data.List (zipWith4)
+import           Data.List (transpose, zipWith4)
 import           Data.List.Split
 import           System.IO (Handle, hPutStr, hPutStrLn, stdout)
 import           Ansiform.Internal.Content
@@ -364,6 +364,82 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
                                      changeBlocks (b,ib)
                                        | even ib = b
                                        | otherwise = blockSetBG black b
+
+
+-- Bordered Groups & Tables
+--------------------------------------------------------------------------------
+
+-- Prints groups or tables inside a box border.
+--   The table does not split into column bands; it overflows when it does not fit.
+printBorderedGroups :: Borders -> TableFormat -> Offset -> Padding -> Number
+                    -> Bool -> [Group] -> Output -> IO Number
+printBorderedGroups brd fmt o p n bSpace gs out
+    | null gs = return 0
+    | otherwise = case borderChars brd of
+        Nothing -> printGroups fmt o p n bSpace False gs out
+        Just bc -> printBordered bc
+  where
+    h = outputHandle out
+    p' = unn p
+    specs = fmap (columnSpecAt fmt) [0 .. length gs - 1]
+    cappedWidths = zipWith cappedWidth specs gs
+    maxWidth = maximum' 0 cappedWidths
+    contentWidths = if bSpace then replicate (length gs) maxWidth else cappedWidths
+    cellWidths = fmap (+ (2 * p')) contentWidths
+    rows = transpose (fmap unGroup gs)
+    n' = unn n
+    limitedRows = if n' == 0 then rows else take n' rows
+
+    printBordered bc = do
+        top <- printHorizontal (borderTopLeft bc) (borderTopMid bc) (borderTopRight bc)
+        bodyCount <- printRows
+        bottom <- printHorizontal (borderBottomLeft bc) (borderBottomMid bc) (borderBottomRight bc)
+        return (top + bodyCount + bottom)
+      where
+        printRows = go limitedRows
+          where
+            go [] = return 0
+            go (row:rest) = do
+                printRow row
+                sep <- if null rest
+                         then return 0
+                         else printHorizontal (borderMidLeft bc) (borderMidMid bc) (borderMidRight bc)
+                restCount <- go rest
+                return (1 + sep + restCount)
+
+        printRow row = do
+            indR h (unn o)
+            resetStyle h (outputColors out)
+            hPutStr h [borderLeft bc]
+            printCells 0 (zip contentWidths row)
+            hPutStr h "\n"
+          where
+            printCells _ [] = return ()
+            printCells i ((w,cell):rest) = do
+                let spec = columnSpecAt fmt i
+                    aligned = formatBlock spec (formNumber w) cell
+                    padded = padBlock (formNumber (w + 2 * p')) AlignCenter aligned
+                printBlock out padded
+                resetStyle h (outputColors out)
+                if null rest
+                  then hPutStr h [borderRight bc]
+                  else hPutStr h [borderVertical bc]
+                printCells (i + 1) rest
+
+        printHorizontal first middle lastChar = do
+            indR h (unn o)
+            resetStyle h (outputColors out)
+            hPutStr h (borderLine first middle lastChar cellWidths (borderHorizontal bc))
+            hPutStr h "\n"
+            return 1
+
+-- Builds one horizontal line of a box border.
+borderLine :: Char -> Char -> Char -> [Int] -> Char -> String
+borderLine first middle lastChar widths horizontal = case widths of
+    [] -> [first, lastChar]
+    _ -> first : concat
+        [ replicate w horizontal ++ [if i == length widths - 1 then lastChar else middle]
+        | (i,w) <- zip [0 :: Int ..] widths ]
 
 
 -- Text Printing

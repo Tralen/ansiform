@@ -16,6 +16,27 @@ import           Ansiform.Internal.Width
 data Align = AlignLeft | AlignCenter | AlignRight
              deriving (Eq, Show)
 
+-- | Box-drawing style for tables and groups.
+data Borders = BordersNone | BordersAscii | BordersLight | BordersHeavy | BordersDouble
+               deriving (Eq, Show)
+
+-- | Characters used to draw one border style.
+data BorderChars = BorderChars
+    { borderTopLeft :: Char
+    , borderTopMid :: Char
+    , borderTopRight :: Char
+    , borderLeft :: Char
+    , borderRight :: Char
+    , borderMidLeft :: Char
+    , borderMidMid :: Char
+    , borderMidRight :: Char
+    , borderBottomLeft :: Char
+    , borderBottomMid :: Char
+    , borderBottomRight :: Char
+    , borderHorizontal :: Char
+    , borderVertical :: Char
+    }
+
 -- | Marker appended when a cell is truncated.
 data Ellipsis = EllipsisNone | EllipsisChar Char
                 deriving (Eq, Show)
@@ -32,6 +53,9 @@ newtype TableFormat = TableFormat [ColumnSpec]
                       deriving (Eq, Show)
 
 instance Sample Align where
+    sampleShow _ = show
+
+instance Sample Borders where
     sampleShow _ = show
 
 instance Sample Ellipsis where
@@ -54,6 +78,39 @@ defaultColumnSpec = ColumnSpec AlignLeft Nothing EllipsisNone
 -- | Empty format; every column uses 'defaultColumnSpec'.
 defaultTableFormat :: TableFormat
 defaultTableFormat = TableFormat []
+
+-- Returns the characters for a border style.
+borderChars :: Borders -> Maybe BorderChars
+borderChars b = case b of
+    BordersNone -> Nothing
+    BordersAscii -> Just BorderChars
+        { borderTopLeft = '+', borderTopMid = '+', borderTopRight = '+'
+        , borderLeft = '|', borderRight = '|'
+        , borderMidLeft = '+', borderMidMid = '+', borderMidRight = '+'
+        , borderBottomLeft = '+', borderBottomMid = '+', borderBottomRight = '+'
+        , borderHorizontal = '-', borderVertical = '|'
+        }
+    BordersLight -> Just BorderChars
+        { borderTopLeft = '┌', borderTopMid = '┬', borderTopRight = '┐'
+        , borderLeft = '│', borderRight = '│'
+        , borderMidLeft = '├', borderMidMid = '┼', borderMidRight = '┤'
+        , borderBottomLeft = '└', borderBottomMid = '┴', borderBottomRight = '┘'
+        , borderHorizontal = '─', borderVertical = '│'
+        }
+    BordersHeavy -> Just BorderChars
+        { borderTopLeft = '┏', borderTopMid = '┳', borderTopRight = '┓'
+        , borderLeft = '┃', borderRight = '┃'
+        , borderMidLeft = '┣', borderMidMid = '╋', borderMidRight = '┫'
+        , borderBottomLeft = '┗', borderBottomMid = '┻', borderBottomRight = '┛'
+        , borderHorizontal = '━', borderVertical = '┃'
+        }
+    BordersDouble -> Just BorderChars
+        { borderTopLeft = '╔', borderTopMid = '╦', borderTopRight = '╗'
+        , borderLeft = '║', borderRight = '║'
+        , borderMidLeft = '╠', borderMidMid = '╬', borderMidRight = '╣'
+        , borderBottomLeft = '╚', borderBottomMid = '╩', borderBottomRight = '╝'
+        , borderHorizontal = '═', borderVertical = '║'
+        }
 
 formTableFormat :: [ColumnSpec] -> TableFormat
 formTableFormat = TableFormat

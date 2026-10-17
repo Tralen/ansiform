@@ -13,7 +13,7 @@ import           Ansiform.Internal.Content
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Output (outputConfig)
 import           Ansiform.Internal.Printer as Internal
-import           Ansiform.Internal.Table (TableFormat, defaultTableFormat)
+import           Ansiform.Internal.Table (Borders, TableFormat, defaultTableFormat)
 import           Ansiform.Content
 import           Ansiform.Style
 
@@ -142,6 +142,26 @@ printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s -> 
               printGroups defaultTableFormat o 0 r False False (groupAverage (outputConfig s) gs) s
 
+-- | Printer for a list of Groups inside box borders, with minimum spaced columns.
+printerGroupsBordered :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBordered brd o p gs = formPrinter "GroupsBordered" $ \s ->
+              printBorderedGroups brd defaultTableFormat o p 0 False gs s
+
+-- | Printer for a list of Groups inside box borders, with evenly spaced columns.
+printerGroupsBordered' :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBordered' brd o p gs = formPrinter "GroupsBordered'" $ \s ->
+              printBorderedGroups brd defaultTableFormat o p 0 True gs s
+
+-- | Printer for Groups inside box borders, limiting the number of rows.
+printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
+printerGroupsBorderedLimited brd o p r gs = formPrinter "GroupsBorderedLimited" $ \s ->
+              printBorderedGroups brd defaultTableFormat o p r False gs s
+
+-- | Printer for evenly spaced Groups inside box borders, limiting the number of rows.
+printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
+printerGroupsBorderedLimited' brd o p r gs = formPrinter "GroupsBorderedLimited'" $ \s ->
+              printBorderedGroups brd defaultTableFormat o p r True gs s
+
 
 -- Table Printing
 --------------------------------------------------------------------------------
@@ -185,6 +205,26 @@ printerTableLimitedFormat fmt o p r mt = formPrinter "TableLimitedFormat" $ \s -
 printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat' fmt o p r mt = formPrinter "TableLimitedFormat'" $ \s ->
                  printGroups fmt o p r True True (unMaybeTable mt) s
+
+-- | Prints a bordered Table with minimum spaced columns.
+printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableBordered brd fmt o p mt = formPrinter "TableBordered" $ \s ->
+                 printBorderedGroups brd fmt o p 0 False (unMaybeTable mt) s
+
+-- | Prints a bordered Table with evenly spaced columns.
+printerTableBordered' :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableBordered' brd fmt o p mt = formPrinter "TableBordered'" $ \s ->
+                 printBorderedGroups brd fmt o p 0 True (unMaybeTable mt) s
+
+-- | Prints a bordered Table limiting the number of rows, with minimum spaced columns.
+printerTableBorderedLimited :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableBorderedLimited brd fmt o p r mt = formPrinter "TableBorderedLimited" $ \s ->
+                 printBorderedGroups brd fmt o p r False (unMaybeTable mt) s
+
+-- | Prints a bordered Table limiting the number of rows, with evenly spaced columns.
+printerTableBorderedLimited' :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableBorderedLimited' brd fmt o p r mt = formPrinter "TableBorderedLimited'" $ \s ->
+                 printBorderedGroups brd fmt o p r True (unMaybeTable mt) s
 
 
 -- Text Printing

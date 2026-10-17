@@ -99,12 +99,18 @@ printerGroups :: Offset -> [Group] -> Printer
 printerGroups' :: Offset -> [Group] -> Printer
 printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
+
+printerGroupsBordered :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBordered' :: Borders -> Offset -> Padding -> [Group] -> Printer
+printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
+printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 ```
 
 - `printerGroup` prints one group as a column.
 - `printerGroups` spaces the groups evenly.
 - `printerGroups'` gives each group the minimum width it needs.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
+- The `Bordered` variants draw a box around the groups. They do not split columns into bands and do not apply a background. See [Table formatting](table-format.md).
 
 Groups that exceed the configured overflow ratio are split into extra rows by the layout engine.
 
@@ -120,12 +126,18 @@ printerTableFormat :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableFormat' :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableLimitedFormat :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+
+printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableBordered' :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
+printerTableBorderedLimited :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
+printerTableBorderedLimited' :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 ```
 
 - `printerTable` uses minimum column spacing and a zebra background.
 - `printerTable'` spaces the columns evenly.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
 - The `Format` variants apply per-column alignment, maximum widths and truncation. See [Table formatting](table-format.md).
+- The `Bordered` variants draw a box around the table with ASCII, light, heavy or double characters. They do not split columns into bands and do not apply the zebra background.
 - A `Nothing` table is treated as an empty group, so invalid input still produces a well-defined (empty) result instead of an exception.
 
 ## Paragraphs and articles
