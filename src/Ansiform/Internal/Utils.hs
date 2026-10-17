@@ -1,4 +1,4 @@
-module Vis.Internal.Utils where
+module Ansiform.Internal.Utils where
 
 --------------------------------------------------------------------------------
 import qualified Data.List as List

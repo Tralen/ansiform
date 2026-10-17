@@ -1,6 +1,6 @@
 # Architecture
 
-Vis separates the description of a screen from the act of drawing it.
+Ansiform separates the description of a screen from the act of drawing it.
 
 ## Module layout
 
@@ -8,18 +8,18 @@ The public modules are thin, documented facades over internal modules.
 
 | Public module | Responsibility | Internal module |
 | --- | --- | --- |
-| `Vis` | Umbrella re-export of the whole public API. | n/a |
-| `Vis.Content` | Items, blocks, groups, tables and their builders. | `Vis.Internal.Content` |
-| `Vis.Style` | Colors, formats and styles. | `Vis.Internal.Style` |
-| `Vis.Number` | Non-negative numbers used for sizes. | `Vis.Internal.Number` |
-| `Vis.Printer` | Printer builders. | `Vis.Internal.Printer` |
-| `Vis.Section` | Section builders. | `Vis.Internal.Section` |
-| `Vis.Page` | Page builders. | `Vis.Internal.Page` |
-| `Vis.Settings` | Settings and configuration modifiers. | `Vis.Internal.Settings` |
-| `Vis.Sample` | Inspection helpers for debugging. | `Vis.Internal.Sample` |
-| `Vis.Draw` | Drawing and state lifecycle. | `Vis.Internal.State`, `Vis.Internal.Terminal` |
+| `Ansiform` | Umbrella re-export of the whole public API. | n/a |
+| `Ansiform.Content` | Items, blocks, groups, tables and their builders. | `Ansiform.Internal.Content` |
+| `Ansiform.Style` | Colors, formats and styles. | `Ansiform.Internal.Style` |
+| `Ansiform.Number` | Non-negative numbers used for sizes. | `Ansiform.Internal.Number` |
+| `Ansiform.Printer` | Printer builders. | `Ansiform.Internal.Printer` |
+| `Ansiform.Section` | Section builders. | `Ansiform.Internal.Section` |
+| `Ansiform.Page` | Page builders. | `Ansiform.Internal.Page` |
+| `Ansiform.Settings` | Settings and configuration modifiers. | `Ansiform.Internal.Settings` |
+| `Ansiform.Sample` | Inspection helpers for debugging. | `Ansiform.Internal.Sample` |
+| `Ansiform.Draw` | Drawing and state lifecycle. | `Ansiform.Internal.State`, `Ansiform.Internal.Terminal` |
 
-The `Vis.Internal.*` modules are implementation details. They are not exposed by the package and may change without a major version bump.
+The `Ansiform.Internal.*` modules are implementation details. They are not exposed by the package and may change without a major version bump.
 
 ## Layering
 
@@ -63,7 +63,7 @@ No public function throws an exception for malformed input. Layout functions are
 
 ## Versioning
 
-The package follows the Haskell Package Versioning Policy (PVP). The version lives in `vis.cabal` and is recorded in `ChangeLog.md`.
+The package follows the Haskell Package Versioning Policy (PVP). The version lives in `ansiform.cabal` and is recorded in `ChangeLog.md`.
 
 - Patch: fixes and small refinements.
 - Minor: new user-facing features or screens.

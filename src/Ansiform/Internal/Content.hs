@@ -1,15 +1,15 @@
-module Vis.Internal.Content where
+module Ansiform.Internal.Content where
 
 --------------------------------------------------------------------------------
 import           Data.Char
 import           Data.List
 import           Data.List.Split
 import           Data.Maybe
-import           Vis.Internal.Number
-import           Vis.Internal.Sample
-import           Vis.Internal.Settings
-import           Vis.Internal.Style
-import           Vis.Internal.Utils
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Sample
+import           Ansiform.Internal.Settings
+import           Ansiform.Internal.Style
+import           Ansiform.Internal.Utils
 
 
 

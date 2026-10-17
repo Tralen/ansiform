@@ -1,7 +1,7 @@
-module Vis.Internal.Number where
+module Ansiform.Internal.Number where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Sample
+import           Ansiform.Internal.Sample
 
 
 

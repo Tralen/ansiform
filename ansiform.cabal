@@ -1,14 +1,14 @@
 cabal-version:       3.0
-name:                vis
-version:             0.3.5
+name:                ansiform
+version:             0.4.0
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
-license:             GPL-3.0-only
+license:             MIT
 license-file:        LICENSE
 author:              Tunai Raiol
 maintainer:          tunairaiol@yahoo.co.uk
-copyright:           All rights reserved
+copyright:           2018-2026 Tunai Raiol
 category:            User Interfaces
 tested-with:         GHC == 9.14.1
 extra-doc-files:     ChangeLog.md
@@ -32,29 +32,29 @@ common shared
 library
   import:              shared
 
-  exposed-modules:     Vis
-                     , Vis.Content
-                     , Vis.Draw
-                     , Vis.Number
-                     , Vis.Page
-                     , Vis.Printer
-                     , Vis.Sample
-                     , Vis.Section
-                     , Vis.Settings
-                     , Vis.Style
+  exposed-modules:     Ansiform
+                     , Ansiform.Content
+                     , Ansiform.Draw
+                     , Ansiform.Number
+                     , Ansiform.Page
+                     , Ansiform.Printer
+                     , Ansiform.Sample
+                     , Ansiform.Section
+                     , Ansiform.Settings
+                     , Ansiform.Style
 
-  other-modules:       Vis.Internal
-                     , Vis.Internal.Content
-                     , Vis.Internal.Number
-                     , Vis.Internal.Page
-                     , Vis.Internal.Printer
-                     , Vis.Internal.Sample
-                     , Vis.Internal.Section
-                     , Vis.Internal.Settings
-                     , Vis.Internal.State
-                     , Vis.Internal.Style
-                     , Vis.Internal.Terminal
-                     , Vis.Internal.Utils
+  other-modules:       Ansiform.Internal
+                     , Ansiform.Internal.Content
+                     , Ansiform.Internal.Number
+                     , Ansiform.Internal.Page
+                     , Ansiform.Internal.Printer
+                     , Ansiform.Internal.Sample
+                     , Ansiform.Internal.Section
+                     , Ansiform.Internal.Settings
+                     , Ansiform.Internal.State
+                     , Ansiform.Internal.Style
+                     , Ansiform.Internal.Terminal
+                     , Ansiform.Internal.Utils
 
   build-depends:       ansi-terminal >= 0.8 && < 1.2
                      , terminal-size >= 0.3 && < 0.4
@@ -63,17 +63,17 @@ library
 
   hs-source-dirs:      src
 
-executable vis-demo
+executable ansiform-demo
   import:              shared
 
   main-is:             Demo.hs
   hs-source-dirs:      examples
-  build-depends:       vis
+  build-depends:       ansiform
 
-test-suite vis-test
+test-suite ansiform-test
   import:              shared
 
   type:                exitcode-stdio-1.0
   main-is:             Spec.hs
   hs-source-dirs:      test
-  build-depends:       vis
+  build-depends:       ansiform

@@ -1,12 +1,12 @@
-module Vis.Internal.Terminal 
-                    ( module Vis.Internal.Terminal
+module Ansiform.Internal.Terminal 
+                    ( module Ansiform.Internal.Terminal
                     , ANSI.cursorUp, ANSI.cursorDown
                     ) where
            
 --------------------------------------------------------------------------------
 import           System.Console.ANSI as ANSI
 import           System.Console.Terminal.Size
-import           Vis.Internal.Number
+import           Ansiform.Internal.Number
 
 
 -- Indentation

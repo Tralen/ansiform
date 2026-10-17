@@ -1,8 +1,8 @@
--- | Interactive gallery for the Vis library.
+-- | Interactive gallery for the Ansiform library.
 --
 --   Run with:
 --
---   > cabal run vis-demo
+--   > cabal run ansiform-demo
 module Main where
 
 import           Control.Exception (bracket_)
@@ -11,7 +11,7 @@ import           Data.Char (toLower)
 import           System.IO (BufferMode(..), hGetBuffering, hGetEcho,
                             hIsTerminalDevice, hSetBuffering, hSetEcho,
                             isEOF, stdin)
-import           Vis
+import           Ansiform
 
 --------------------------------------------------------------------------------
 -- Application
@@ -19,7 +19,7 @@ import           Vis
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.3.5"
+demoVersion = "0.4.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -67,7 +67,7 @@ loop screen state = do
     open next st = do
       st' <- draw (screenPage next) st
       loop next st'
-    finish = putStrLn "\nVis demo finished."
+    finish = putStrLn "\nAnsiform demo finished."
 
 demoSettings :: VisSettings
 demoSettings = settings [minSpace 2]
@@ -86,7 +86,7 @@ themeDanger = red'
 header :: VisSection
 header = sectionTopRule 1 ruleHeader
   [ printerSolidLineCenter 0 1 blue
-      [ blockSimple "Vis" (bold white')
+      [ blockSimple "Ansiform" (bold white')
       , blockSimple demoVersion (bold white') ]
   , printerEmpty 1
   , printerLineCenter 4
@@ -157,7 +157,7 @@ menuBlocks =
   , blockMenu "G" "Group philosophers" cyan
   , blockMenu "T" "Tabulate composers" cyan
   , blockMenu "H" "Rich flight table" cyan
-  , blockMenu "A" "Article about Vis" cyan
+  , blockMenu "A" "Article about Ansiform" cyan
   , blockMenu "C" "Content builders" cyan
   , blockMenu "X" "Exit" themeDanger
   ]
@@ -304,7 +304,7 @@ article = [paragraph1, paragraph2]
 
 paragraph1, paragraph2 :: VisParagraph
 paragraph1 =
-  [ blockSimple "Vis " textBold
+  [ blockSimple "Ansiform " textBold
   , blockSimple "is a formatting DSL for command line interfaces. " textRegular
   , blockSimple "Builders are pure, " textItalic
   , blockSimple "pages are immutable, " textUnderline

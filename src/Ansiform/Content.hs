@@ -1,4 +1,4 @@
-module Vis.Content ( module Vis.Content
+module Ansiform.Content ( module Ansiform.Content
                    , Internal.VisItem, Internal.VisBlock, Internal.VisRule
                    , Internal.VisGroup, Internal.VisTable
                    , Internal.VisParagraph, Internal.VisArticle
@@ -6,8 +6,8 @@ module Vis.Content ( module Vis.Content
 
 --------------------------------------------------------------------------------
 import           Data.List
-import           Vis.Internal.Content as Internal
-import           Vis.Style
+import           Ansiform.Internal.Content as Internal
+import           Ansiform.Style
 
 
 -- Basic builders

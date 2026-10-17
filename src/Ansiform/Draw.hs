@@ -1,17 +1,17 @@
-module Vis.Draw ( start, draw, redraw
+module Ansiform.Draw ( start, draw, redraw
                 , amend, amend'
                 , replace, replace'
                 , VisState
                 ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number
-import           Vis.Internal.Page
-import           Vis.Internal.Section
-import           Vis.Internal.Settings
-import           Vis.Internal.State
-import           Vis.Internal.Terminal
-import           Vis.Page
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Page
+import           Ansiform.Internal.Section
+import           Ansiform.Internal.Settings
+import           Ansiform.Internal.State
+import           Ansiform.Internal.Terminal
+import           Ansiform.Page
 
 
 -- Drawing Functions

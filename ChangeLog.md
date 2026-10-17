@@ -1,6 +1,14 @@
-# Revision history for Vis
+# Revision history for Ansiform
+
+> Formerly Vis. The 0.4.0 release renames the package and the module namespace.
 
 ## Functional Versions
+
+### 0.4.0 -- 2026-10-17
+* Renamed the package to ansiform and the module namespace to Ansiform.
+* Changed the license from GPL-3.0-only to MIT.
+* Updated the README, docs, demo and tests for the new name.
+* Kept the Vis* type names for now; removing the prefix is future work.
 
 ### 0.3.5 -- 2026-10-17
 * Modernized the Cabal setup to cabal-version 3.0.

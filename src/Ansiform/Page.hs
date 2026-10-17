@@ -1,11 +1,11 @@
-module Vis.Page ( module Vis.Page, Internal.VisPage, Internal.runPage
+module Ansiform.Page ( module Ansiform.Page, Internal.VisPage, Internal.runPage
                 , Internal.runPageDefault, Internal.runPageDefault'
                 ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Page as Internal
-import           Vis.Internal.Number
-import           Vis.Internal.Section
+import           Ansiform.Internal.Page as Internal
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Section
 
 -- Page Builders
 --------------------------------------------------------------------------------

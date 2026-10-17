@@ -47,4 +47,4 @@ Because settings are resolved at draw time, the same page can be drawn at differ
 
 ## Terminal detection
 
-When no width is given, `Vis` asks the terminal for its size and falls back to `80` columns when the size is unavailable (for example, when output is redirected). The terminal height is available internally, but the current layout engine only depends on the width.
+When no width is given, `Ansiform` asks the terminal for its size and falls back to `80` columns when the size is unavailable (for example, when output is redirected). The terminal height is available internally, but the current layout engine only depends on the width.

@@ -1,10 +1,10 @@
-module Vis.Internal.Settings where
+module Ansiform.Internal.Settings where
 
 --------------------------------------------------------------------------------
 import qualified Data.List as List
-import           Vis.Internal.Number
-import           Vis.Internal.Sample
-import           Vis.Internal.Terminal
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Sample
+import           Ansiform.Internal.Terminal
 
 
 -- Config type

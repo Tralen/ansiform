@@ -1,4 +1,4 @@
-module Vis.Internal.Sample where
+module Ansiform.Internal.Sample where
 
 --------------------------------------------------------------------------------
 

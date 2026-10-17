@@ -1,5 +1,5 @@
-module Vis.Internal.Style 
-                    ( module Vis.Internal.Style
+module Ansiform.Internal.Style 
+                    ( module Ansiform.Internal.Style
                     , ANSI.Color(..), ANSI.ColorIntensity(..)
                     , ANSI.ConsoleIntensity(..), ANSI.Underlining(..)
                     , ANSI.cursorUp, ANSI.cursorDown
@@ -8,7 +8,7 @@ module Vis.Internal.Style
 --------------------------------------------------------------------------------
 import           Control.Monad.IO.Class
 import           System.Console.ANSI as ANSI
-import           Vis.Internal.Sample
+import           Ansiform.Internal.Sample
 --------------------------------------------------------------------------------
 
 {-
@@ -142,7 +142,7 @@ visZero = vis VisZero
 vis0 :: IO ()
 vis0 = visZero
 
--- Constructs the final list of SGR instructions for Vis.
+-- Constructs the final list of SGR instructions for Ansiform.
 visBuilder ::  VisStyle -> [SGR]
 visBuilder s = case s of
                    VisZero -> []

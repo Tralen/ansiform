@@ -34,7 +34,7 @@ Use `block` when different parts of the same block need different styles:
 
 ```haskell
 mixed :: VisBlock
-mixed = block [ item "Vis" (bold cyan)
+mixed = block [ item "Ansiform" (bold cyan)
               , item " is " styleDefault
               , item "pure" (bold green) ]
 ```
@@ -160,7 +160,7 @@ A `VisParagraph` is a list of blocks that are wrapped as one continuous paragrap
 ```haskell
 paragraph :: VisParagraph
 paragraph =
-  [ blockSimple "Vis " textBold
+  [ blockSimple "Ansiform " textBold
   , blockSimple "wraps styled fragments without losing their formatting."
       textRegular
   ]

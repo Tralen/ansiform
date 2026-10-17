@@ -1,43 +1,40 @@
 # Naming
 
-The package is currently named `vis`, and the public modules live under the `Vis` namespace.
+The package is named `ansiform`, and the public modules live under the `Ansiform` namespace.
 
-## Current situation
+## Origin
+
+`ansiform` was suggested by the assistant as a portmanteau of ANSI and form/format. It is not an established term. A Hackage check found no package named `ansiform` or `Ansiform`, so the name appears to be available.
+
+## Why the project was renamed
+
+The project was formerly named `vis`. That name caused two kinds of confusion:
 
 - Hackage already has a package named `Vis` (capital V): Painless 3D graphics, a fork of not-gloss.
-- The exact lowercase `vis` is not currently listed on Hackage, but names that differ only in case are a poor idea for discoverability.
-- The JavaScript ecosystem also has `vis-network` and its predecessor `vis.js`, libraries for graph and network visualization.
+- The JavaScript ecosystem has `vis-network` and its predecessor `vis.js`, libraries for graph and network visualization.
 
-The name is therefore risky for a public release, even though the Haskell package name and the JavaScript package name live in different ecosystems.
+The exact lowercase `vis` was not listed on Hackage, but names that differ only in case are a poor idea for discoverability. The rename avoids the case-only distinction and gives the library a distinctive identity.
 
-## Recommendation
+## What changed
 
-If the library is only used locally, the current name is acceptable. If it is going to be published on Hackage, rename it before the first release. The package name and the module namespace change together, so renaming later would be a breaking change for users.
+- The package name changed from `vis` to `ansiform`.
+- The module namespace changed from `Vis` to `Ansiform`.
+- Imports in the demo, tests and user code changed from `import Vis` to `import Ansiform`.
+- The demo executable is now `ansiform-demo` and the test suite is `ansiform-test`.
+- The license changed from GPL-3.0-only to MIT.
 
-## ansiform
+There is no compatibility module named `Vis`. The rename is a breaking change for users of the old package.
 
-`ansiform` was suggested by the assistant as a portmanteau of ANSI and form/format. It is not an established term. A Hackage check found no package named `ansiform` or `Ansiform`, so it appears to be available.
+## Type names
 
-Advantages:
+The public types still carry the `Vis` prefix: `VisItem`, `VisBlock`, `VisPrinter`, `VisPage`, `VisSection`, `VisNumber`, `VisStyle`, `VisColor`, `VisSettings`, `VisConfig`, `VisState`, `VisSample` and so on.
 
-- It describes the domain: ANSI terminal formatting.
-- It is distinctive and unlikely to collide with the JavaScript visualization ecosystem or the Hackage `Vis` 3D graphics package.
-- It avoids the case-only distinction between `vis` and `Vis`.
+Dropping the prefix is future work. It is a separate breaking change and does not need to happen together with the package rename. Keeping the type names for now preserves some continuity and avoids an unnecessarily large migration.
 
-The rename would affect:
+## Remaining names to avoid confusion
 
-- the package name (`vis` to `ansiform`);
-- the module namespace (`Vis` to `Ansiform`);
-- imports in the demo, tests and user code;
-- documentation, links and the ChangeLog.
-
-Because the API is otherwise unchanged, the rename can be done as a single major release. It is best done before publishing.
+The old name remains in the ChangeLog and in the type prefix. The README and this document explain that `ansiform` is unrelated to the Hackage `Vis` package and to `vis-network`.
 
 ## Other candidates
 
-If `ansiform` is not preferred, other distinctive options to evaluate include `vis-cli`, `vis-term`, `ansiterm` and `termiform`. `vis-cli` and `vis-term` still contain "vis" and are less distinctive than `ansiform`.
-
-## What was already done
-
-- The README carries a note distinguishing this library from `vis-network` and the Hackage `Vis` package.
-- This document records the rationale and the options.
+If `ansiform` is not preferred in the future, other distinctive options include `vis-cli`, `vis-term`, `ansiterm` and `termiform`. `vis-cli` and `vis-term` still contain "vis" and are less distinctive than `ansiform`.

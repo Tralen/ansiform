@@ -1,5 +1,5 @@
 -- | Non-negative numbers used for widths, offsets and padding.
-module Vis.Number ( VisNumber
+module Ansiform.Number ( VisNumber
                   , VisWidth
                   , VisPadding
                   , VisOffset
@@ -8,7 +8,7 @@ module Vis.Number ( VisNumber
                   ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number hiding (visNumber, unNumber)
+import           Ansiform.Internal.Number hiding (visNumber, unNumber)
 
 
 -- | Builds a 'VisNumber', capping negative values at zero.

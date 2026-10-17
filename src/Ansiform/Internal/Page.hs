@@ -1,10 +1,10 @@
-module Vis.Internal.Page where
+module Ansiform.Internal.Page where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number
-import           Vis.Internal.Sample
-import           Vis.Internal.Section
-import           Vis.Internal.Settings
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Sample
+import           Ansiform.Internal.Section
+import           Ansiform.Internal.Settings
 
 
 -- Page Type

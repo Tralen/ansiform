@@ -1,12 +1,12 @@
-module Vis.Internal.Section where
+module Ansiform.Internal.Section where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
-import           Vis.Internal.Number
-import           Vis.Internal.Printer
-import           Vis.Internal.Sample
-import           Vis.Internal.Settings
-import           Vis.Printer
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Printer
+import           Ansiform.Internal.Sample
+import           Ansiform.Internal.Settings
+import           Ansiform.Printer
 
 
 -- Section Type

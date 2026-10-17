@@ -1,9 +1,9 @@
-module Vis.Internal.State where
+module Ansiform.Internal.State where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number
-import           Vis.Internal.Page
-import           Vis.Internal.Settings
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Page
+import           Ansiform.Internal.Settings
 
 
 -- State Type

@@ -1,15 +1,15 @@
-module Vis.Printer ( module Vis.Printer 
+module Ansiform.Printer ( module Ansiform.Printer 
                    , Internal.VisPrinter, Internal.runPrinter
                    , Internal.runPrinterDefault
                    , Internal.runPrinterDefault'
                    ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Content
-import           Vis.Internal.Number
-import           Vis.Internal.Printer as Internal
-import           Vis.Content
-import           Vis.Style
+import           Ansiform.Internal.Content
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Printer as Internal
+import           Ansiform.Content
+import           Ansiform.Style
 
 
 -- Basic Printing

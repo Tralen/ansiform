@@ -1,13 +1,13 @@
-module Vis.Section ( module Vis.Section
+module Ansiform.Section ( module Ansiform.Section
                    , Internal.VisSection, Internal.runSection
                    , Internal.runSectionDefault, Internal.runSectionDefault'
                    ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number
-import           Vis.Internal.Section as Internal
-import           Vis.Content
-import           Vis.Printer
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Section as Internal
+import           Ansiform.Content
+import           Ansiform.Printer
 
 
 -- Section Builders

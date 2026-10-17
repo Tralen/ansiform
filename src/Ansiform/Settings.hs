@@ -1,12 +1,12 @@
-module Vis.Settings (module Vis.Settings
+module Ansiform.Settings (module Ansiform.Settings
                     , Internal.VisConfig
                     , Internal.VisSettings
                     ) where
 
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Number
-import           Vis.Internal.Settings as Internal
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Settings as Internal
 
 
 -- Default Settings

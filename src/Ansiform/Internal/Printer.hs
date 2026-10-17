@@ -1,17 +1,17 @@
-module Vis.Internal.Printer where
+module Ansiform.Internal.Printer where
 
 --------------------------------------------------------------------------------
 import           Control.Monad
 import           Data.List.Split
-import           Vis.Internal.Content
-import           Vis.Internal.Number
-import           Vis.Internal.Sample
-import           Vis.Internal.Settings
-import           Vis.Internal.Style
-import           Vis.Internal.Terminal
-import           Vis.Internal.Utils
-import           Vis.Content
-import           Vis.Style
+import           Ansiform.Internal.Content
+import           Ansiform.Internal.Number
+import           Ansiform.Internal.Sample
+import           Ansiform.Internal.Settings
+import           Ansiform.Internal.Style
+import           Ansiform.Internal.Terminal
+import           Ansiform.Internal.Utils
+import           Ansiform.Content
+import           Ansiform.Style
 
 
 

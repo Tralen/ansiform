@@ -1,12 +1,12 @@
-# Vis
+# Ansiform
 
-Vis is a small Haskell library for building visual command line interfaces. It provides a declarative format DSL for styled text, rules, aligned lines, lists, groups, tables, paragraphs and multi-section pages.
+Ansiform is a small Haskell library for building visual command line interfaces. It provides a declarative format DSL for styled text, rules, aligned lines, lists, groups, tables, paragraphs and multi-section pages.
 
 Builders are pure and produce immutable values. A thin drawing layer writes those values to the terminal and keeps track of how many lines were printed, so a page can be amended, replaced or redrawn in place.
 
-> **Name note:** Vis is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package `Vis` (3D graphics). See [Naming](docs/naming.md).
+> **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.3.5**.
+Current version: **0.4.0**.
 
 ## Features
 
@@ -24,7 +24,7 @@ Current version: **0.3.5**.
 ```haskell
 module Main where
 
-import Vis
+import Ansiform
 
 main :: IO ()
 main = do
@@ -51,10 +51,10 @@ body = sectionBodyRule 1 (rule ':' (bold black'))
 ```sh
 cabal build
 cabal test
-cabal run vis-demo
+cabal run ansiform-demo
 ```
 
-`vis-demo` is an interactive gallery. Press the keys shown in the footer; the screen changes immediately, without a prompt or Enter. `B` returns to the menu, `R` redraws the current screen and `X` exits.
+`ansiform-demo` is an interactive gallery. Press the keys shown in the footer; the screen changes immediately, without a prompt or Enter. `B` returns to the menu, `R` redraws the current screen and `X` exits.
 
 ## Documentation
 
@@ -79,4 +79,4 @@ cabal run vis-demo
 
 ## License
 
-GPL-3. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

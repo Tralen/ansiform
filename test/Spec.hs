@@ -5,7 +5,7 @@ import           Control.Monad (unless)
 import           Data.List (isInfixOf)
 import           Data.Maybe (isJust, isNothing)
 import           System.Exit (exitFailure)
-import           Vis
+import           Ansiform
 
 main :: IO ()
 main = do

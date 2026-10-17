@@ -3,7 +3,7 @@
 The package ships with an interactive gallery:
 
 ```sh
-cabal run vis-demo
+cabal run ansiform-demo
 ```
 
 The header and footer are shared components; only the body changes between screens. The footer always lists the keys accepted by the current screen.
@@ -26,4 +26,4 @@ The menu lists each shortcut next to its option, and the footer shows the same k
 
 ## Source
 
-The executable lives in `examples/Demo.hs`. It uses only the public API, defines its version in `demoVersion`, and keeps a small `Screen` data type to select the body for each page. The version follows the package version in `vis.cabal`.
+The executable lives in `examples/Demo.hs`. It uses only the public API, defines its version in `demoVersion`, and keeps a small `Screen` data type to select the body for each page. The version follows the package version in `ansiform.cabal`.

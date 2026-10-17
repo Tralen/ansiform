@@ -1,9 +1,9 @@
-module Vis.Style ( module Vis.Style
+module Ansiform.Style ( module Ansiform.Style
                  , Internal.VisColor, Internal.VisFormat, Internal.VisStyle
                  ) where
 
 --------------------------------------------------------------------------------
-import           Vis.Internal.Style as Internal
+import           Ansiform.Internal.Style as Internal
 
 
 -- Colors
