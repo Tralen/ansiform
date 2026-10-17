@@ -4,9 +4,9 @@ Vis is a small Haskell library for building visual command line interfaces. It p
 
 Builders are pure and produce immutable values. A thin drawing layer writes those values to the terminal and keeps track of how many lines were printed, so a page can be amended, replaced or redrawn in place.
 
-> **Name note:** Vis is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library. See [Naming](docs/naming.md).
+> **Name note:** Vis is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package `Vis` (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.3.4**.
+Current version: **0.3.5**.
 
 ## Features
 

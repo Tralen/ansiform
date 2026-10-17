@@ -2,6 +2,12 @@
 
 ## Functional Versions
 
+### 0.3.5 -- 2026-10-17
+* Modernized the Cabal setup to cabal-version 3.0.
+* Added a common stanza and a cabal.project file.
+* Removed the obsolete Setup.hs and switched to the SPDX license identifier.
+* Documented the existing Hackage Vis package and recommended ansiform for publication.
+
 ### 0.3.4 -- 2026-10-17
 * Documented the name rationale and its relationship to vis-network.js.
 * Added a disambiguation note to the README.
