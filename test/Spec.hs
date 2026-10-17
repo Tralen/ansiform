@@ -52,7 +52,8 @@ main = do
          in "01" `isInfixOf` out && "Item" `isInfixOf` out)
     , test "Default theme provides accent and danger styles"
         (themeAccent defaultTheme == bold cyan
-          && themeDanger defaultTheme == bold red')
+          && themeDanger defaultTheme == bold red'
+          && themeFooter defaultTheme == italic white)
     , test "Theme record update changes a style"
         (themeAccent (defaultTheme { themeAccent = bold magenta }) == bold magenta)
     , test "Page amendment replaces the selected section"

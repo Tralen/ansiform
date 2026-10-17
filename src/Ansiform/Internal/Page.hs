@@ -11,7 +11,7 @@ import           Ansiform.Internal.Settings
 -- Page Type
 --------------------------------------------------------------------------------
 
--- A Page is just a list of Sections.
+-- | An ordered list of sections.
 newtype Page = Page [Section]
                 deriving (Eq,Show)
 
@@ -31,6 +31,7 @@ unPage (Page ss) = ss
 -- Page Runners
 --------------------------------------------------------------------------------
 -- Functions to print the page with the user settings.
+-- | Runs a page on stdout with the given settings.
 runPage :: Settings -> Page -> IO [Number]
 runPage = runPageOn stdout
 
@@ -47,6 +48,7 @@ runPageIOOn :: Handle -> IO Config -> Page -> IO [Number]
 runPageIOOn h cfg = mapM (runSectionIOOn h cfg) . unPage
 
 -- Uses default settings.
+-- | Runs a page on stdout with the default settings.
 runPageDefault :: Page -> IO [Number]
 runPageDefault = runPageDefaultOn stdout
 
@@ -55,6 +57,7 @@ runPageDefaultOn :: Handle -> Page -> IO [Number]
 runPageDefaultOn h = mapM (runSectionDefaultOn h) . unPage
 
 -- Uses default settings, with given width and minSpace.
+-- | Runs a page on stdout with default settings and explicit width and spacing.
 runPageDefault' :: Number -> Number -> Page -> IO [Number]
 runPageDefault' = runPageDefaultOn' stdout
 

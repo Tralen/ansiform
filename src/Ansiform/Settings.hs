@@ -14,24 +14,31 @@ import           Ansiform.Internal.Settings as Internal
 -- Default Settings
 --------------------------------------------------------------------------------
 
+-- | Builds settings from a list of configuration modifiers.
 settings :: [Config -> Config] -> Settings
 settings = formSettings
 
+-- | The settings that use only the terminal defaults.
 defaultSettings :: Settings
 defaultSettings = formSettings []
 
 
 -- Configuration modifiers
 --------------------------------------------------------------------------------
+
+-- | Overrides the detected terminal width.
 width :: Width -> Config -> Config
 width = setWidth
 
+-- | Sets the minimum space between adjacent blocks and columns.
 minSpace :: Width -> Config -> Config
 minSpace = setMinSpace
 
+-- | Sets the percentage by which a group may exceed the average width.
 groupOverflow :: Number -> Config -> Config
 groupOverflow = setGroupOverflow
 
+-- | Alias for 'groupOverflow'.
 overflow :: Number -> Config -> Config
 overflow = setGroupOverflow
 
@@ -50,5 +57,3 @@ alwaysColors = colorMode ColorAlways
 -- | Disables ANSI styling unconditionally.
 neverColors :: Config -> Config
 neverColors = colorMode ColorNever
-
-

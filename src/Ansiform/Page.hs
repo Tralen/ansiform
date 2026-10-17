@@ -11,26 +11,17 @@ import           Ansiform.Internal.Section
 -- Page Builders
 --------------------------------------------------------------------------------
 
--- Simplest page builder.
+-- | Builds a page from a list of sections.
 page :: [Section] -> Page
 page = formPage
 
--- Builds a Page by replacing a single Section, based on an index.
+-- | Replaces one section at the given index.
 amendPage :: Page -> Section -> Number -> Page
 amendPage p s n = amendPage' p [s] n
 
--- Builds a Page by replacing all Sections after a chosen index.
+-- | Replaces the sections from the given index onwards.
 amendPage' :: Page -> [Section] -> Number -> Page
 amendPage' p ss n = formPage $ starter ++ remainder
     where p' = unPage p; n' = unn n
           remainder = ss ++ drop (n' + length ss) p'
           starter = take n' p'
-
-
-
-
-
-
-
-
-

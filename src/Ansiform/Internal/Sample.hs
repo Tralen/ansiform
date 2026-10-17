@@ -2,8 +2,7 @@ module Ansiform.Internal.Sample where
 
 --------------------------------------------------------------------------------
 
--- Sample Class
---------------------------------------------------------------------------------
+-- | Inspection helpers for debugging values.
 class Sample a where
   sample :: a -> IO ()
   sample x = putStrLn $ sampleShow 0 x

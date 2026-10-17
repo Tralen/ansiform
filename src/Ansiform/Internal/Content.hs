@@ -17,29 +17,26 @@ import           Ansiform.Internal.Width
 
 -- Content Types
 --------------------------------------------------------------------------------
--- Combination of text and a Style for that text.
---   It should have no non-printable characters.
+-- | A piece of text with a single style. Non-printable characters are removed.
 newtype Item = Item (String,Style)
                 deriving (Eq, Show)
 
--- List of Items to be printed as a block. 
---   It should have no empty items, to avoid setting styles unnecessarely.
---   It is treated as a block and can only be separated by paragraph formatting.
+-- | A list of items printed without breaks. It contains no empty items.
 newtype Block = Block [Item]
                 deriving (Eq, Show)
 
--- List of Blocks that start with a title for that list.
+-- | A header block followed by body blocks.
 newtype Group = Group [Block]
                  deriving (Eq, Show)
 
--- List of Groups where each group has the same length.
+-- | A list of groups with the same number of blocks.
 newtype Table = Table [Group]
                  deriving (Eq, Show)
 
--- A Paragraph is just a suggestive name for a list of Blocks.
+-- | A list of blocks wrapped as one paragraph.
 type Paragraph = [Block]
 
--- An article is just a list of Paragraphs.
+-- | A list of paragraphs.
 type Article = [Paragraph]
 
 -- Sample Instances
@@ -123,10 +120,11 @@ itemEmpty :: Item
 itemEmpty = formItem "" defaultStyle
 
 -- Trivial Block.
+-- | An empty block.
 blockEmpty :: Block
 blockEmpty = formBlock []
 
--- Block with a single text and custom Style.
+-- | A block containing a single text and style.
 blockSimple :: String -> Style -> Block
 blockSimple s v = formBlock [formItem s v]
 
@@ -360,6 +358,7 @@ isTableBalanced h rs = and $ fmap (\r -> headLength == length r) rs
 
 -- Rules && Solid
 --------------------------------------------------------------------------------
+-- | A character and a style used to draw a horizontal rule.
 newtype Rule = Rule (Char, Style)
                   deriving (Eq, Show)
 

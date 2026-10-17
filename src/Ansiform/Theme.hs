@@ -14,7 +14,7 @@ defaultTheme :: Theme
 defaultTheme = Theme
     { themeHeader = bold white'
     , themeSubtitle = bold yellow
-    , themeFooter = normal black'
+    , themeFooter = italic white
     , themeAccent = bold cyan
     , themeDanger = bold red'
     , themeMuted = normal black'

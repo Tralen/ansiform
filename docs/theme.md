@@ -25,7 +25,7 @@ defaultTheme :: Theme
 | --- | --- |
 | `themeHeader` | Title text. |
 | `themeSubtitle` | Secondary title text. |
-| `themeFooter` | Footer messages. |
+| `themeFooter` | Footer messages. The default theme uses italic white. |
 | `themeAccent` | Highlighted keys, links and selected values. |
 | `themeDanger` | Exit and destructive actions. |
 | `themeMuted` | Secondary and disabled text. |

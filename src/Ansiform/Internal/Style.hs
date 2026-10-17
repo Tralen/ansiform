@@ -38,6 +38,7 @@ SetColor                    ConsoleLayer ColorIntensity Color
 
 -- Colors
 --------------------------------------------------------------------------------
+-- | An ANSI color, optionally with a specific intensity.
 data Color = ColorDefault | Color ColorIntensity ANSI.Color
                 deriving (Eq, Show)
 
@@ -73,6 +74,7 @@ isColorDefault vc = case vc of ColorDefault -> True ; _ -> False
 -- Formatting
 --------------------------------------------------------------------------------
 --                                            Bold             Italic Underline
+-- | Bold, italic and underline attributes.
 data Format = FormatDefault | Format ConsoleIntensity Bool   Underlining
                  deriving (Eq, Show)
 
@@ -127,6 +129,7 @@ isUnderline vf = case unUnderline vf of SingleUnderline -> True; _ -> False
 
 -- Visual Styles
 --------------------------------------------------------------------------------
+-- | A foreground color, a background color and a format.
 data Style = Zero | Style Color Color Format
                 deriving (Eq, Show)
 

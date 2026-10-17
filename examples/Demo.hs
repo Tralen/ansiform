@@ -14,7 +14,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.5.0"
+demoVersion = "0.7.5.1"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks

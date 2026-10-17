@@ -12,7 +12,7 @@ import           Ansiform.Internal.Terminal
 -- Config type
 --------------------------------------------------------------------------------
 
--- Config is just a list of functions to modify the settings, made by the user.
+-- | A list of configuration modifiers.
 newtype Settings = Settings [Config -> Config]
 
 instance Sample Settings where
@@ -50,7 +50,7 @@ instance Sample ColorMode where
     sampleShow _ ColorAlways = "Always"
     sampleShow _ ColorNever = "Never"
 
--- Config is a tuple of the values needed to run the printers and more.
+-- | The resolved configuration used by the printers.
 newtype Config = Config 
             ( Width       -- Current screen width
             , Width       -- Minimum space to be used bettwen blocks.

@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### 0.7.5.1 -- 2026-10-17
+* Documented every public function and type with Haddock comments; all public modules report 100% coverage.
+* Changed the default theme footer to italic white for readability.
+* Documented Hackage and GitHub credential configuration in docs/releasing.md.
+
 ### 0.7.5.0 -- 2026-10-17
 * Added Borders with ASCII, light, heavy and double styles.
 * Added the printerTableBordered and printerGroupsBordered families.

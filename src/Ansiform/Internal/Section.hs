@@ -12,9 +12,7 @@ import           Ansiform.Printer
 
 -- Section Type
 --------------------------------------------------------------------------------
--- A Section is a list of Printers.
---    The section takes a number as a minimum number of lines. If the printing
---    of the section doesn't reach that number, empty lines will be printed.
+-- | A list of printers and a minimum number of lines.
 newtype Section = Section (Number,[Printer])
                      deriving (Eq, Show)
 
@@ -35,6 +33,7 @@ unSectionNumber (Section (n,_)) = n
 --------------------------------------------------------------------------------
 
 -- Function to run the list of Printers with the user settings.
+-- | Runs a section on stdout with the given settings.
 runSection :: Settings -> Section -> IO Number
 runSection = runSectionOn stdout
 
@@ -51,6 +50,7 @@ runSectionIOOn :: Handle -> IO Config -> Section -> IO Number
 runSectionIOOn h cfg = calcSection (runPrinterIOOn h cfg)
 
 -- Uses default settings.
+-- | Runs a section on stdout with the default settings.
 runSectionDefault :: Section -> IO Number
 runSectionDefault = runSectionDefaultOn stdout
 
@@ -59,6 +59,7 @@ runSectionDefaultOn :: Handle -> Section -> IO Number
 runSectionDefaultOn h = calcSection (runPrinterDefaultOn h)
 
 -- Uses default settings, with given width and minSpace.
+-- | Runs a section on stdout with default settings and explicit width and spacing.
 runSectionDefault' :: Number -> Number -> Section -> IO Number
 runSectionDefault' = runSectionDefaultOn' stdout
 

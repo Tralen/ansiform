@@ -5,13 +5,18 @@ import           Ansiform.Internal.Sample
 
 
 
--- A Number is capped at 0, so it is always positive.
+-- | A non-negative number used for sizes, offsets and counts.
 newtype Number = Number Int
                     deriving (Eq, Ord, Show)
 
 
+-- | Number of terminal columns.
 type Width = Number
+
+-- | Space between content and the edge of a background.
 type Padding = Number
+
+-- | Indentation from the left edge.
 type Offset = Number
 
 

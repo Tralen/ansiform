@@ -12,10 +12,6 @@ No pending medium-value items.
 
 ## Publication quality
 
-### Haddock coverage
-
-The public modules build with Haddock, but function-level coverage is low. Convert the existing `--` comments to `-- |` Haddock comments and document the public types and functions. The `docs/` directory remains the long-form reference.
-
 ### CI matrix
 
 The current CI targets GHC 9.14.1. Consider a matrix with the oldest supported GHC and the latest one once the lower bound is validated.
@@ -31,6 +27,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Haddock coverage
+
+Released in 0.7.5.1. Every public function and type is documented, and all public modules report 100% Haddock coverage. The remaining Haddock warnings are only about module re-exports.
 
 ### Table borders
 

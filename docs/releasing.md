@@ -5,10 +5,10 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.5.0.
+- Version: 0.7.5.1.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, CHANGELOG and LICENSE.
-- Haddock builds. Function-level documentation coverage is still being improved.
+- Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
 - GitHub remote: `origin` points to https://github.com/Tralen/ansiform.git. The repository is private for now.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
@@ -17,10 +17,53 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 
 Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist` do not use them.
 
-- `HACKAGE_TOKEN` is the Hackage upload token. Cabal does not read an environment variable automatically; pass it with `--token "$HACKAGE_TOKEN"` or configure it once in the Cabal configuration file. Never commit it or paste it into a command that is logged.
-- `GITHUB_TOKEN` is used by GitHub API operations, such as creating a release or a repository with `curl` or `gh`. A normal `git push` uses the remote's SSH key or credential helper, not this variable.
+### Hackage
 
-Load the private secrets file in the shell that runs the release commands, and check that the variables are non-empty before uploading. The values must stay out of the repository and out of the documentation.
+Cabal reads the global keys `token`, `username`, `password` and `password-command` from `~/.config/cabal/config`. Preferred options:
+
+1. Store the token in the Cabal config for repeated releases:
+
+   ```cabal
+   token: <hackage-token>
+   ```
+
+2. Pass it per command after loading your secrets file:
+
+   ```sh
+   cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+   ```
+
+3. Use a command that prints the token on demand:
+
+   ```sh
+   cabal upload --password-command 'cat /path/to/hackage-token' --publish <tarball>
+   ```
+
+Never put the token directly in shell history or commit the file that contains it.
+
+### GitHub
+
+`GITHUB_TOKEN` is used by the GitHub API and by `gh`. It is not used automatically by `git push`. Choose one of these:
+
+- **SSH**, recommended:
+
+  ```sh
+  git remote set-url origin git@github.com:Tralen/ansiform.git
+  ```
+
+  The corresponding public key must be registered on GitHub.
+- **`gh`**, if installed:
+
+  ```sh
+  gh auth login
+  ```
+
+  `gh` configures the git credential helper. It is not installed in the current environment.
+- **HTTPS credential helper**: configure a helper that reads the token from your secret store. Avoid `credential.helper store`, which saves the token in plain text.
+
+The private secrets file is not inherited by non-interactive shells. Load it in the shell that runs the release commands, for example with `source`, or configure the credentials persistently.
+
+Never print the values of the tokens or commit the secrets file.
 
 ## Before the first release
 
