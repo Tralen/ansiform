@@ -16,6 +16,8 @@ The public modules are thin, documented facades over internal modules.
 | `Ansiform.Section` | Section builders. | `Ansiform.Internal.Section` |
 | `Ansiform.Page` | Page builders. | `Ansiform.Internal.Page` |
 | `Ansiform.Settings` | Settings and configuration modifiers. | `Ansiform.Internal.Settings` |
+| `Ansiform.Input` | Immediate single-key input. | `Ansiform.Internal.Input` |
+| `Ansiform.Width` | Display width of characters and strings. | `Ansiform.Internal.Width` |
 | `Ansiform.Sample` | Inspection helpers for debugging. | `Ansiform.Internal.Sample` |
 | `Ansiform.Draw` | Drawing and state lifecycle. | `Ansiform.Internal.State`, `Ansiform.Internal.Terminal` |
 
@@ -38,6 +40,8 @@ The `Ansiform.Internal.*` modules are implementation details. They are not expos
 ```
 
 `Printer` stores a function `Config -> IO Number`. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor.
+
+`Ansiform.Input` is the other IO boundary. It configures stdin for immediate single-key reads and restores the terminal state when the interaction ends.
 
 ## Invariants
 

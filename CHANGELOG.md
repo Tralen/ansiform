@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.7.1.0 -- 2026-10-17
+* Added Ansiform.Input with withImmediateInput and readKey, making single-key interaction the standard library pattern.
+* Updated the demo to use the shared input API and restore terminal state automatically.
+* Added Unicode-aware display widths through Ansiform.Width, used for wrapping, alignment, lists and tables.
+* Added docs/input.md and updated the README quick start, pages, architecture, content and roadmap.
+
 ### 0.7.0 -- 2026-10-17
 * Added the ColorMode setting with Auto, Always and Never.
 * Auto suppresses ANSI styles when stdout is not a terminal, when NO_COLOR is set or when TERM is dumb.

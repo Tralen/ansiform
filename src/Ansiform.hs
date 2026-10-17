@@ -15,6 +15,7 @@ module Ansiform (module All) where
 --------------------------------------------------------------------------------
 import           Ansiform.Content   as All
 import           Ansiform.Draw      as All
+import           Ansiform.Input     as All
 import           Ansiform.Number    as All
 import           Ansiform.Page      as All
 import           Ansiform.Printer   as All
@@ -22,6 +23,7 @@ import           Ansiform.Sample    as All
 import           Ansiform.Section   as All
 import           Ansiform.Settings  as All
 import           Ansiform.Style     as All
+import           Ansiform.Width     as All
 
 
 -- TODO:

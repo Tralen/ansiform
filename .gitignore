@@ -3,6 +3,8 @@
 .prompt/
 PROMPT.md
 TODO.md
+HANDOFF.md
+REGRESSION.md
 
 # Haskell
 dist-newstyle/

@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.7.0
+version:             0.7.1.0
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -17,6 +17,7 @@ extra-doc-files:     CHANGELOG.md
                      docs/content.md
                      docs/demo.md
                      docs/design-notes.md
+                     docs/input.md
                      docs/naming.md
                      docs/pages.md
                      docs/printers.md
@@ -37,6 +38,7 @@ library
   exposed-modules:     Ansiform
                      , Ansiform.Content
                      , Ansiform.Draw
+                     , Ansiform.Input
                      , Ansiform.Number
                      , Ansiform.Page
                      , Ansiform.Printer
@@ -44,9 +46,11 @@ library
                      , Ansiform.Section
                      , Ansiform.Settings
                      , Ansiform.Style
+                     , Ansiform.Width
 
   other-modules:       Ansiform.Internal
                      , Ansiform.Internal.Content
+                     , Ansiform.Internal.Input
                      , Ansiform.Internal.Number
                      , Ansiform.Internal.Page
                      , Ansiform.Internal.Printer
@@ -57,6 +61,7 @@ library
                      , Ansiform.Internal.Style
                      , Ansiform.Internal.Terminal
                      , Ansiform.Internal.Utils
+                     , Ansiform.Internal.Width
 
   build-depends:       ansi-terminal >= 0.8 && < 1.2
                      , terminal-size >= 0.3 && < 0.4

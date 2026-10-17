@@ -49,16 +49,25 @@ All drawing functions return a new state; the old state is never mutated.
 ## Example
 
 ```haskell
+import Data.Char (toLower)
+import Ansiform
+
 main :: IO ()
-main = do
+main = withImmediateInput $ do
   state <- start firstPage defaultSettings
-  _ <- getLine
-  state' <- draw secondPage state
-  _ <- getLine
-  state'' <- amend newBody 1 state'
-  _ <- getLine
-  _ <- redraw state''
-  pure ()
+  loop state
+
+loop :: State -> IO ()
+loop state = do
+  key <- readKey
+  case fmap toLower key of
+    Just 'n' -> draw secondPage state >>= loop
+    Just 'e' -> amend newBody 1 state >>= loop
+    Just 'r' -> redraw state >>= loop
+    Just 'x' -> pure ()
+    _ -> loop state
 ```
 
 A typical page uses section `0` for the header, the middle sections for the body and the last sections for the footer. Keeping those indices stable makes `amend` and `replace` predictable.
+
+See [Input](input.md) for the immediate key handling used by this loop.

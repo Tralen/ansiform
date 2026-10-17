@@ -5,12 +5,7 @@
 --   > cabal run ansiform-demo
 module Main where
 
-import           Control.Exception (bracket_)
-import           Control.Monad (when)
 import           Data.Char (toLower)
-import           System.IO (BufferMode(..), hGetBuffering, hGetEcho,
-                            hIsTerminalDevice, hSetBuffering, hSetEcho,
-                            isEOF, stdin)
 import           Ansiform
 
 --------------------------------------------------------------------------------
@@ -19,50 +14,37 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.0"
+demoVersion = "0.7.1.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
   deriving (Eq, Show)
 
 main :: IO ()
-main = do
-  interactive <- hIsTerminalDevice stdin
-  oldBuffering <- hGetBuffering stdin
-  oldEcho <- if interactive then hGetEcho stdin else return True
-  let setup = when interactive $ do
-                hSetBuffering stdin NoBuffering
-                hSetEcho stdin False
-      restore = when interactive $ do
-                  hSetBuffering stdin oldBuffering
-                  hSetEcho stdin oldEcho
-  bracket_ setup restore $ do
-    state <- start (screenPage Menu) demoSettings
-    loop Menu state
+main = withImmediateInput $ do
+  state <- start (screenPage Menu) demoSettings
+  loop Menu state
 
 loop :: Screen -> State -> IO ()
 loop screen state = do
-  eof <- isEOF
-  if eof
-    then finish
-    else do
-      key <- getChar
-      case toLower key of
-        'l' -> open List state
-        'g' -> open Groups state
-        't' -> open Tables state
-        'h' -> open Rich state
-        'a' -> open Article state
-        'c' -> open Blocks state
-        'r' -> do state' <- redraw state
-                  loop screen state'
-        'b' -> do state' <- draw (screenPage Menu) state
-                  loop Menu state'
-        'x' -> finish
-        '\n' -> loop screen state
-        ' ' -> loop screen state
-        _   -> do putStrLn "Unknown option. Use one of the keys shown in the footer."
-                  loop screen state
+  key <- readKey
+  case fmap toLower key of
+    Nothing -> finish
+    Just 'l' -> open List state
+    Just 'g' -> open Groups state
+    Just 't' -> open Tables state
+    Just 'h' -> open Rich state
+    Just 'a' -> open Article state
+    Just 'c' -> open Blocks state
+    Just 'r' -> do state' <- redraw state
+                   loop screen state'
+    Just 'b' -> do state' <- draw (screenPage Menu) state
+                   loop Menu state'
+    Just 'x' -> finish
+    Just '\n' -> loop screen state
+    Just ' ' -> loop screen state
+    Just _   -> do putStrLn "Unknown option. Use one of the keys shown in the footer."
+                   loop screen state
   where
     open next st = do
       st' <- draw (screenPage next) st

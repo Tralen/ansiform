@@ -56,6 +56,25 @@ main = do
          in "<Right>" `isInfixOf` out
               && not ("<Left>" `isInfixOf` out)
               && "<Center>" `isInfixOf` out)
+    , test "Display width of ASCII text"
+        (charWidth 'a' == 1 && textWidth "abc" == 3)
+    , test "Display width of wide characters"
+        (charWidth '漢' == 2 && textWidth "a漢" == 3)
+    , test "Display width of combining marks"
+        (charWidth '\x0301' == 0 && textWidth "e\x0301" == 1)
+    , test "Display width of emoji"
+        (charWidth '😀' == 2)
+    , test "Display width of emoji modifiers"
+        (charWidth '\x1F3FB' == 0)
+    , test "Display width of Hangul medial jamo"
+        (charWidth '\x1161' == 0)
+    , test "Display width of fullwidth forms"
+        (charWidth '\xFF21' == 2)
+    , testIO "Wide text wraps by display width" $ do
+        (_, out) <- captureStdout
+          $ runPrinter (settings [width 5, neverColors])
+                       (printerParagraph 0 0 [blockSimple "漢漢 漢漢" styleDefault])
+        return $ length (filter (== '\n') out) == 2
     , testIO "Styles are suppressed when colors are never" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [neverColors]) (printerItem (item "plain" (bold red)))

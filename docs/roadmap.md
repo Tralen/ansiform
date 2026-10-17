@@ -4,10 +4,6 @@ This is a prioritized list of possible features and adjustments. It records the 
 
 ## High value
 
-### Unicode display width
-
-The layout uses `length` on `String`, which counts code points rather than terminal columns. Wide characters, combining marks and emoji break alignment. Introduce a display-width function, for example through the small `unicode-width` package, and use it for text measurement, wrapping and table widths.
-
 ### Render to a string or handle
 
 The printers write directly to stdout. A renderer that returns a `String` or writes to a `Handle` would make the library testable without capturing stdout, embeddable in other applications and suitable for golden tests. This is a larger architectural change because `Printer` is currently `Config -> IO Number`.
@@ -47,6 +43,14 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Immediate single-key input
+
+Released in 0.7.1.0. `Ansiform.Input` provides `withImmediateInput` and `readKey`, so pressing a key changes the screen without Enter. The terminal state is restored when the interaction ends. See [Input](input.md).
+
+### Unicode display width
+
+Released in 0.7.1.0. Layout now measures text in terminal columns instead of code points. Combining marks are zero width, wide CJK characters and emoji are two columns, and wrapping, alignment, lists and tables share the same `textWidth` function. See [Content](content.md).
 
 ### Color mode and non-TTY detection
 

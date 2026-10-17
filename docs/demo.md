@@ -6,7 +6,7 @@ The package ships with an interactive gallery:
 cabal run ansiform-demo
 ```
 
-The header and footer are shared components; only the body changes between screens. The footer always lists the keys accepted by the current screen.
+The header and footer are shared components; only the body changes between screens. The footer always lists the keys accepted by the current screen. The demo uses `withImmediateInput` and `readKey` from `Ansiform.Input`, the same immediate input API available to applications.
 
 ## Keys
 

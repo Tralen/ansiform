@@ -10,6 +10,7 @@ import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Settings
 import           Ansiform.Internal.Style
 import           Ansiform.Internal.Utils
+import           Ansiform.Internal.Width
 
 
 
@@ -174,7 +175,7 @@ blockTextWidthList vb = fmap itemTextWidth (unBlock vb)
 
 -- Calculates the length of the text in a Item.
 itemTextWidth :: Item -> Int
-itemTextWidth vi = length $ unItemText vi
+itemTextWidth vi = textWidth $ unItemText vi
 
 -- Changes the background of each item in a Block.
 blockSetBG :: Color -> Block -> Block
@@ -288,7 +289,7 @@ itemSplit w vi = ( formItem (fst processText) vs
                   | otherwise = (concatRev cwds, concat wds)
                 where
                   wd = fromMaybe "" $ headMaybe wds
-                  wdLength = length wd
+                  wdLength = textWidth wd
                   totalLength = wdLength + cw 
 
 

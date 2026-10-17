@@ -16,6 +16,19 @@ Content values describe what should appear on screen. They carry no terminal sta
 
 `Item` removes non-printable characters when it is built. `Block` removes empty items, so styles are never applied to empty strings.
 
+## Display width
+
+Layout measures text in terminal columns, not in characters. The same rules are available through `Ansiform.Width`:
+
+```haskell
+charWidth :: Char -> Int
+textWidth :: String -> Int
+```
+
+ASCII and most accented text occupy one column, combining marks occupy zero, and wide CJK characters and emoji occupy two. Wrapping, alignment, lists and tables all use `textWidth`, so wide text stays aligned.
+
+The model is per code point. Grapheme clusters that joiner sequences or regional indicators build, such as flags and family emoji, are approximated by the width of their individual code points.
+
 ## Basic builders
 
 ```haskell
