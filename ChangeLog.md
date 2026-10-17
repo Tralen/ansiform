@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.7.8.3 -- 2026-10-17
+* Removed docs/design-notes.md; the original notes remain available in the Git history.
+
 ### 0.7.8.2 -- 2026-10-17
 * Changed the Groups shortcut for the philosopher prompt from E to C.
 * Added a blank line below the prompt and removed the choose shortcut from the prompt page.

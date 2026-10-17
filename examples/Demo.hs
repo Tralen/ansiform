@@ -15,7 +15,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.8.2"
+demoVersion = "0.7.8.3"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
