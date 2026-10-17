@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.7.3.0
+version:             0.7.4.0
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -28,6 +28,7 @@ extra-doc-files:     CHANGELOG.md
                      docs/settings.md
                      docs/style.md
                      docs/table-format.md
+                     docs/theme.md
 
 common shared
   default-language:    Haskell2010
@@ -50,6 +51,7 @@ library
                      , Ansiform.Settings
                      , Ansiform.Style
                      , Ansiform.Table
+                     , Ansiform.Theme
                      , Ansiform.Width
 
   other-modules:       Ansiform.Internal
@@ -67,6 +69,7 @@ library
                      , Ansiform.Internal.Style
                      , Ansiform.Internal.Table
                      , Ansiform.Internal.Terminal
+                     , Ansiform.Internal.Theme
                      , Ansiform.Internal.Utils
                      , Ansiform.Internal.Width
 

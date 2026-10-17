@@ -14,7 +14,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.3.0"
+demoVersion = "0.7.4.0"
 
 -- The demo is a small screen machine.
 data Screen = Menu | List | Groups | Tables | Rich | Article | Blocks
@@ -58,23 +58,19 @@ demoSettings = settings [minSpace 2]
 -- Reusable components
 --------------------------------------------------------------------------------
 
-themeAccent, themeMuted :: Style
-themeAccent = bold cyan
-themeMuted = normal black'
-
-themeDanger :: Color
-themeDanger = red'
+demoTheme :: Theme
+demoTheme = defaultTheme
 
 header :: Section
 header = sectionTopRule 1 ruleHeader
-  [ printerSolidLineCenter 0 1 blue
-      [ blockSimple "Ansiform" (bold white')
-      , blockSimple demoVersion (bold white') ]
+  [ printerSolidLineCenter 0 1 (themeBar demoTheme)
+      [ blockSimple "Ansiform" (themeHeader demoTheme)
+      , blockSimple demoVersion (themeHeader demoTheme) ]
   , printerEmpty 1
   , printerLineCenter 4
-      [ blockSimple "CLI UI Library" (bold yellow)
-      , blockSimple "Gallery" themeMuted
-      , blockSimple "Demo" themeAccent ]
+      [ blockSimple "CLI UI Library" (themeSubtitle demoTheme)
+      , blockSimple "Gallery" (themeMuted demoTheme)
+      , blockSimple "Demo" (themeAccent demoTheme) ]
   ]
 
 bottom :: Section
@@ -82,15 +78,15 @@ bottom = sectionRule ruleBottom
 
 footer :: String -> [[Block]] -> Section
 footer message commandLines = sectionBodyRule 1 ruleFooter
-  ( [ printerLeft 2 (blockSimple message styleDefault)
+  ( [ printerLeft 2 (blockSimple message (themeFooter demoTheme))
     , printerEmpty 1
     ] ++ fmap (printerLineCenter 4) commandLines )
 
 ruleHeader, ruleBody, ruleFooter, ruleBottom :: Rule
-ruleHeader = rule '=' (bold black')
-ruleBody = rule '%' (bold black')
-ruleFooter = rule ':' (bold black')
-ruleBottom = ruleDefault (bold black')
+ruleHeader = rule '=' (themeRule demoTheme)
+ruleBody = rule '%' (themeRule demoTheme)
+ruleFooter = rule ':' (themeRule demoTheme)
+ruleBottom = ruleDefault (themeRule demoTheme)
 
 --------------------------------------------------------------------------------
 -- Screens
@@ -114,19 +110,19 @@ screenFooter _ = footer "Press B to go back or R to reload." pageCommands
 
 menuCommands, pageCommands :: [[Block]]
 menuCommands =
-  [ [ blockMenu "L" "List" cyan
-    , blockMenu "G" "Groups" cyan
-    , blockMenu "T" "Tables" cyan
-    , blockMenu "H" "Rich table" cyan ]
-  , [ blockMenu "A" "Article" cyan
-    , blockMenu "C" "Content builders" cyan
-    , blockMenu "X" "Exit" themeDanger ]
+  [ [ blockMenuStyle "L" "List" (themeAccent demoTheme)
+    , blockMenuStyle "G" "Groups" (themeAccent demoTheme)
+    , blockMenuStyle "T" "Tables" (themeAccent demoTheme)
+    , blockMenuStyle "H" "Rich table" (themeAccent demoTheme) ]
+  , [ blockMenuStyle "A" "Article" (themeAccent demoTheme)
+    , blockMenuStyle "C" "Content builders" (themeAccent demoTheme)
+    , blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
   ]
 
 pageCommands =
-  [ [ blockMenu "B" "Back" cyan
-    , blockMenu "R" "Reload" cyan
-    , blockMenu "X" "Exit" themeDanger ]
+  [ [ blockMenuStyle "B" "Back" (themeAccent demoTheme)
+    , blockMenuStyle "R" "Reload" (themeAccent demoTheme)
+    , blockMenuStyle "X" "Exit" (themeDanger demoTheme) ]
   ]
 
 --------------------------------------------------------------------------------
@@ -135,13 +131,13 @@ pageCommands =
 
 menuBlocks :: [Block]
 menuBlocks =
-  [ blockMenu "L" "List composers" cyan
-  , blockMenu "G" "Group philosophers" cyan
-  , blockMenu "T" "Tabulate composers" cyan
-  , blockMenu "H" "Rich flight table" cyan
-  , blockMenu "A" "Article about Ansiform" cyan
-  , blockMenu "C" "Content builders" cyan
-  , blockMenu "X" "Exit" themeDanger
+  [ blockMenuStyle "L" "List composers" (themeAccent demoTheme)
+  , blockMenuStyle "G" "Group philosophers" (themeAccent demoTheme)
+  , blockMenuStyle "T" "Tabulate composers" (themeAccent demoTheme)
+  , blockMenuStyle "H" "Rich flight table" (themeAccent demoTheme)
+  , blockMenuStyle "A" "Article about Ansiform" (themeAccent demoTheme)
+  , blockMenuStyle "C" "Content builders" (themeAccent demoTheme)
+  , blockMenuStyle "X" "Exit" (themeDanger demoTheme)
   ]
 
 blocksBody :: Section
@@ -149,7 +145,7 @@ blocksBody = sectionBodyRule 1 ruleBody
   [ printerItem (item "A single Item" (solid cyan))
   , printerEmpty 1
   , printerColumn 4
-      [ blockSimple "Content builders" (bold yellow)
+      [ blockSimple "Content builders" (themeSubtitle demoTheme)
       , blockVal "Version" demoVersion cyan
       , blockBars ["Left", "Center", "Right"] styleDefault (normal magenta)
       , blockSlash "Input" "Output" blue
@@ -217,7 +213,7 @@ richTable = tableBlocks richHeader richRows
 
 richHeader :: [Block]
 richHeader =
-  [ blockSimple "Flight" (bold yellow)
+  [ blockSimple "Flight" (themeTableHeader demoTheme)
   , blockSimple "Company" (normal yellow)
   , blockAssoc ["Origin", "Destination"] (normal yellow) (normal magenta)
   , blockSimple "Departure" (normal cyan)
@@ -254,12 +250,12 @@ richRows =
   ]
 
 simpleTable :: Maybe Table
-simpleTable = tableSimple simpleHeader (normal blue') simpleRows
+simpleTable = tableSimple simpleHeader (themeTableBody demoTheme) simpleRows
 
 -- Right aligns the numeric columns and truncates long composer names.
 demoTablesFormat :: TableFormat
 demoTablesFormat = tableFormat
-  [ defaultColumnSpec { columnMaxWidth = Just 10
+  [ defaultColumnSpec { columnMaxWidth = Just 11
                       , columnEllipsis = EllipsisChar '…' }
   , defaultColumnSpec
   , defaultColumnSpec { columnAlign = AlignRight }

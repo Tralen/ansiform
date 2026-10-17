@@ -50,6 +50,11 @@ main = do
     , test "Composite block builder keeps its parts"
         (let out = sampleShow 0 (blockEnum "01" "Item" blue)
          in "01" `isInfixOf` out && "Item" `isInfixOf` out)
+    , test "Default theme provides accent and danger styles"
+        (themeAccent defaultTheme == bold cyan
+          && themeDanger defaultTheme == bold red')
+    , test "Theme record update changes a style"
+        (themeAccent (defaultTheme { themeAccent = bold magenta }) == bold magenta)
     , test "Page amendment replaces the selected section"
         (let replaced = amendPage' oldPage [newSection] 0
              out = sampleShow 0 replaced

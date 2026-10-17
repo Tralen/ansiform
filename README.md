@@ -6,7 +6,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
 
-Current version: **0.7.3.0**.
+Current version: **0.7.4.0**.
 
 ## Features
 
@@ -15,6 +15,7 @@ Current version: **0.7.3.0**.
 - Unicode-aware display widths for alignment, wrapping, lists and tables.
 - Rendering to any `Handle` or to a `String` for embedding and golden tests.
 - Per-column table alignment, maximum widths and truncation with an ellipsis.
+- A reusable `Theme` record for consistent headers, footers, menus and tables.
 - Horizontal rules, solid backgrounds, offsets and padding.
 - Single-line and multi-line alignment.
 - Columns, lists, groups, simple tables and rich tables.
@@ -78,6 +79,7 @@ cabal run ansiform-demo
 - [Architecture](docs/architecture.md): module layout, invariants and the pure/IO boundary.
 - [Content](docs/content.md): items, blocks, groups, tables, paragraphs and their builders.
 - [Styles](docs/style.md): colors, formats and reusable text styles.
+- [Theme](docs/theme.md): reusable styles for headers, footers, menus and tables.
 - [Printers](docs/printers.md): every printer function and its arguments.
 - [Table formatting](docs/table-format.md): per-column alignment, maximum widths and truncation.
 - [Sections](docs/sections.md): grouping printers and reserving minimum line counts.

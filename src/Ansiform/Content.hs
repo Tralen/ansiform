@@ -59,11 +59,15 @@ blockSlash t1 t2 c = blockCycle [(t1, normal c)
                                 ,(" / ", normal black')
                                 ,(t2, normal c)]
 
+-- Block of the form 'Index: Element' with a custom key style.
+blockMenuStyle :: String -> String -> Style -> Block
+blockMenuStyle i t vs = blockCycle [(i, vs)
+                                   ,(": ", normal black')
+                                   ,(t, normal colorDefault)]
+
 -- Block of the form 'Index: Element' to be used on menus.
 blockMenu :: String -> String -> Color -> Block
-blockMenu i t c = blockCycle [(i, bold c)
-                             ,(": ", normal black')
-                             ,(t, normal colorDefault)]
+blockMenu i t c = blockMenuStyle i t (bold c)
 
 -- Block of the form 'Element -> Val'.
 blockVal :: String -> String -> Color -> Block

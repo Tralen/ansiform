@@ -4,6 +4,13 @@
 
 ## Functional Versions
 
+### 0.7.4.0 -- 2026-10-17
+* Added Ansiform.Theme with Theme and defaultTheme.
+* Added blockMenuStyle for menu keys that use a Style instead of a Color.
+* Updated the demo header, footer, menus, rules and simple table to use the theme.
+* Fixed the demo Tables column width so Tchaikovsky is readable.
+* Added docs/theme.md.
+
 ### 0.7.3.0 -- 2026-10-17
 * Added Ansiform.Table with per-column alignment, maximum widths and ellipsis truncation.
 * Added printerTableFormat, printerTableFormat', printerTableLimitedFormat and printerTableLimitedFormat'.

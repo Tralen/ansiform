@@ -65,6 +65,7 @@ These builders cover common line shapes.
 | `blockEnum index text color` | `index text`, both styled. |
 | `blockSlash left right color` | `left / right`. |
 | `blockMenu key text color` | `key: text`, used for menus. |
+| `blockMenuStyle key text style` | Like `blockMenu`, with a custom key style. |
 | `blockVal name value color` | `name -> value`. |
 | `blockAssoc values style arrowStyle` | `A -> B -> C`. |
 | `blockAssoc' values style arrowStyle` | `A <- B <- C`. |

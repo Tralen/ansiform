@@ -8,10 +8,6 @@ No pending high-value items.
 
 ## Medium value
 
-### Theme record
-
-Introduce a `Theme` value grouping the styles used by headers, footers, accents, danger, muted text and tables. Reusable components can take a theme instead of hard-coded styles. This is a low-risk addition that reinforces the library's consistency goal.
-
 ### Table borders
 
 Add optional box-drawing borders around tables and groups. This is mostly a rendering feature and should not complicate the content model.
@@ -37,6 +33,10 @@ Deliberately deferred. CLI content is small, and `String`/lists keep the API sim
 Deliberately deferred. The list-based builders and the `State` lifecycle cover the common cases. A separate `Ansiform.Monad` layer can be added if a concrete need appears.
 
 ## Implemented
+
+### Theme record
+
+Released in 0.7.4.0. `Ansiform.Theme` provides `Theme` and `defaultTheme`, with styles for headers, subtitles, footers, accents, danger, muted text, rules, bars and tables. The demo components take the theme as a value. See [Theme](theme.md).
 
 ### Per-column alignment and truncation
 

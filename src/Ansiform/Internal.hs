@@ -14,5 +14,6 @@ import           Ansiform.Internal.Settings  as All
 import           Ansiform.Internal.Style     as All
 import           Ansiform.Internal.Table     as All
 import           Ansiform.Internal.Terminal  as All
+import           Ansiform.Internal.Theme     as All
 import           Ansiform.Internal.Utils     as All
 import           Ansiform.Internal.Width     as All
