@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.7.5.1
+version:             0.7.5.2
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -13,7 +13,7 @@ category:            User Interfaces
 homepage:            https://github.com/Tralen/ansiform
 bug-reports:         https://github.com/Tralen/ansiform/issues
 tested-with:         GHC == 9.14.1
-extra-doc-files:     CHANGELOG.md
+extra-doc-files:     ChangeLog.md
                      README.md
                      docs/architecture.md
                      docs/content.md

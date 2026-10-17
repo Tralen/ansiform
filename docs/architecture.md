@@ -72,7 +72,7 @@ No public function throws an exception for malformed input. Layout functions are
 
 ## Versioning
 
-The package follows the Haskell Package Versioning Policy (PVP). The version lives in `ansiform.cabal` and is recorded in `CHANGELOG.md`.
+The package follows the Haskell Package Versioning Policy (PVP). The version lives in `ansiform.cabal` and is recorded in `ChangeLog.md`.
 
 - Patch: fixes and small refinements.
 - Minor: new user-facing features or screens.

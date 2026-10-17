@@ -5,9 +5,9 @@ This checklist covers the first Hackage and GitHub release of Ansiform. Update i
 ## Current status
 
 - Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.5.1.
+- Version: 0.7.5.2.
 - License: MIT.
-- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, CHANGELOG and LICENSE.
+- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
 - CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution.
 - GitHub remote: `origin` points to https://github.com/Tralen/ansiform.git. The repository is private for now.
@@ -19,13 +19,18 @@ Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist`
 
 ### Hackage
 
-Cabal reads the global keys `token`, `username`, `password` and `password-command` from `~/.config/cabal/config`. Preferred options:
+Cabal reads the global keys `token`, `username`, `password` and `password-command` from the user config. Depending on the installation, the file is `~/.cabal/config` (legacy layout) or `~/.config/cabal/config` (XDG layout). Use the file Cabal already uses; `cabal user-config` refers to the XDG path.
 
-1. Store the token in the Cabal config for repeated releases:
+1. Store the token in the Cabal config for repeated releases. `token` is a global key, so it must be at the top level, not inside the `repository` stanza:
 
    ```cabal
    token: <hackage-token>
+
+   repository hackage.haskell.org
+     url: http://hackage.haskell.org/
    ```
+
+   The `repository` stanza configures the server; it is not where the upload token belongs.
 
 2. Pass it per command after loading your secrets file:
 
@@ -137,7 +142,7 @@ Never print the values of the tokens or commit the secrets file.
    git push origin master --tags
    ```
 
-2. Create a GitHub release from the tag, using the relevant CHANGELOG section as the description.
+2. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
 3. Add CI, Hackage and license badges to the README once the URLs exist.
 
 ## Notes

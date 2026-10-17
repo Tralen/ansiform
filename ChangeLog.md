@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.5.2 -- 2026-10-17
+* Renamed CHANGELOG.md back to ChangeLog.md, following the Hackage convention.
+* Documented the Hackage token key at the top level of ~/.cabal/config.
+
 ### 0.7.5.1 -- 2026-10-17
 * Documented every public function and type with Haddock comments; all public modules report 100% coverage.
 * Changed the default theme footer to italic white for readability.
@@ -45,7 +49,7 @@
 * Auto suppresses ANSI styles when stdout is not a terminal, when NO_COLOR is set or when TERM is dumb.
 * Added the colorMode modifier and the autoColors, alwaysColors and neverColors shortcuts.
 * Added regression tests for style suppression and forced styling.
-* Renamed ChangeLog.md to CHANGELOG.md.
+* Renamed ChangeLog.md to CHANGELOG.md (reverted in 0.7.5.2).
 
 ### 0.6.1 -- 2026-10-17
 * Added the GitHub Actions CI workflow.
