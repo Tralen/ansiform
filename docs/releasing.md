@@ -36,6 +36,8 @@ cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<ve
 
 Do not add the token or the location of your secret manager to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
 
+New Hackage accounts must be added to the uploaders group before the first upload. Ask two confirmed uploaders to endorse the account through the link in the account email, or email `hackage-trustees@haskell.org` with the Hackage username and a link to the repository. Uploads return HTTP 403 until the account is approved.
+
 ### GitHub
 
 Pushes use SSH. Configure an SSH key for your GitHub account with your own local tooling; no key paths belong in this repository.
