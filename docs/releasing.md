@@ -25,13 +25,13 @@ Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist`
 Export `HACKAGE_TOKEN` with your own secret manager before running the command. Use the token directly on the command line so it is not stored:
 
 ```sh
-cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+cabal upload --token "$HACKAGE_TOKEN" dist-newstyle/sdist/ansiform-<version>.tar.gz
 ```
 
 For documentation:
 
 ```sh
-cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
+cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
 ```
 
 Do not add the token or the location of your secret manager to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
@@ -99,27 +99,41 @@ Never print the values of the tokens or commit the location of your secrets.
 
 ## Uploading to Hackage
 
+`cabal upload` uploads a **package candidate** by default. A candidate is not visible as a normal package version, so it can be inspected and even deleted before publication.
+
 1. Create a Hackage account and obtain an upload token.
 2. Configure the token, preferably through the interactive prompt or the Cabal config file. Avoid putting the token directly in shell history.
-3. Upload the source distribution:
+3. Build the documentation tarball:
 
    ```sh
-   cabal upload --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+   cabal haddock --haddock-for-hackage
    ```
 
-   If the token is not configured, pass it explicitly:
+   The tarball is written to `dist-newstyle/ansiform-<version>-docs.tar.gz`.
+
+4. Upload the source distribution as a candidate:
+
+   ```sh
+   cabal upload --token "$HACKAGE_TOKEN" dist-newstyle/sdist/ansiform-<version>.tar.gz
+   ```
+
+5. Upload the documentation candidate:
+
+   ```sh
+   cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
+   ```
+
+6. Inspect the candidate page at `https://hackage.haskell.org/package/ansiform/candidates`. Check the rendered documentation, the dependency bounds and the build report. A candidate that fails verification can be deleted from that page.
+7. After the candidate is verified, publish the package and its documentation:
 
    ```sh
    cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+   cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/ansiform-<version>-docs.tar.gz
    ```
 
-4. Upload the documentation for the published package:
+8. Check the public package page, the documentation links and the dependency bounds.
 
-   ```sh
-   cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/sdist/ansiform-<version>-docs.tar.gz
-   ```
-
-5. Check the package page, the documentation links and the dependency bounds.
+Publishing cannot be undone easily. Use the candidate stage to catch metadata, documentation and dependency problems before publishing.
 
 ## GitHub release
 
