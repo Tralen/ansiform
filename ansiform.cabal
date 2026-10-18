@@ -6,9 +6,9 @@ description:         Basic format DSL for building an ANSI command line interfac
                      with colors, alignment, tables, paragraphs and more.
 license:             MIT
 license-file:        LICENSE
-author:              Tunai Raiol
-maintainer:          tunairaiol@yahoo.co.uk
-copyright:           2018-2026 Tunai Raiol
+author:              Tralen
+maintainer:          dev@tralen.cc
+copyright:           2018-2026 Tralen
 category:            User Interfaces
 homepage:            https://github.com/Tralen/ansiform
 bug-reports:         https://github.com/Tralen/ansiform/issues

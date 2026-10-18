@@ -140,4 +140,5 @@ Never print the values of the tokens or commit the location of your secrets.
 - The old package name `vis` collided with the Hackage `Vis` package (3D graphics). Do not reuse it.
 - The public types no longer use the `Vis` prefix, and the internal builders use the `form` prefix.
 - `hie.yaml` is optional editor configuration and is not tracked. Commit it only if the team decides to share it.
+- Commits use the GitHub noreply address; maintainer contact uses `dev@tralen.cc`.
 - The CI workflow targets GHC 9.14.1 and Cabal 3.18.1.0. Extend the matrix once the supported GHC range is validated.
