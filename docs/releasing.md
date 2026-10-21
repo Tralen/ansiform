@@ -13,8 +13,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `0.7.8.6` and its GitHub release are published. Tag `0.7.9.0` marks this release.
-- Hackage: 0.7.8.6 is published at <https://hackage.haskell.org/package/ansiform>; the 0.7.9.0 release follows this checklist.
+- Tag `0.7.9.0` and its GitHub release are published.
+- Hackage: 0.7.9.0 is published at <https://hackage.haskell.org/package/ansiform-0.7.9.0>, with documentation uploaded.
 - The 0.7.9.0 release adds page forms, automatic padding for bordered groups and explicit non-negative arithmetic.
 
 ## Credentials
