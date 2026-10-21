@@ -9,3 +9,12 @@ REGRESSION.md
 # Haskell
 dist-newstyle/
 dist-*/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx

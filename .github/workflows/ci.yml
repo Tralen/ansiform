@@ -5,6 +5,9 @@ on:
     branches: [master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: ${{ matrix.os }} / GHC ${{ matrix.ghc-version }}
@@ -13,23 +16,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15, windows-latest]
-        ghc-version: ["9.2.8", "9.14.1"]
-        exclude:
-          # GHC 9.2.8 has no aarch64-darwin bindist for the arm64 macOS runner.
-          - os: macos-15
+        include:
+          - os: ubuntu-latest
             ghc-version: "9.2.8"
+          - os: ubuntu-latest
+            ghc-version: "9.14.1"
+          - os: macos-15-intel
+            ghc-version: "9.2.8"
+          - os: macos-15
+            ghc-version: "9.14.1"
+          - os: windows-latest
+            ghc-version: "9.2.8"
+          - os: windows-latest
+            ghc-version: "9.14.1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: haskell-actions/setup@v2
+      - uses: haskell-actions/setup@0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d # v2.12.1
         id: setup
         with:
           ghc-version: ${{ matrix.ghc-version }}
           cabal-version: "3.18.1.0"
 
       - name: Cache Cabal store
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ${{ steps.setup.outputs.cabal-store }}
@@ -55,3 +65,30 @@ jobs:
 
       - name: Build source distribution
         run: cabal sdist
+
+  quality:
+    name: Formatting and linting
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Fourmolu
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/fourmolu.zip" https://github.com/fourmolu/fourmolu/releases/download/v0.21.0.0/fourmolu-0.21.0.0-linux-x86_64.zip
+          echo "aadf6931653df7b96f52014cf8eb4285a3e8778cd0b531499fc3ee013e1e00c7  $RUNNER_TEMP/fourmolu.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/fourmolu.zip" -d "$RUNNER_TEMP"
+          install -Dm755 "$RUNNER_TEMP/fourmolu-0.21.0.0-linux-x86_64/fourmolu" "$HOME/.local/bin/fourmolu"
+
+      - name: Install HLint
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/hlint.tar.gz" https://github.com/ndmitchell/hlint/releases/download/v3.10/hlint-3.10-x86_64-linux.tar.gz
+          echo "ccabc8802a58154699a3583b8dddc5ea2e6d65753a62c45c0e80088ebb16b42b  $RUNNER_TEMP/hlint.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/hlint.tar.gz" -C "$RUNNER_TEMP"
+          install -Dm755 "$RUNNER_TEMP/hlint-3.10/hlint" "$HOME/.local/bin/hlint"
+
+      - name: Check formatting
+        run: find src examples test -name '*.hs' -print0 | xargs -0 fourmolu --mode check
+
+      - name: Lint
+        run: hlint src examples test

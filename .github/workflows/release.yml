@@ -1,0 +1,132 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release, without a v prefix
+        required: true
+        type: string
+      publish:
+        description: Publish the candidate to Hackage and GitHub
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  VERSION: ${{ inputs.version }}
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    name: Candidate ${{ inputs.version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.version }}
+          fetch-depth: 0
+
+      - name: Verify version and tag
+        run: |
+          test "$(git describe --tags --exact-match)" = "$VERSION"
+          git ls-remote --exit-code --tags origin "refs/tags/$VERSION"
+          test "$(sed -n 's/^version:[[:space:]]*//p' ansiform.cabal | head -n 1)" = "$VERSION"
+
+      - uses: haskell-actions/setup@0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d # v2.12.1
+        with:
+          ghc-version: "9.14.1"
+          cabal-version: "3.18.1.0"
+
+      - name: Update package index
+        run: cabal update
+
+      - name: Build and test
+        run: |
+          cabal build all
+          cabal test all
+          cabal check
+
+      - name: Build release artifacts
+        run: |
+          cabal haddock --haddock-for-hackage
+          cabal sdist
+          test -f "dist-newstyle/sdist/ansiform-$VERSION.tar.gz"
+          test -f "dist-newstyle/ansiform-$VERSION-docs.tar.gz"
+
+      - name: Upload Hackage candidate
+        env:
+          HACKAGE_TOKEN: ${{ secrets.HACKAGE_TOKEN }}
+        run: |
+          test -n "$HACKAGE_TOKEN"
+          cabal upload --token "$HACKAGE_TOKEN" "dist-newstyle/sdist/ansiform-$VERSION.tar.gz"
+          cabal upload --token "$HACKAGE_TOKEN" --documentation "dist-newstyle/ansiform-$VERSION-docs.tar.gz"
+
+      - name: Write checksums
+        run: |
+          cd dist-newstyle
+          sha256sum "sdist/ansiform-$VERSION.tar.gz" "ansiform-$VERSION-docs.tar.gz" > SHA256SUMS
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ansiform-${{ inputs.version }}
+          path: |
+            dist-newstyle/sdist/ansiform-${{ inputs.version }}.tar.gz
+            dist-newstyle/ansiform-${{ inputs.version }}-docs.tar.gz
+            dist-newstyle/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish ${{ inputs.version }}
+    needs: candidate
+    if: inputs.publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ansiform-${{ inputs.version }}
+          path: dist-newstyle
+
+      - name: Verify checksums
+        run: |
+          cd dist-newstyle
+          sha256sum -c SHA256SUMS
+
+      - uses: haskell-actions/setup@0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d # v2.12.1
+        with:
+          ghc-version: "9.14.1"
+          cabal-version: "3.18.1.0"
+
+      - name: Publish to Hackage
+        env:
+          HACKAGE_TOKEN: ${{ secrets.HACKAGE_TOKEN }}
+        run: |
+          test -n "$HACKAGE_TOKEN"
+          cabal upload --token "$HACKAGE_TOKEN" --publish "dist-newstyle/sdist/ansiform-$VERSION.tar.gz"
+          cabal upload --token "$HACKAGE_TOKEN" --documentation --publish "dist-newstyle/ansiform-$VERSION-docs.tar.gz"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$VERSION" \
+            --verify-tag \
+            --title "ansiform $VERSION" \
+            --generate-notes \
+            "dist-newstyle/sdist/ansiform-$VERSION.tar.gz" \
+            "dist-newstyle/ansiform-$VERSION-docs.tar.gz" \
+            "dist-newstyle/SHA256SUMS"

@@ -25,6 +25,7 @@ extra-doc-files:     CHANGELOG.md
                      docs/platforms.md
                      docs/ports.md
                      docs/printers.md
+                     docs/quality.md
                      docs/releasing.md
                      docs/render.md
                      docs/roadmap.md

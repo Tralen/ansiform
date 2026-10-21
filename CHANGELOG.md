@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### Unreleased
+* Added Fourmolu formatting and HLint checks, a gitleaks secret scan and a manual release workflow.
+* Added a macOS Intel CI job for GHC 9.2.8 and updated the GitHub Actions to Node 24 versions.
+* Added `docs/quality.md` and documented the release automation.
+
 ### 1.0.0 -- 2026-10-21
 * Forms now draw every prefilled field when they open, so all current values are visible before the first field is focused. The active field redraws the same text and starts with the cursor at the end.
 * Marked the library stable at 1.0.0 after the editable form fields, the shortcut key reader, the line editing core and the multiplatform CI work.

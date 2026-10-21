@@ -1,15 +1,15 @@
 # Releasing
 
-This checklist covers the Hackage and GitHub release of Ansiform. Update it as the release process evolves.
+This checklist covers the Hackage and GitHub release of Ansiform. Update it as the release process evolves. The README defines the versioning scheme and the single source of the version.
 
 ## Current status
 
 - Package: `ansiform`. The name is already registered on Hackage.
 - Version: 1.0.0.
 - License: MIT.
-- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
+- `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, changelog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
-- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution on Linux, macOS and Windows, with GHC 9.2.8 and GHC 9.14.1. macOS uses `macos-15` and only GHC 9.14.1: GHC 9.2.8 has no aarch64-darwin bindist, and the SDK on `macos-latest` is too new for the GHC 9.14.1 linker.
+- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution on Ubuntu, `macos-15-intel`, `macos-15` and Windows with GHC 9.2.8 and GHC 9.14.1. The quality job checks Fourmolu and HLint. `.github/workflows/gitleaks.yml` scans the history for secrets.
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
@@ -19,11 +19,11 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 
 ## Credentials
 
-Publishing needs two credentials. Local builds, tests, Haddock and `cabal sdist` do not use them.
+Publishing needs two credentials. Local builds, tests, Haddock, formatting, linting and `cabal sdist` do not use them.
 
 ### Hackage
 
-Export `HACKAGE_TOKEN` with your own secret manager before running the command. Use the token directly on the command line so it is not stored:
+Export `HACKAGE_TOKEN` with your own secret manager before running a local command. Use the token directly on the command line so it is not stored:
 
 ```sh
 cabal upload --token "$HACKAGE_TOKEN" dist-newstyle/sdist/ansiform-<version>.tar.gz
@@ -35,7 +35,7 @@ For documentation:
 cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
 ```
 
-Do not add the token or the location of your secret manager to the repository. If a persistent configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
+The automated release stores the token as an environment secret named `HACKAGE_TOKEN` in the GitHub environment `release`. Do not add the token or the location of your secret manager to the repository. If a persistent local configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
 
 New Hackage accounts must be added to the uploaders group before the first upload. Ask two confirmed uploaders to endorse the account through the link in the account email, or email `hackage-trustees@haskell.org` with the Hackage username and a link to the repository. Uploads return HTTP 403 until the account is approved.
 
@@ -57,17 +57,43 @@ Pushes use SSH. Configure an SSH key for your GitHub account with your own local
    git remote set-url origin git@github.com:Tralen/ansiform.git
    ```
 
-The repository must be public for the package links and badges to work. Pushes still require a key belonging to an account with write access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`.
+The repository must be public for the package links and badges to work. Pushes still require a key belonging to an account with write access. `GITHUB_TOKEN` is not used automatically by `git push`; it is only for the GitHub API or `gh`. The release workflow uses the token that GitHub provides to create the release.
 
 Never print the values of the tokens or commit the location of your secrets.
 
-## Before the first release
+## Automated release
+
+`.github/workflows/release.yml` publishes a version through `workflow_dispatch`. It has two jobs:
+
+- `candidate` checks out the tag, verifies that the tag and the version in `ansiform.cabal` match, builds, tests, checks, builds the Haddock tarball and the source distribution, uploads both as Hackage candidates and stores them with a `SHA256SUMS` file as a workflow artifact.
+- `publish` runs only when the `publish` input is true. It verifies the checksums, publishes the exact artifacts to Hackage and creates the GitHub release with generated notes.
+
+Both jobs use the `release` environment. Create the environment in the repository settings and add `HACKAGE_TOKEN` as an environment secret. A solo maintainer does not need required reviewers; if reviewers are enabled, both the candidate and the publish job wait for approval.
+
+1. Push the final commit and the tag. The tag uses the version without a `v` prefix:
+
+   ```sh
+   git push origin master
+   git tag -a <version> -m "ansiform <version>"
+   git push origin <version>
+   ```
+
+2. Run the workflow with `publish` disabled and inspect the candidate at `https://hackage.haskell.org/package/ansiform/candidates`. Check the rendered documentation, the dependency bounds and the build report.
+3. Run the workflow again with `publish` enabled. The environment approval is the explicit authorization.
+4. Check the public package page, the documentation links, the GitHub release and the attached artifacts.
+
+The workflow is the preferred path because it builds from the tag and keeps the token outside the local machine. The manual process below remains available and produces the same artifacts.
+
+## Manual release
+
+### Before the release
 
 1. Configure an SSH key for GitHub and confirm write access to the repository.
-2. Verify the remote:
+2. Verify the remote and start from a clean tree:
 
    ```sh
    git remote -v
+   git status
    git push -u origin master
    ```
 
@@ -94,18 +120,27 @@ Never print the values of the tokens or commit the location of your secrets.
    cabal sdist
    ```
 
-6. Inspect the source distribution:
+6. Run the quality checks described in `docs/quality.md`:
+
+   ```sh
+   fourmolu --mode check $(find src examples test -name '*.hs')
+   hlint src examples test
+   gitleaks git --redact --log-opts="--all"
+   gitleaks dir --redact .
+   ```
+
+7. Inspect the source distribution:
 
    ```sh
    tar -tzf dist-newstyle/sdist/ansiform-<version>.tar.gz
    ```
 
-## Uploading to Hackage
+### Uploading to Hackage
 
-`cabal upload` uploads a **package candidate** by default. A candidate is not visible as a normal package version, so it can be inspected and even deleted before publication.
+`cabal upload` uploads a package candidate by default. A candidate is not visible as a normal package version, so it can be inspected and even deleted before publication.
 
 1. Create a Hackage account and obtain an upload token.
-2. Configure the token, preferably through the interactive prompt or the Cabal config file. Avoid putting the token directly in shell history.
+2. Reference the token through the environment variable, as shown above. Do not paste the token value into the command or store it in the repository.
 3. Build the documentation tarball:
 
    ```sh
@@ -139,7 +174,7 @@ Never print the values of the tokens or commit the location of your secrets.
 
 Publishing cannot be undone easily. Never run `--publish` without explicit approval after the candidate review. Use the candidate stage to catch metadata, documentation and dependency problems before publishing.
 
-## GitHub release
+### GitHub release
 
 1. Confirm that the repository exists and is public. Recreate it only if it is missing.
 2. Push the final commit and tag the release:
@@ -150,8 +185,26 @@ Publishing cannot be undone easily. Never run `--publish` without explicit appro
    git push origin master --tags
    ```
 
-3. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
-4. The Hackage badge is already present in the README.
+3. Create a GitHub release from the tag, using the relevant changelog section as the description:
+
+   ```sh
+   gh release create <version> --verify-tag --title "ansiform <version>" --notes-file <notes>
+   ```
+
+4. Attach the source distribution, the documentation tarball and a `SHA256SUMS` file to the release.
+5. The Hackage badge is already present in the README.
+
+### Verification
+
+Install the published version in a temporary project instead of installing the executables into the user's binary directory:
+
+```sh
+mkdir /tmp/ansiform-check
+cd /tmp/ansiform-check
+cabal repl --build-depends=ansiform==<version>
+```
+
+Compile a small expression that imports `Ansiform` and run it. This checks that the published package resolves and that the public API is usable.
 
 ## Notes
 
@@ -159,4 +212,6 @@ Publishing cannot be undone easily. Never run `--publish` without explicit appro
 - The public types no longer use the `Vis` prefix, and the internal builders use the `form` prefix.
 - `hie.yaml` is optional editor configuration and is not tracked. Commit it only if the team decides to share it.
 - Commits use the GitHub noreply address; maintainer contact uses `dev@tralen.cc`.
-- The CI workflow runs GHC 9.2.8 and GHC 9.14.1 with Cabal 3.18.1.0 on Ubuntu, Windows and `macos-15`. Keep the macOS pin until a newer GHC supports the `macos-latest` SDK.
+- The CI workflow runs GHC 9.2.8 and GHC 9.14.1 with Cabal 3.18.1.0. `macos-15-intel` covers GHC 9.2.8 because the arm64 runner has no bindist for that version. `macos-15` covers GHC 9.14.1 because the SDK on `macos-latest` is too new for its linker.
+- The workflows use Node 24 actions. Keep the pinned versions and checksums in `ci.yml` current.
+- Formatting, linting and secret scanning are documented in `docs/quality.md`.

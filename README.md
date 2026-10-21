@@ -105,6 +105,8 @@ cabal run ansiform-tutorial
 
 `ansiform-tutorial` is the small bookmarks program from the [tutorial](https://github.com/Tralen/ansiform/blob/master/docs/tutorial.md).
 
+Formatting, linting and secret scanning are described in the [quality](https://github.com/Tralen/ansiform/blob/master/docs/quality.md) guide.
+
 ## Documentation
 
 - [Tutorial](https://github.com/Tralen/ansiform/blob/master/docs/tutorial.md): build a small bookmarks program step by step.
@@ -118,6 +120,7 @@ cabal run ansiform-tutorial
 - [Pages and drawing](https://github.com/Tralen/ansiform/blob/master/docs/pages.md): pages, state and the drawing lifecycle.
 - [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, forms, and the standard interaction loop.
 - [Platforms](https://github.com/Tralen/ansiform/blob/master/docs/platforms.md): Linux, macOS and Windows behaviour, terminal requirements and known limitations.
+- [Quality](https://github.com/Tralen/ansiform/blob/master/docs/quality.md): formatting, linting and secret scanning.
 - [Ports](https://github.com/Tralen/ansiform/blob/master/docs/ports.md): an assessment of porting the library to Rust.
 - [Render](https://github.com/Tralen/ansiform/blob/master/docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](https://github.com/Tralen/ansiform/blob/master/docs/settings.md): width, spacing and group overflow configuration.
