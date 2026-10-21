@@ -14,7 +14,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
 - Tag `0.7.8.5` and its GitHub release are published.
-- The roadmap is complete. GitHub publication is done; the Hackage upload is pending.
+- Hackage: published at <https://hackage.haskell.org/package/ansiform>.
+- The roadmap is complete. GitHub and Hackage publication are done.
 
 ## Credentials
 
@@ -149,7 +150,7 @@ Publishing cannot be undone easily. Use the candidate stage to catch metadata, d
    ```
 
 3. Create a GitHub release from the tag, using the relevant ChangeLog section as the description.
-4. Add the Hackage badge to the README once the package page exists. The CI and license badges are already present.
+4. The Hackage badge is already present in the README.
 
 ## Notes
 
