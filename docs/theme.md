@@ -28,8 +28,8 @@ defaultTheme :: Theme
 | `themeFooter` | Footer messages. The default theme uses italic white. |
 | `themeAccent` | Highlighted keys, links and selected values. |
 | `themeDanger` | Exit and destructive actions. |
-| `themeMuted` | Secondary and disabled text. |
-| `themeRule` | Horizontal rules. |
+| `themeMuted` | Secondary and disabled text. The default theme uses italic white. |
+| `themeRule` | Horizontal rules. The default theme uses bold vivid black. |
 | `themeBar` | Solid bar background. |
 | `themeTableHeader` | Table header text. |
 | `themeTableBody` | Default table body text. |

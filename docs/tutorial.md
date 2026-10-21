@@ -166,16 +166,13 @@ formBody = sectionBodyRule 1 ruleBody
   [ printerLeft 2 (blockSimple "Title: " styleDefault)
   , printerEmpty 1
   , printerLeft 2 (blockSimple "URL:   " styleDefault)
-  , printerEmpty 1
-  , printerLeft 2
-      (blockSimple "Press Enter after each field; empty fields cancel."
-        (themeMuted theme))
   ]
 
 formFooter :: Section
 formFooter = sectionBodyRule 1 ruleFooter
   [ printerLineCenter 4
-      [ blockSimple "Type a value and press Enter for each field."
+      [ blockSimple
+          "Type a value and press Enter for each field; empty fields cancel."
           (themeFooter theme) ]
   ]
 ```
@@ -192,7 +189,7 @@ formPrompts =
   , promptAt 1 4 (fieldColumn "URL:   ") ]
 ```
 
-The form body is section `1`. `sectionBodyRule 1` prints a rule on row `0` and an empty line on row `1`, so the title is row `2` and the URL is row `4`. The column is the label offset plus the display width of the label. `textWidth` understands wide characters and combining marks, so the cursor stays aligned even with Unicode labels.
+The form body is section `1`. `sectionBodyRule 1` prints a rule on row `0` and an empty line on row `1`, so the title is row `2` and the URL is row `4`. The footer carries the instruction, so the body only reserves the two editable lines. The column is the label offset plus the display width of the label. `textWidth` understands wide characters and combining marks, so the cursor stays aligned even with Unicode labels.
 
 `readForm` draws the page, places the cursor on each prompt in order and returns the typed values:
 

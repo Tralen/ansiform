@@ -125,16 +125,13 @@ formBody = sectionBodyRule 1 ruleBody
   [ printerLeft 2 (blockSimple "Title: " styleDefault)
   , printerEmpty 1
   , printerLeft 2 (blockSimple "URL:   " styleDefault)
-  , printerEmpty 1
-  , printerLeft 2
-      (blockSimple "Press Enter after each field; empty fields cancel."
-        (themeMuted theme))
   ]
 
 formFooter :: Section
 formFooter = sectionBodyRule 1 ruleFooter
   [ printerLineCenter 4
-      [ blockSimple "Type a value and press Enter for each field."
+      [ blockSimple
+          "Type a value and press Enter for each field; empty fields cancel."
           (themeFooter theme) ]
   ]
 
