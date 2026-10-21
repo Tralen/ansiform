@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.9.0.5 -- 2026-10-21
+* Pinned the macOS CI job to `macos-15`. The `macos-latest` image ships an SDK that the GHC 9.14.1 linker cannot parse, so the build failed before the tests ran.
+
 ### 0.9.0.4 -- 2026-10-21
 * Fixed a Windows crash when rendering to a temporary handle. `termWOn` and `termHOn` now query the terminal size only when the handle is a terminal. The `stty` fallback in `terminal-size` can close a non-console handle on Windows, which broke `renderPage`, `renderSection` and `renderPrinter` on that platform.
 
