@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.7.8.5 -- 2026-10-20
+* Added PVP upper bounds to the directory dependency of the test suite.
+
 ### 0.7.8.4 -- 2026-10-18
 * Finalized the package metadata with the author name and the project maintainer alias.
 * Documented the Hackage candidate workflow for verification before publication.
