@@ -47,7 +47,7 @@ The tool versions are pinned in the workflow. Update the version, the release UR
 
 ## Local setup
 
-Fourmolu and HLint have release binaries for Linux, macOS and Windows. They can also be installed with Cabal:
+Fourmolu has release binaries for Linux and macOS, and HLint also ships a Windows binary. Both can be installed with Cabal:
 
 ```sh
 cabal install --installdir="$HOME/.local/bin" --overwrite-policy=always fourmolu-0.21.0.0 hlint-3.10
