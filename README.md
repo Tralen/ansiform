@@ -22,6 +22,11 @@ Haskell with Cabal. Stack is not used.
 
 PVP, single-sourced from the `ansiform.cabal` file.
 
+- Patch: fixes and minor refinements.
+- Minor: new user-facing features or screens.
+- Major 2: data model breaking changes.
+- Major 1: major release milestones.
+
 ## Features
 
 - ANSI colors, bold, italic and underline, with automatic suppression on non-TTY output, `NO_COLOR` and `TERM=dumb`.
