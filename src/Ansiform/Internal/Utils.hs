@@ -27,6 +27,12 @@ headMaybe :: [a] -> Maybe a
 headMaybe [] = Nothing
 headMaybe (x:_) = Just x
 
+-- Version of indexing that returns a maybe.
+atMay :: [a] -> Int -> Maybe a
+atMay xs n
+    | n < 0 = Nothing
+    | otherwise = headMaybe (drop n xs)
+
 -- Version of head that takes a default.
 head' :: a -> [a] -> a
 head' d [] = d

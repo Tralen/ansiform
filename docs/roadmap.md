@@ -26,6 +26,18 @@ Deliberately deferred. The list-based builders and the `State` lifecycle cover t
 
 ## Implemented
 
+### Page forms
+
+Released in 0.7.9.0. `Ansiform.Input` provides `Prompt`, `promptAt`, `readForm` and `readFormOn`, so a screen can draw a page and read several prompts without counting the lines below each one. Prompt positions are section-relative, and errors are reported as `FormError` values. See [Input](input.md).
+
+### Explicit non-negative arithmetic
+
+Released in 0.7.9.0. `Ansiform.Number` provides `addNumber`, `subtractNumber` and `subtractNumberMaybe`; the checked subtraction returns `Nothing` when the result would be negative. See [Numbers](number.md).
+
+### Bordered group padding
+
+Released in 0.7.9.0. The `printerGroupsBordered` family pads unequal groups with empty blocks, so every column reaches the bottom border. See [Table formatting](table-format.md).
+
 ### CI matrix
 
 Released in 0.7.6.0. The CI workflow tests GHC 9.2.8 and GHC 9.14.1 with Cabal 3.18.1.0.

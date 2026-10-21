@@ -79,7 +79,7 @@ printerSolidLineRight :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineCenter :: Offset -> Padding -> Color -> [Block] -> Printer
 ```
 
-These printers fill a whole line with the background color and then print the text on top, with the given padding. They are useful for title bars and selected rows.
+These printers fill a whole line with the background color and then print the text on top, with the given padding. They are useful for title bars and selected rows. The `SolidLeft`, `SolidRight` and `SolidCenter` builders take one `Block`; the `SolidLineLeft`, `SolidLineRight` and `SolidLineCenter` builders take a list of `Block` values.
 
 ## Columns and lists
 
@@ -110,7 +110,7 @@ printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Grou
 - `printerGroups` spaces the groups evenly.
 - `printerGroups'` gives each group the minimum width it needs.
 - The `Limited` variants stop after a number of rows; `0` means no limit.
-- The `Bordered` variants draw a box around the groups. They do not split columns into bands and do not apply a background. See [Table formatting](table-format.md).
+- The `Bordered` variants draw a box around the groups. They do not split columns into bands and do not apply a background. Unequal groups are padded automatically with empty blocks, so every column reaches the bottom border. See [Table formatting](table-format.md).
 
 Groups that exceed the configured overflow ratio are split into extra rows by the layout engine.
 

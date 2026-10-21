@@ -7,7 +7,8 @@ import           Data.Maybe (isJust, isNothing)
 import           GHC.IO.Handle (hDuplicate, hDuplicateTo)
 import           System.Directory (getTemporaryDirectory, removeFile)
 import           System.Exit (exitFailure)
-import           System.IO (hClose, hFlush, openTempFile, stdout)
+import           System.IO (hClose, hFlush, hPutStr, hSeek, openTempFile,
+                            SeekMode (AbsoluteSeek), stdin, stdout)
 import           Ansiform
 
 main :: IO ()
@@ -21,6 +22,11 @@ main = do
         (unNumber (3 + 4 :: Number) == 7)
     , test "Number subtraction caps at zero"
         (unNumber (2 - 5 :: Number) == 0)
+    , test "Number checked subtraction rejects negative results"
+        (subtractNumberMaybe 2 5 == Nothing
+          && subtractNumberMaybe 5 2 == Just 3)
+    , test "Number explicit subtraction caps at zero"
+        (unNumber (subtractNumber 2 5) == 0)
     , test "Number negation caps at zero"
         (unNumber (negate (5 :: Number)) == 0)
     , test "Number signum"
@@ -118,6 +124,37 @@ main = do
           (printerTableBordered BordersLight defaultTableFormat 0 0 tbl)
           (settings [width 40, neverColors])
         return $ all (`isInfixOf` out) ["┌", "│", "└", "x", "y"]
+    , testIO "Bordered groups pad unequal columns" $ do
+        let tall = groupSimple (blockSimple "A" styleDefault)
+                     [ blockSimple "1" styleDefault
+                     , blockSimple "2" styleDefault ]
+            short = groupSimple (blockSimple "B" styleDefault) []
+        out <- renderPrinter
+          (printerGroupsBordered BordersAscii 0 0 [tall, short])
+          (settings [width 30, neverColors])
+        let outputLines = lines out
+            allSameWidth = case outputLines of
+              [] -> False
+              (firstLine:_) -> all ((== length firstLine) . length) outputLines
+        return $ length outputLines == 7 && allSameWidth
+    , testIO "Form rejects a prompt outside the page" $ do
+        let p = page [section [printerLeft 0 (blockSimple "one" styleDefault)]]
+            prompt = promptAt 9 0 0
+        (result, _) <- captureStdout $ do
+          st <- start p (settings [neverColors])
+          (_, formResult) <- readForm p [prompt] st
+          return formResult
+        return $ result == Left (PromptOutsidePage prompt)
+    , testIO "Form reads prompts in order" $ do
+        let p = page [section
+              [ printerLeft 0 (blockSimple "first" styleDefault)
+              , printerLeft 0 (blockSimple "second" styleDefault) ]]
+            prompts = [promptAt 0 0 7, promptAt 0 1 8]
+        (result, _) <- withStdin "Ada\n42\n" $ captureStdout $ do
+          st <- start p (settings [neverColors])
+          (_, formResult) <- readForm p prompts st
+          return formResult
+        return $ result == Right ["Ada", "42"]
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])
@@ -159,6 +196,23 @@ captureStdout action = do
   output <- readFile path
   removeFile path
   return (result, output)
+
+-- Runs an action with stdin replaced by a temporary file containing the input.
+withStdin :: String -> IO a -> IO a
+withStdin input action = do
+  tmp <- getTemporaryDirectory
+  (path, handle) <- openTempFile tmp "ansiform-test-input"
+  hPutStr handle input
+  hFlush handle
+  hSeek handle AbsoluteSeek 0
+  original <- hDuplicate stdin
+  hDuplicateTo handle stdin
+  result <- action
+  hDuplicateTo original stdin
+  hClose original
+  hClose handle
+  removeFile path
+  return result
 
 --------------------------------------------------------------------------------
 -- Fixtures

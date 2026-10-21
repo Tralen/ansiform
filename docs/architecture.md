@@ -18,7 +18,7 @@ The public modules are thin, documented facades over internal modules.
 | `Ansiform.Settings` | Settings and configuration modifiers. | `Ansiform.Internal.Settings` |
 | `Ansiform.Table` | Per-column table formatting. | `Ansiform.Internal.Table` |
 | `Ansiform.Theme` | Reusable styles for interface components. | `Ansiform.Internal.Theme` |
-| `Ansiform.Input` | Immediate single-key and line input. | `Ansiform.Internal.Input` |
+| `Ansiform.Input` | Immediate single-key input, line input and page forms. | `Ansiform.Internal.Input` |
 | `Ansiform.Render` | Rendering to a `Handle` or a `String`. | `Ansiform.Internal.Output`, `Ansiform.Internal.Render` |
 | `Ansiform.Width` | Display width of characters and strings. | `Ansiform.Internal.Width` |
 | `Ansiform.Sample` | Inspection helpers for debugging. | `Ansiform.Internal.Sample` |

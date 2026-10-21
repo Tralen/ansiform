@@ -87,7 +87,7 @@ printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group
 printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 ```
 
-Bordered tables and groups do not split into column bands; they overflow when they are wider than the terminal. They also do not apply the zebra background, leaving the border and cell styles explicit.
+Bordered tables and groups do not split into column bands; they overflow when they are wider than the terminal. They also do not apply the zebra background, leaving the border and cell styles explicit. Unequal groups passed to the bordered group printers are padded with empty blocks to the height of the tallest group, so the border stays rectangular.
 
 ## Truncation
 

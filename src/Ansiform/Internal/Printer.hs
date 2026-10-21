@@ -105,7 +105,7 @@ printLeft o off b = ind h off >> printBlock o b >> printEnd o
 
 -- Function to execute the printing functions that sums the line counts.
 printCounter :: (a -> IO Number) -> [a] -> IO Number
-printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
+printCounter f = foldM (\ns l -> addNumber ns <$> f l) 0
 
 
 -- Rules & Solid Printing
@@ -113,7 +113,7 @@ printCounter f = foldM (\ns l -> (+) ns <$> f l) 0
 
 -- Prints a horizontal rule with an offset on both sides.
 printRule :: Offset -> Rule -> Output -> IO Number
-printRule o r out = ind h o >> printItem out (formRuleItem r (w - o*2)) >> printEnd out
+printRule o r out = ind h o >> printItem out (formRuleItem r (subtractNumber w (o * 2))) >> printEnd out
               where w = unWidth (outputConfig out)
                     h = outputHandle out
 
@@ -146,7 +146,7 @@ printLineRight o bs out = printLineLeft finalOffset bs out
           w = unWidth (outputConfig out)
           m = unMinSpace (outputConfig out)
           m' = unn m
-          finalOffset = w - o - totalWidth + m
+          finalOffset = addNumber (subtractNumber (subtractNumber w o) totalWidth) m
           totalWidth = formNumber . sum $ fmap ((+m') . blockTextWidth) bs
 
 
@@ -195,7 +195,7 @@ type LineFunction = (Offset -> [Block] -> Output -> IO Number)
 --   The padding between background and text can be given as another offset.
 printSolidLine :: Offset -> Padding -> Color -> [Block]
                -> LineFunction -> Output -> IO Number
-printSolidLine o p c bs f out = printSolid o c out >> hCursorUp h 1 >> f (o + p) bs' out
+printSolidLine o p c bs f out = printSolid o c out >> hCursorUp h 1 >> f (addNumber o p) bs' out
           where bs' = fmap (blockSetBG c) bs
                 h = outputHandle out
 
@@ -305,10 +305,10 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
          where
             printLoop :: [Group] -> [Int] -> Int -> Number -> IO Number
             printLoop rm wl ri nls
-                    | null rm || (ri >= n' && n' /= 0) = return (nls + formNumber ri - 1)
+                    | null rm || (ri >= n' && n' /= 0) = return (subtractNumber (addNumber nls (formNumber ri)) 1)
                     | otherwise = executePrint >> restartLoop
               where                 
-                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (nls + formNumber rowLength)
+                 restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (addNumber nls (formNumber rowLength))
 
                  executePrint :: IO ()
                  executePrint
@@ -371,6 +371,8 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
 
 -- Prints groups or tables inside a box border.
 --   The table does not split into column bands; it overflows when it does not fit.
+--   Groups with fewer blocks than the tallest group are padded with empty
+--   blocks, so every column reaches the bottom border.
 printBorderedGroups :: Borders -> TableFormat -> Offset -> Padding -> Number
                     -> Bool -> [Group] -> Output -> IO Number
 printBorderedGroups brd fmt o p n bSpace gs out
@@ -386,7 +388,7 @@ printBorderedGroups brd fmt o p n bSpace gs out
     maxWidth = maximum' 0 cappedWidths
     contentWidths = if bSpace then replicate (length gs) maxWidth else cappedWidths
     cellWidths = fmap (+ (2 * p')) contentWidths
-    rows = transpose (fmap unGroup gs)
+    rows = transpose (fmap unGroup (padGroups gs))
     n' = unn n
     limitedRows = if n' == 0 then rows else take n' rows
 
@@ -432,6 +434,14 @@ printBorderedGroups brd fmt o p n bSpace gs out
             hPutStr h (borderLine first middle lastChar cellWidths (borderHorizontal bc))
             hPutStr h "\n"
             return 1
+
+-- Pads every group with empty blocks so all groups have the same height.
+padGroups :: [Group] -> [Group]
+padGroups gs = fmap padGroup gs
+  where
+    tallest = maximum' 0 (fmap (length . unGroup) gs)
+    padGroup g = formGroup' (unGroup g ++ replicate missing blockEmpty)
+      where missing = max 0 (tallest - length (unGroup g))
 
 -- Builds one horizontal line of a box border.
 borderLine :: Char -> Char -> Char -> [Int] -> Char -> String
@@ -483,7 +493,7 @@ printSequence o o1 p bZebra fInt vbss out = printCounter printEach (zip vbss [0.
     where 
       printEach (vbs,i)
           | i == length vbss - 1 = printParagraph' predZebra
-          | otherwise = printParagraph' predZebra >>= \n -> printSeparation >>= \n' -> return (n+n')
+          | otherwise = printParagraph' predZebra >>= \n -> printSeparation >>= \n' -> return (addNumber n n')
         where 
           predZebra = bZebra && fInt i
           printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs out

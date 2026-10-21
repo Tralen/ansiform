@@ -4,6 +4,14 @@
 
 ## Functional Versions
 
+### 0.7.9.0 -- 2026-10-21
+* Added readForm and readFormOn to Ansiform.Input, reading several page prompts with the cursor arithmetic handled by the library.
+* Added Prompt, promptAt and FormError as public types for page forms.
+* printerGroupsBordered and its variants now pad unequal groups with empty blocks automatically.
+* Added addNumber, subtractNumber and subtractNumberMaybe to Ansiform.Number; checked subtraction reports a negative result as Nothing.
+* Clarified the Haddock comments for the single-block and line solid printers, and warned that readLineAt already wraps withLineInput.
+* Added docs/number.md.
+
 ### 0.7.8.6 -- 2026-10-21
 * Fixed README links so they resolve on Hackage.
 * Removed the top horizontal rule from the demo header.

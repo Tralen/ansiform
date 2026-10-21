@@ -81,27 +81,33 @@ printerLineCenter o bs = formPrinter "LineCenter" $ \s -> printLineCenter o bs s
 -- Solid Text Printing
 --------------------------------------------------------------------------------
 
--- | Printer for a block on a solid left-aligned line.
+-- | Printer for one block on a solid left-aligned line.
+--   For several blocks, use 'printerSolidLineLeft'.
 printerSolidLeft :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidLeft o p c b = formPrinter "SolidLeft" $ \s -> printSolidLine o p c [b] printLineLeft s
 
--- | Printer for a block on a solid right-aligned line.
+-- | Printer for one block on a solid right-aligned line.
+--   For several blocks, use 'printerSolidLineRight'.
 printerSolidRight :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidRight o p c b = formPrinter "SolidRight" $ \s -> printSolidLine o p c [b] printLineRight s
 
--- | Printer for a block on a solid centered line.
+-- | Printer for one block on a solid centered line.
+--   For several blocks, use 'printerSolidLineCenter'.
 printerSolidCenter :: Offset -> Padding -> Color -> Block -> Printer
 printerSolidCenter o p c b = formPrinter "SolidCenter" $ \s -> printSolidLine o p c [b] printLineCenter s
 
--- | Printer for blocks on a solid left-aligned line.
+-- | Printer for several blocks on a solid left-aligned line.
+--   Use 'printerSolidLeft' for a single block.
 printerSolidLineLeft :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineLeft o p c bs = formPrinter "SolidLineLeft" $ \s -> printSolidLine o p c bs printLineLeft s
 
--- | Printer for blocks on a solid right-aligned line.
+-- | Printer for several blocks on a solid right-aligned line.
+--   Use 'printerSolidRight' for a single block.
 printerSolidLineRight :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineRight o p c bs = formPrinter "SolidLineRight" $ \s -> printSolidLine o p c bs printLineRight s
 
--- | Printer for blocks on a solid centered line.
+-- | Printer for several blocks on a solid centered line.
+--   Use 'printerSolidCenter' for a single block.
 printerSolidLineCenter :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineCenter o p c bs = formPrinter "SolidLineCenter" $ \s -> printSolidLine o p c bs printLineCenter s
 

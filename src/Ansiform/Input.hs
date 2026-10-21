@@ -1,6 +1,9 @@
--- | Immediate single-key and line input for interactive interfaces.
-module Ansiform.Input (withImmediateInput, readKey, withLineInput, readLine,
-                       readLineAt, readLineAtOn) where
+-- | Immediate single-key input and line input for interactive interfaces.
+module Ansiform.Input ( withImmediateInput, readKey, withLineInput, readLine
+                      , readLineAt, readLineAtOn
+                      , Prompt, promptAt, promptSection, promptRow, promptColumn
+                      , FormError (..), readForm, readFormOn
+                      ) where
 
 --------------------------------------------------------------------------------
 import           Ansiform.Internal.Input

@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.7.8.6**.
+Current version: **0.7.9.0**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -19,10 +19,12 @@ Repository: <https://github.com/Tralen/ansiform>.
 - ANSI colors, bold, italic and underline, with automatic suppression on non-TTY output, `NO_COLOR` and `TERM=dumb`.
 - Immediate single-key input: a key press changes the screen without Enter.
 - Line input for prompts and numeric selection, including prompts printed inside a page and typed in place.
+- Forms that draw a page and read several prompts, with the cursor arithmetic handled by the library.
 - Unicode-aware display widths for alignment, wrapping, lists and tables.
 - Rendering to any `Handle` or to a `String` for embedding and golden tests.
 - Per-column table alignment, maximum widths and truncation with an ellipsis.
 - Optional ASCII, light, heavy or double box borders for tables and groups.
+- Automatic padding of unequal groups in bordered layouts, so the border stays rectangular.
 - A reusable `Theme` record for consistent headers, footers, menus and tables.
 - Horizontal rules, solid backgrounds, offsets and padding.
 - Single-line and multi-line alignment.
@@ -30,6 +32,7 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Paragraph and article wrapping with styled fragments.
 - Multi-section pages with amend, replace and redraw support.
 - Errors as data: malformed tables return `Nothing` instead of throwing.
+- Explicit saturating and checked subtraction for non-negative `Number` values.
 - Small dependency footprint: `ansi-terminal`, `terminal-size`, `split`, `transformers` and `directory`.
 
 ## Quick start
@@ -92,9 +95,10 @@ cabal run ansiform-demo
 - [Table formatting](https://github.com/Tralen/ansiform/blob/master/docs/table-format.md): per-column alignment, maximum widths, truncation and borders.
 - [Sections](https://github.com/Tralen/ansiform/blob/master/docs/sections.md): grouping printers and reserving minimum line counts.
 - [Pages and drawing](https://github.com/Tralen/ansiform/blob/master/docs/pages.md): pages, state and the drawing lifecycle.
-- [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, and the standard interaction loop.
+- [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, forms, and the standard interaction loop.
 - [Render](https://github.com/Tralen/ansiform/blob/master/docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](https://github.com/Tralen/ansiform/blob/master/docs/settings.md): width, spacing and group overflow configuration.
+- [Numbers](https://github.com/Tralen/ansiform/blob/master/docs/number.md): non-negative arithmetic, saturation and checked subtraction.
 - [Demo](https://github.com/Tralen/ansiform/blob/master/docs/demo.md): what the executable showcases.
 - [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md): name rationale and disambiguation.
 - [Releasing](https://github.com/Tralen/ansiform/blob/master/docs/releasing.md): Hackage and GitHub publication checklist.

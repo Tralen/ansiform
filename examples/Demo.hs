@@ -7,6 +7,7 @@ module Main where
 
 import           Data.Char (isSpace, toLower)
 import           Data.List (elemIndex)
+import           Data.Maybe (listToMaybe)
 import           Ansiform
 
 --------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.8.6"
+demoVersion = "0.7.9.0"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -60,9 +61,9 @@ loop screen state = do
       loop next st'
 
     choosePhilosopher st = do
-      st' <- draw (screenPage GroupsPrompt) st
-      input <- readLineAt promptRowsUp promptInputColumn
-      open (chosenScreen input) st'
+      (st', input) <- readForm (screenPage GroupsPrompt)
+        [promptAt 2 2 promptInputColumn] st
+      open (chosenScreen (either (const Nothing) listToMaybe input)) st'
 
     chosenScreen input = case input >>= philosopherByNumber . trim of
       Just p -> PhilosopherPage p
@@ -122,12 +123,6 @@ promptMessage = "Choose a philosopher by number and press Enter: "
 -- The input column is the prompt offset plus its display width.
 promptInputColumn :: Offset
 promptInputColumn = formNumber (unNumber promptOffset + textWidth promptMessage)
-
--- Lines between the prompt row and the cursor after the page is drawn:
--- the blank line below the prompt, the command rows, the footer trailing
--- blank line, the bottom rule and the cursor row that follows it.
-promptRowsUp :: Number
-promptRowsUp = formNumber (length pageCommands + 4)
 
 ruleBody, ruleFooter, ruleBottom :: Rule
 ruleBody = rule '%' (themeRule demoTheme)

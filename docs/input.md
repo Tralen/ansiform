@@ -11,6 +11,14 @@ readLine :: IO (Maybe String)
 
 readLineAt :: Number -> Offset -> IO (Maybe String)
 readLineAtOn :: Handle -> Number -> Offset -> IO (Maybe String)
+
+data Prompt  -- opaque
+promptAt :: Number -> Number -> Offset -> Prompt
+
+data FormError = PromptOutsidePage Prompt | FormInputEnded
+
+readForm :: Page -> [Prompt] -> State -> IO (State, Either FormError [String])
+readFormOn :: Handle -> Page -> [Prompt] -> State -> IO (State, Either FormError [String])
 ```
 
 ## Setting up
@@ -70,7 +78,30 @@ ask state = do
 
 `readLineAt rowsUp column` moves the cursor up `rowsUp` lines, sets it to the absolute `column`, flushes the output and reads a line with echo. `rowsUp` counts the lines printed after the prompt plus the cursor row that follows them. `column` is the prompt offset plus the display width of the prompt text. Because the page is not redrawn until the input is complete, the typed text stays on the prompt line, above the command keys and with nothing printed below the footer.
 
+`readLineAt` already wraps `withLineInput`. Do not wrap it again, either directly or through another helper: the terminal mode would be changed and restored twice, which can leave echo or buffering in the wrong state.
+
 `readLineAtOn` writes the cursor movement to a given handle. Like `withLineInput`, it changes the cursor and echo only when stdin is a terminal.
+
+## Forms
+
+Counting the lines below every prompt is fragile. `readForm` takes a page and a list of prompts, draws the page, and computes the cursor movement from the line counts recorded by the draw:
+
+```haskell
+ask state = do
+  (state', input) <- readForm page
+    [ promptAt 2 2 nameColumn
+    , promptAt 2 4 ageColumn ] state
+  case input of
+    Right [name, age] -> save name age state'
+    Right _ -> retry state'
+    Left _ -> retry state'
+```
+
+`promptAt section row column` places a prompt on a zero-based section index, a zero-based row inside that section and an absolute column. Section-relative rows stay correct when the other sections change height. Prompts are read in list order, should each occupy a different page line, and the helper moves the cursor up or down between them as needed. Line input is enabled once for the whole form, so callers must not wrap `readForm` in `withLineInput`.
+
+The result is an ADT: `Right values` contains one string per prompt, `Left (PromptOutsidePage p)` reports a prompt that does not fit the drawn page, and `Left FormInputEnded` reports end of input. When a prompt does not fit, no input is read. The returned state is the one produced by drawing the page, so the caller can redraw or amend it.
+
+Both helpers assume the typed text does not wrap to another terminal line.
 
 ## Terminal state
 
