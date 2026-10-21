@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.7.10.4 -- 2026-10-21
+* Removed the obsolete URL readability comment from the tutorial example and its documentation snippet.
+
 ### 0.7.10.3 -- 2026-10-21
 * BordersNone now renders a true borderless table with the same row and column layout as the bordered printers, without border characters, horizontal separators or column bands.
 * Columns in the borderless mode are separated by two spaces.

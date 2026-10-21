@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.7.10.3**.
+Current version: **0.7.10.4**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 

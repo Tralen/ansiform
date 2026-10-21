@@ -75,7 +75,6 @@ The header, footer and rules are used by both pages, so they live in one place. 
 theme :: Theme
 theme = defaultTheme
 
--- The URL stays readable on dark terminals, while rules keep the theme color.
 urlStyle :: Style
 urlStyle = italic white
 

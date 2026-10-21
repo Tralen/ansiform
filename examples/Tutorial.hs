@@ -52,7 +52,6 @@ clampSelection count index
 theme :: Theme
 theme = defaultTheme
 
--- The URL stays readable on dark terminals, while rules keep the theme color.
 urlStyle :: Style
 urlStyle = italic white
 
