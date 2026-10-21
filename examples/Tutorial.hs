@@ -52,6 +52,10 @@ clampSelection count index
 theme :: Theme
 theme = defaultTheme
 
+-- The URL stays readable on dark terminals, while rules keep the theme color.
+urlStyle :: Style
+urlStyle = italic white
+
 bookmarkSettings :: Settings
 bookmarkSettings = settings [minSpace 2]
 
@@ -94,7 +98,7 @@ bookmarkBlock isSelected index (Bookmark title url) =
     [ (if isSelected then "> " else "  ", style)
     , (show (index + 1) ++ ". ", style)
     , (title, style)
-    , ("  " ++ url, themeMuted theme)
+    , ("  " ++ url, urlStyle)
     ]
   where
     style = if isSelected then themeAccent theme else styleDefault

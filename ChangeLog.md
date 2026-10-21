@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.10.1 -- 2026-10-21
+* Changed the tutorial bookmark URL style from muted black to italic white for readability on dark terminals.
+* Kept the tutorial rules on the theme rule style, which is black in the default theme.
+
 ### 0.7.10.0 -- 2026-10-21
 * Added docs/tutorial.md, a step-by-step guide to a small bookmarks program.
 * Added the ansiform-tutorial executable in examples/Tutorial.hs.

@@ -75,6 +75,10 @@ The header, footer and rules are used by both pages, so they live in one place. 
 theme :: Theme
 theme = defaultTheme
 
+-- The URL stays readable on dark terminals, while rules keep the theme color.
+urlStyle :: Style
+urlStyle = italic white
+
 bookmarkSettings :: Settings
 bookmarkSettings = settings [minSpace 2]
 
@@ -96,6 +100,8 @@ ruleFooter = rule ':' (themeRule theme)
 ```
 
 `sectionTop 1` prints the header and then one empty line. `printerSolidLineCenter` fills a whole line with the theme bar color and centers the title on top. A `Theme` is a record of `Style` values, so replacing `defaultTheme` changes every component at once.
+
+The URL uses `italic white` so it stays readable on dark terminals. The rules keep `themeRule`, which is black in the default theme; change `urlStyle` or `themeRule` independently if your terminal has a light background.
 
 ## 4. Draw the list
 
@@ -121,7 +127,7 @@ bookmarkBlock isSelected index (Bookmark title url) =
     [ (if isSelected then "> " else "  ", style)
     , (show (index + 1) ++ ". ", style)
     , (title, style)
-    , ("  " ++ url, themeMuted theme)
+    , ("  " ++ url, urlStyle)
     ]
   where
     style = if isSelected then themeAccent theme else styleDefault
