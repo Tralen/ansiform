@@ -68,7 +68,16 @@ Never print the values of the tokens or commit the location of your secrets.
 - `candidate` checks out the tag, verifies that the tag and the version in `ansiform.cabal` match, builds, tests, checks, builds the Haddock tarball and the source distribution, uploads both as Hackage candidates and stores them with a `SHA256SUMS` file as a workflow artifact.
 - `publish` runs only when the `publish` input is true. It verifies the checksums, publishes the exact artifacts to Hackage and creates the GitHub release with generated notes.
 
-Both jobs use the `release` environment. Create the environment in the repository settings and add `HACKAGE_TOKEN` as an environment secret. A solo maintainer does not need required reviewers; if reviewers are enabled, both the candidate and the publish job wait for approval.
+Both jobs use the `release` environment. A solo maintainer does not need required reviewers; if reviewers are enabled, both the candidate and the publish job wait for approval.
+
+### Configuring the release environment
+
+1. Open **Settings > Environments** and create an environment named `release`.
+2. Under **Environment secrets**, add a secret named `HACKAGE_TOKEN`. Paste the Hackage token value as the secret value; do not paste the name or `$HACKAGE_TOKEN`, and do not create an Actions variable, because variables are plaintext.
+3. Under **Deployment branches and tags**, allow `master` and the release tags. The workflow is dispatched from a branch, so the selected branch must be allowed.
+4. Required reviewers are optional. If enabled, both jobs wait for approval.
+
+The workflow reads the secret with `secrets.HACKAGE_TOKEN` and exposes it to the upload steps as the `HACKAGE_TOKEN` environment variable. The token is never printed and never enters the repository.
 
 1. Push the final commit and the tag. The tag uses the version without a `v` prefix:
 
