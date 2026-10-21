@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.9.0**.
+Current version: **0.9.0.1**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -104,6 +104,7 @@ cabal run ansiform-tutorial
 - [Sections](https://github.com/Tralen/ansiform/blob/master/docs/sections.md): grouping printers and reserving minimum line counts.
 - [Pages and drawing](https://github.com/Tralen/ansiform/blob/master/docs/pages.md): pages, state and the drawing lifecycle.
 - [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, forms, and the standard interaction loop.
+- [Platforms](https://github.com/Tralen/ansiform/blob/master/docs/platforms.md): Linux, macOS and Windows behaviour, terminal requirements and known limitations.
 - [Render](https://github.com/Tralen/ansiform/blob/master/docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](https://github.com/Tralen/ansiform/blob/master/docs/settings.md): width, spacing and group overflow configuration.
 - [Numbers](https://github.com/Tralen/ansiform/blob/master/docs/number.md): non-negative arithmetic, saturation and checked subtraction.

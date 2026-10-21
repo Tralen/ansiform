@@ -171,6 +171,8 @@ visibleLine :: Int -> LineState -> (String, Int)
 
 When stdin is not a terminal, as in pipes and CI, the settings are left untouched. `readKey` and `readKeyPress` still read one key at a time and return `Nothing` at end of input.
 
+On Windows, immediate input also requires an I/O manager that delivers console input without waiting for Enter, normally `winio`. See [Platforms](platforms.md) for the runtime option, the terminal requirements and the known limitations.
+
 ## Keys
 
 `readKey` returns the character as typed. `readKeyPress` goes one level up: it consumes complete escape sequences and returns only the keys a shortcut map should see. Neither filters newlines, spaces or control keys; the loop decides which keys are meaningful. This keeps the input layer small and lets every screen define its own shortcuts.

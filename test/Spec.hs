@@ -237,6 +237,9 @@ main = do
     , testIO "Shortcut reader reports end of input" $ do
         result <- withStdin "" readKeyPress
         return $ result == Nothing
+    , testIO "Raw key reader returns escape sequence characters" $ do
+        result <- withStdin "\ESC[A" (sequence [readKey, readKey, readKey])
+        return $ result == [Just '\ESC', Just '[', Just 'A']
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])

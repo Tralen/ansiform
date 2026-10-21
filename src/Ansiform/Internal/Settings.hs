@@ -2,8 +2,9 @@ module Ansiform.Internal.Settings where
 
 --------------------------------------------------------------------------------
 import qualified Data.List as List
+import           System.Console.ANSI (hSupportsANSI)
 import           System.Environment (lookupEnv)
-import           System.IO (Handle, hIsTerminalDevice, stdout)
+import           System.IO (Handle, stdout)
 import           Ansiform.Internal.Number
 import           Ansiform.Internal.Sample
 import           Ansiform.Internal.Terminal
@@ -117,14 +118,13 @@ colorsSupported :: IO Bool
 colorsSupported = colorsSupportedOn stdout
 
 -- Checks whether a handle can safely receive ANSI styles.
+--   Uses 'hSupportsANSI', which also recognises Windows consoles and MinTTY,
+--   and keeps the NO_COLOR opt-out on top of it.
 colorsSupportedOn :: Handle -> IO Bool
 colorsSupportedOn h = do
     noColor <- lookupEnv "NO_COLOR"
-    term <- lookupEnv "TERM"
-    terminal <- hIsTerminalDevice h
-    return $ terminal
-          && not (maybe False (not . null) noColor)
-          && term /= Just "dumb"
+    terminal <- hSupportsANSI h
+    return $ terminal && not (maybe False (not . null) noColor)
 
 -- Support Functions
 --------------------------------------------------------------------------------

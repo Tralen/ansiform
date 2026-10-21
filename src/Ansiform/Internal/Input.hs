@@ -7,7 +7,7 @@ module Ansiform.Internal.Input (withImmediateInput, readKey, readKeyPress,
                                 FormError(..), readForm, readFormOn) where
 
 --------------------------------------------------------------------------------
-import           Control.Exception (bracket_)
+import           Control.Exception (bracket_, tryJust)
 import           Control.Monad (when)
 import           Data.Char (isPrint)
 import           Data.Maybe (isJust)
@@ -15,8 +15,8 @@ import           System.Console.ANSI (hClearFromCursorToLineEnd, hCursorDown,
                                       hCursorUp, hSetCursorColumn)
 import           System.IO (BufferMode (..), Handle, hFlush, hGetBuffering,
                             hGetEcho, hIsTerminalDevice, hPutStr, hSetBuffering,
-                            hSetEcho, isEOF, stdin, stdout)
-import           System.Timeout (timeout)
+                            hSetEcho, hWaitForInput, isEOF, stdin, stdout)
+import           System.IO.Error (isEOFError)
 import           Ansiform.Draw (drawOn)
 import           Ansiform.Internal.Line
 import           Ansiform.Internal.Number
@@ -54,9 +54,30 @@ readKey = do
     eof <- isEOF
     if eof then return Nothing else Just <$> getChar
 
--- | Delay in microseconds used to tell a lone Escape from an escape sequence.
+-- | Delay in milliseconds used to tell a lone Escape from an escape sequence.
 escapeDelay :: Int
-escapeDelay = 50000
+escapeDelay = 50
+
+-- | Result of waiting for the next key within a time limit.
+data KeyWait = KeyReady Char | KeyTimeout | KeyEnded
+
+-- | Waits up to the given number of milliseconds for the next key.
+--   Uses 'hWaitForInput', which is portable and avoids interrupting a blocked
+--   read with an asynchronous exception. Only an end-of-file exception is
+--   turned into data; other I/O errors still propagate.
+waitKey :: Int -> IO KeyWait
+waitKey ms = do
+    eof <- isEOF
+    if eof
+        then return KeyEnded
+        else do
+            ready <- tryJust eofOnly (hWaitForInput stdin ms)
+            case ready of
+                Left _ -> return KeyEnded
+                Right False -> return KeyTimeout
+                Right True -> KeyReady <$> getChar
+  where
+    eofOnly e = if isEOFError e then Just e else Nothing
 
 -- | Reads one key press for shortcut handling.
 --   Arrow keys, Home, End, function keys and other escape sequences consume
@@ -70,23 +91,23 @@ readKeyPress = do
     case key of
         Nothing -> return Nothing
         Just '\ESC' -> do
-            next <- timeout escapeDelay readKey
+            next <- waitKey escapeDelay
             case next of
-                Nothing -> return (Just '\ESC')
-                Just Nothing -> return Nothing
-                Just (Just '[') -> skipControlSequence >> readKeyPress
-                Just (Just 'O') -> skipFinalByte >> readKeyPress
-                Just (Just _) -> readKeyPress
+                KeyTimeout -> return (Just '\ESC')
+                KeyEnded -> return Nothing
+                KeyReady '[' -> skipControlSequence >> readKeyPress
+                KeyReady 'O' -> skipFinalByte >> readKeyPress
+                KeyReady _ -> readKeyPress
         Just c -> return (Just c)
 
 -- Skips the rest of a CSI sequence, whose final byte is in 0x40 to 0x7E.
 skipControlSequence :: IO ()
 skipControlSequence = do
-    next <- timeout escapeDelay readKey
+    next <- waitKey escapeDelay
     case next of
-        Nothing -> return ()
-        Just Nothing -> return ()
-        Just (Just c)
+        KeyTimeout -> return ()
+        KeyEnded -> return ()
+        KeyReady c
             | c >= '\x40' && c <= '\x7E' -> return ()
             | otherwise -> skipControlSequence
 
@@ -94,7 +115,7 @@ skipControlSequence = do
 -- cursor mode.
 skipFinalByte :: IO ()
 skipFinalByte = do
-    _ <- timeout escapeDelay readKey
+    _ <- waitKey escapeDelay
     return ()
 
 -- | Runs an action with stdin configured for line input with echo.
@@ -326,21 +347,21 @@ readLineEvent = do
 -- A lone Escape cancels; a bracket starts a control sequence.
 readEscapeSequence :: IO (Maybe LineEvent)
 readEscapeSequence = do
-    next <- timeout escapeDelay readKey
+    next <- waitKey escapeDelay
     case next of
-        Nothing -> return (Just LineCancel)
-        Just Nothing -> return Nothing
-        Just (Just '[') -> readControlSequence
-        Just (Just _) -> return (Just LineIgnore)
+        KeyTimeout -> return (Just LineCancel)
+        KeyEnded -> return Nothing
+        KeyReady '[' -> readControlSequence
+        KeyReady _ -> return (Just LineIgnore)
 
 -- Decodes the final byte of a CSI sequence. Unknown sequences are ignored.
 readControlSequence :: IO (Maybe LineEvent)
 readControlSequence = do
-    next <- timeout escapeDelay readKey
+    next <- waitKey escapeDelay
     case next of
-        Nothing -> return (Just LineIgnore)
-        Just Nothing -> return Nothing
-        Just (Just c) -> case c of
+        KeyTimeout -> return (Just LineIgnore)
+        KeyEnded -> return Nothing
+        KeyReady c -> case c of
             'D' -> return (Just (LineEdit LineMoveLeft))
             'C' -> return (Just (LineEdit LineMoveRight))
             'H' -> return (Just (LineEdit LineMoveHome))
@@ -353,9 +374,9 @@ readControlSequence = do
 -- Reads the final tilde of a numbered CSI sequence.
 readTildeSequence :: LineKey -> IO (Maybe LineEvent)
 readTildeSequence key = do
-    next <- timeout escapeDelay readKey
+    next <- waitKey escapeDelay
     case next of
-        Nothing -> return (Just LineIgnore)
-        Just Nothing -> return Nothing
-        Just (Just '~') -> return (Just (LineEdit key))
-        Just (Just _) -> return (Just LineIgnore)
+        KeyTimeout -> return (Just LineIgnore)
+        KeyEnded -> return Nothing
+        KeyReady '~' -> return (Just (LineEdit key))
+        KeyReady _ -> return (Just LineIgnore)

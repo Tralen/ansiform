@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.9.0
+version:             0.9.0.1
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -22,6 +22,7 @@ extra-doc-files:     ChangeLog.md
                      docs/naming.md
                      docs/number.md
                      docs/pages.md
+                     docs/platforms.md
                      docs/printers.md
                      docs/releasing.md
                      docs/render.md
@@ -92,6 +93,8 @@ executable ansiform-demo
   main-is:             Demo.hs
   hs-source-dirs:      examples
   build-depends:       ansiform
+  if os(windows)
+    ghc-options:       -with-rtsopts=--io-manager=winio
 
 executable ansiform-tutorial
   import:              shared
@@ -99,6 +102,8 @@ executable ansiform-tutorial
   main-is:             Tutorial.hs
   hs-source-dirs:      examples
   build-depends:       ansiform
+  if os(windows)
+    ghc-options:       -with-rtsopts=--io-manager=winio
 
 test-suite ansiform-test
   import:              shared

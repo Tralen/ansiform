@@ -4,6 +4,13 @@
 
 ## Functional Versions
 
+### 0.9.0.1 -- 2026-10-21
+* Automatic colour detection now uses `hSupportsANSI`, so Windows consoles and MinTTY are recognised; `NO_COLOR` still disables styling.
+* Escape-sequence timeouts use `hWaitForInput` instead of an asynchronous timeout around `getChar`, which is portable and does not interrupt a blocked read.
+* Added `docs/platforms.md` with the Linux, macOS and Windows behaviour, terminal requirements and known limitations.
+* The demo and tutorial enable the `winio` I/O manager on Windows, and the demo version label follows the package version.
+* Added a regression test that documents the raw `readKey` output for an arrow-key sequence.
+
 ### 0.9.0 -- 2026-10-21
 * Added `readKeyPress` to `Ansiform.Input`, a key reader for menus that consumes and ignores terminal escape sequences such as arrow keys.
 * Fixed the tutorial and the demo treating arrow-key sequences as `A` or `D` shortcuts, which opened the add or edit form instead of moving the selection.
