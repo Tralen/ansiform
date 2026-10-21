@@ -5,7 +5,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 ## Current status
 
 - Package: `ansiform`. The name is already registered on Hackage.
-- Version: 0.9.0.6.
+- Version: 1.0.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -13,9 +13,9 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `0.9.0.6` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/0.9.0.6>.
-- Hackage: 0.9.0.6 is published at <https://hackage.haskell.org/package/ansiform-0.9.0.6>, with documentation uploaded.
-- The 0.9.0.6 release fixes the lone-Escape timeout found by the Linux terminal checklist. The 0.9.0.5 release fixed the Windows render crash and the macOS CI toolchain and was the first Hackage publication since 0.7.10.4. The 0.8.0 to 0.9.0.5 changes are recorded in `ChangeLog.md`, including editable form fields, `Ansiform.Line`, `readKeyPress` and the platform documentation.
+- Tag `1.0.0` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0>.
+- Hackage: 1.0.0 is published at <https://hackage.haskell.org/package/ansiform-1.0.0>, with documentation uploaded.
+- The 1.0.0 release marks the library stable and draws every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
 
 ## Credentials
 
