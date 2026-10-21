@@ -36,6 +36,25 @@ deleteSelected (Model bookmarks selected) =
   where
     kept = take selected bookmarks ++ drop (selected + 1) bookmarks
 
+updateSelected :: String -> String -> Model -> Model
+updateSelected title url model@(Model bookmarks selected) = case bookmarks of
+  [] -> model
+  _ -> let index = clampSelection (length bookmarks) selected
+       in Model (replaceAt index (Bookmark title url) bookmarks) index
+
+replaceAt :: Int -> a -> [a] -> [a]
+replaceAt index value values =
+  take index values ++ [value] ++ drop (index + 1) values
+
+selectedBookmark :: Model -> Maybe Bookmark
+selectedBookmark (Model bookmarks selected) =
+  bookmarkAt (clampSelection (length bookmarks) selected) bookmarks
+
+bookmarkAt :: Int -> [Bookmark] -> Maybe Bookmark
+bookmarkAt index bookmarks = case drop index bookmarks of
+  [] -> Nothing
+  (bookmark:_) -> Just bookmark
+
 moveSelection :: Int -> Model -> Model
 moveSelection delta (Model bookmarks selected) =
   Model bookmarks (clampSelection (length bookmarks) (selected + delta))
@@ -109,6 +128,7 @@ listFooter = sectionBodyRule 1 ruleFooter
       , blockMenuStyle "J" "Down" (themeAccent theme)
       , blockMenuStyle "K" "Up" (themeAccent theme)
       , blockMenuStyle "D" "Delete" (themeDanger theme)
+      , blockMenuStyle "E" "Edit" (themeAccent theme)
       , blockMenuStyle "X" "Exit" (themeDanger theme) ]
   ]
 
@@ -116,8 +136,8 @@ listFooter = sectionBodyRule 1 ruleFooter
 -- Form page
 --------------------------------------------------------------------------------
 
-formPage :: Page
-formPage = page [header, formBody, formFooter, bottom]
+formPage :: String -> Page
+formPage instruction = page [header, formBody, formFooter instruction, bottom]
 
 formBody :: Section
 formBody = sectionBodyRule 1 ruleBody
@@ -126,13 +146,17 @@ formBody = sectionBodyRule 1 ruleBody
   , printerLeft 2 (blockSimple "URL:   " styleDefault)
   ]
 
-formFooter :: Section
-formFooter = sectionBodyRule 1 ruleFooter
+formFooter :: String -> Section
+formFooter instruction = sectionBodyRule 1 ruleFooter
   [ printerLineCenter 4
-      [ blockSimple
-          "Type a value and press Enter for each field; empty fields cancel."
-          (themeFooter theme) ]
+      [ blockSimple instruction (themeFooter theme) ]
   ]
+
+addInstruction, editInstruction :: String
+addInstruction =
+  "Type a value and press Enter for each field; empty fields cancel."
+editInstruction =
+  "Edit the values and press Enter; Esc cancels."
 
 fieldColumn :: String -> Offset
 fieldColumn label = formNumber (2 + textWidth label)
@@ -141,6 +165,11 @@ formPrompts :: [Prompt]
 formPrompts =
   [ promptAt 1 2 (fieldColumn "Title: ")
   , promptAt 1 4 (fieldColumn "URL:   ") ]
+
+editPrompts :: Bookmark -> [Prompt]
+editPrompts (Bookmark title url) =
+  [ promptWithInitial 1 2 (fieldColumn "Title: ") title
+  , promptWithInitial 1 4 (fieldColumn "URL:   ") url ]
 
 --------------------------------------------------------------------------------
 -- Application
@@ -160,6 +189,7 @@ loop model state = do
     Just 'j' -> open (moveSelection 1 model) state
     Just 'k' -> open (moveSelection (-1) model) state
     Just 'd' -> open (deleteSelected model) state
+    Just 'e' -> editFlow model state
     Just 'x' -> pure ()
     _ -> loop model state
   where
@@ -167,10 +197,23 @@ loop model state = do
 
 addFlow :: Model -> State -> IO ()
 addFlow model state = do
-  (state', result) <- readForm formPage formPrompts state
+  (state', result) <- readForm (formPage addInstruction) formPrompts state
   let next = case result of
         Right [title, url]
           | not (null title) && not (null url) ->
               addBookmark title url model
         _ -> model
   draw (listPage next) state' >>= loop next
+
+editFlow :: Model -> State -> IO ()
+editFlow model state = case selectedBookmark model of
+  Nothing -> draw (listPage model) state >>= loop model
+  Just bookmark -> do
+    (state', result) <- readForm (formPage editInstruction)
+                                  (editPrompts bookmark) state
+    let next = case result of
+          Right [title, url]
+            | not (null title) && not (null url) ->
+                updateSelected title url model
+          _ -> model
+    draw (listPage next) state' >>= loop next

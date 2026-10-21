@@ -1,7 +1,8 @@
 -- | Immediate single-key input and line input for interactive interfaces.
 module Ansiform.Input ( withImmediateInput, readKey, withLineInput, readLine
                       , readLineAt, readLineAtOn
-                      , Prompt, promptAt, promptSection, promptRow, promptColumn
+                      , Prompt, promptAt, promptWithInitial
+                      , promptSection, promptRow, promptColumn, promptInitial
                       , FormError (..), readForm, readFormOn
                       ) where
 

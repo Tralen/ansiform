@@ -26,6 +26,10 @@ Deliberately deferred. The list-based builders and the `State` lifecycle cover t
 
 ## Implemented
 
+### Editable form fields
+
+Released in 0.8.0. `promptWithInitial` opens a form field with an editable initial value. The field supports insertion, Backspace, Delete, arrows, Home, End, Enter to submit and Esc to cancel the form, and it scrolls horizontally with Unicode-aware widths. The pure editing core is public in `Ansiform.Line`. See [Input](input.md).
+
 ### Borderless bordered layout
 
 Released in 0.7.10.3. Passing `BordersNone` to the bordered table and group printers keeps every column on one row without border characters, horizontal separators or column bands, instead of falling back to the column-band layout. Columns are separated by two spaces. See [Table formatting](table-format.md).

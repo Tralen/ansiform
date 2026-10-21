@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.7.10.4**.
+Current version: **0.8.0**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -20,6 +20,8 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Immediate single-key input: a key press changes the screen without Enter.
 - Line input for prompts and numeric selection, including prompts printed inside a page and typed in place.
 - Forms that draw a page and read several prompts, with the cursor arithmetic handled by the library.
+- Editable form fields that open with an initial value, with arrows, Home, End, Delete and Esc cancellation.
+- A pure line-editing core in `Ansiform.Line` that can be tested without a terminal.
 - A step-by-step tutorial and a runnable bookmarks example.
 - Unicode-aware display widths for alignment, wrapping, lists and tables.
 - Rendering to any `Handle` or to a `String` for embedding and golden tests.

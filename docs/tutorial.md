@@ -8,7 +8,7 @@ The complete program is in `examples/Tutorial.hs` and is compiled by `cabal buil
 cabal run ansiform-tutorial
 ```
 
-The keys are `A` to add, `J` and `K` to move the selection, `D` to delete, and `X` to exit.
+The keys are `A` to add, `J` and `K` to move the selection, `D` to delete, `E` to edit, and `X` to exit.
 
 ## 1. Set up the project
 
@@ -54,6 +54,25 @@ deleteSelected (Model bookmarks selected) =
   Model kept (clampSelection (length kept) selected)
   where
     kept = take selected bookmarks ++ drop (selected + 1) bookmarks
+
+updateSelected :: String -> String -> Model -> Model
+updateSelected title url model@(Model bookmarks selected) = case bookmarks of
+  [] -> model
+  _ -> let index = clampSelection (length bookmarks) selected
+       in Model (replaceAt index (Bookmark title url) bookmarks) index
+
+replaceAt :: Int -> a -> [a] -> [a]
+replaceAt index value values =
+  take index values ++ [value] ++ drop (index + 1) values
+
+selectedBookmark :: Model -> Maybe Bookmark
+selectedBookmark (Model bookmarks selected) =
+  bookmarkAt (clampSelection (length bookmarks) selected) bookmarks
+
+bookmarkAt :: Int -> [Bookmark] -> Maybe Bookmark
+bookmarkAt index bookmarks = case drop index bookmarks of
+  [] -> Nothing
+  (bookmark:_) -> Just bookmark
 
 moveSelection :: Int -> Model -> Model
 moveSelection delta (Model bookmarks selected) =
@@ -146,6 +165,7 @@ listFooter = sectionBodyRule 1 ruleFooter
       , blockMenuStyle "J" "Down" (themeAccent theme)
       , blockMenuStyle "K" "Up" (themeAccent theme)
       , blockMenuStyle "D" "Delete" (themeDanger theme)
+      , blockMenuStyle "E" "Edit" (themeAccent theme)
       , blockMenuStyle "X" "Exit" (themeDanger theme) ]
   ]
 ```
@@ -154,11 +174,11 @@ listFooter = sectionBodyRule 1 ruleFooter
 
 ## 5. Build the form
 
-The add flow needs two values. Its page reuses the same header and bottom, and adds a body with two labeled lines:
+The add and edit flows need two values and share the same page. The page reuses the header and bottom, adds a body with two labeled lines and takes its footer instruction as a parameter, so each flow explains its own keys:
 
 ```haskell
-formPage :: Page
-formPage = page [header, formBody, formFooter, bottom]
+formPage :: String -> Page
+formPage instruction = page [header, formBody, formFooter instruction, bottom]
 
 formBody :: Section
 formBody = sectionBodyRule 1 ruleBody
@@ -167,13 +187,17 @@ formBody = sectionBodyRule 1 ruleBody
   , printerLeft 2 (blockSimple "URL:   " styleDefault)
   ]
 
-formFooter :: Section
-formFooter = sectionBodyRule 1 ruleFooter
+formFooter :: String -> Section
+formFooter instruction = sectionBodyRule 1 ruleFooter
   [ printerLineCenter 4
-      [ blockSimple
-          "Type a value and press Enter for each field; empty fields cancel."
-          (themeFooter theme) ]
+      [ blockSimple instruction (themeFooter theme) ]
   ]
+
+addInstruction, editInstruction :: String
+addInstruction =
+  "Type a value and press Enter for each field; empty fields cancel."
+editInstruction =
+  "Edit the values and press Enter; Esc cancels."
 ```
 
 Now describe where the input goes. A `Prompt` is placed by **section index** and by **row inside that section**, which is easier to keep correct than counting all the lines below it:
@@ -186,6 +210,11 @@ formPrompts :: [Prompt]
 formPrompts =
   [ promptAt 1 2 (fieldColumn "Title: ")
   , promptAt 1 4 (fieldColumn "URL:   ") ]
+
+editPrompts :: Bookmark -> [Prompt]
+editPrompts (Bookmark title url) =
+  [ promptWithInitial 1 2 (fieldColumn "Title: ") title
+  , promptWithInitial 1 4 (fieldColumn "URL:   ") url ]
 ```
 
 The form body is section `1`. `sectionBodyRule 1` prints a rule on row `0` and an empty line on row `1`, so the title is row `2` and the URL is row `4`. The footer carries the instruction, so the body only reserves the two editable lines. The column is the label offset plus the display width of the label. `textWidth` understands wide characters and combining marks, so the cursor stays aligned even with Unicode labels.
@@ -196,9 +225,21 @@ The form body is section `1`. `sectionBodyRule 1` prints a rule on row `0` and a
 readForm :: Page -> [Prompt] -> State -> IO (State, Either FormError [String])
 ```
 
-The result is an ADT. `Right values` contains one string per prompt, `Left (PromptOutsidePage prompt)` means the prompt does not fit the drawn page, and `Left FormInputEnded` means stdin ended. Empty field values are still valid strings; this program decides to cancel the add when either value is empty.
+The result is an ADT. `Right values` contains one string per prompt, `Left (PromptOutsidePage prompt)` means the prompt does not fit the drawn page, `Left FormInputEnded` means stdin ended, and `Left FormCancelled` means the user pressed Esc in an editable field. Empty field values are still valid strings; this program decides to cancel the add when either value is empty.
 
-Line input is enabled once for the whole form. Do not wrap `readForm` in `withLineInput`.
+A form without editable fields enables line input once for the whole form. Do not wrap `readForm` in `withLineInput`.
+
+### Editing an existing value
+
+The edit flow uses `promptWithInitial` instead of `promptAt`:
+
+```haskell
+promptWithInitial :: Number -> Number -> Offset -> String -> Prompt
+```
+
+Each field opens with its current value in the editable buffer and the cursor at the end. The user can backspace, insert and move with the arrows, `Home`, `End` and `Delete`, then press Enter to submit. Esc cancels the whole form. The editor scrolls horizontally when a value is wider than the terminal, so a long URL stays editable. The prompt column and row are the same as in the add form, because both use the same page.
+
+When stdin is not a terminal, `readForm` reads a line per prompt and ignores the initial value, which keeps the program usable in pipes and tests.
 
 ## 6. Run the interaction loop
 
@@ -219,6 +260,7 @@ loop model state = do
     Just 'j' -> open (moveSelection 1 model) state
     Just 'k' -> open (moveSelection (-1) model) state
     Just 'd' -> open (deleteSelected model) state
+    Just 'e' -> editFlow model state
     Just 'x' -> pure ()
     _ -> loop model state
   where
@@ -232,13 +274,30 @@ The add flow combines the form with the model update:
 ```haskell
 addFlow :: Model -> State -> IO ()
 addFlow model state = do
-  (state', result) <- readForm formPage formPrompts state
+  (state', result) <- readForm (formPage addInstruction) formPrompts state
   let next = case result of
         Right [title, url]
           | not (null title) && not (null url) ->
               addBookmark title url model
         _ -> model
   draw (listPage next) state' >>= loop next
+```
+
+The edit flow prefills both fields with the selected bookmark and writes the result back:
+
+```haskell
+editFlow :: Model -> State -> IO ()
+editFlow model state = case selectedBookmark model of
+  Nothing -> draw (listPage model) state >>= loop model
+  Just bookmark -> do
+    (state', result) <- readForm (formPage editInstruction)
+                                  (editPrompts bookmark) state
+    let next = case result of
+          Right [title, url]
+            | not (null title) && not (null url) ->
+                updateSelected title url model
+          _ -> model
+    draw (listPage next) state' >>= loop next
 ```
 
 `readForm` restores the immediate input settings when it returns, so the list keeps responding to single keys. If the form is cancelled or stdin ends, the model is unchanged and the list is drawn again.
@@ -257,7 +316,9 @@ Then:
 2. Type a title and press Enter.
 3. Type a URL and press Enter.
 4. Use `J` and `K` to move the selection.
-5. Press `D` to delete the selected bookmark, or `X` to exit.
+5. Press `E` to edit the selected bookmark, change part of a value and press Enter.
+6. Press Esc during an edit to cancel it.
+7. Press `D` to delete the selected bookmark, or `X` to exit.
 
 The program has no persistence and no error dialogs; it is intentionally small. The important part is the boundary: pure builders describe the screen, the drawing layer prints it, and the loop decides what to draw next.
 
@@ -266,5 +327,6 @@ The program has no persistence and no error dialogs; it is intentionally small. 
 - Add persistence by reading and writing a file outside the pure model functions. Keep the builders pure.
 - Replace `printerColumn` with `printerTable` or `printerSequenceSel` to experiment with tables and highlighted paragraphs. See [Content](content.md) and [Printers](printers.md).
 - Use `renderPage` or `renderPrinter` from [Render](render.md) to capture output in a `String` for golden tests.
-- Read [Input](input.md) for the full input API and [Numbers](number.md) for checked arithmetic.
+- Read [Input](input.md) for the full input API, including editable fields, and [Numbers](number.md) for checked arithmetic.
+- Use `Ansiform.Line` directly to embed the pure line editor in a screen with its own layout.
 - Copy `examples/Tutorial.hs` into your own project and change the model. The example is compiled with the library, so it stays aligned with the documented API.

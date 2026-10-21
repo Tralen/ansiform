@@ -83,6 +83,44 @@ main = do
         (charWidth '\x1161' == 0)
     , test "Display width of fullwidth forms"
         (charWidth '\xFF21' == 2)
+    , test "Line editor inserts at the end"
+        (applyLineKey (LineInsert 'c') (LineState "ab" 2) == LineState "abc" 3)
+    , test "Line editor inserts in the middle"
+        (applyLineKey (LineInsert 'b') (LineState "ac" 1) == LineState "abc" 2)
+    , test "Line editor inserts at the start"
+        (applyLineKey (LineInsert 'a') (LineState "bc" 0) == LineState "abc" 1)
+    , test "Line editor backspace removes the previous character"
+        (applyLineKey LineBackspace (LineState "abc" 2) == LineState "ac" 1)
+    , test "Line editor backspace at the start is a no-op"
+        (applyLineKey LineBackspace (LineState "abc" 0) == LineState "abc" 0)
+    , test "Line editor delete removes the character at the cursor"
+        (applyLineKey LineDelete (LineState "abc" 1) == LineState "ac" 1)
+    , test "Line editor delete at the end is a no-op"
+        (applyLineKey LineDelete (LineState "abc" 3) == LineState "abc" 3)
+    , test "Line editor movement stops at the buffer boundaries"
+        (applyLineKey LineMoveLeft (LineState "ab" 0) == LineState "ab" 0
+          && applyLineKey LineMoveRight (LineState "ab" 2) == LineState "ab" 2)
+    , test "Line editor moves home and end"
+        (lineCursor (applyLineKey LineMoveHome (LineState "ab" 2)) == 0
+          && lineCursor (applyLineKey LineMoveEnd (LineState "ab" 0)) == 2)
+    , test "Line editor ignores non-printable characters"
+        (applyLineKey (LineInsert '\t') (LineState "a" 1) == LineState "a" 1)
+    , test "Line window shows text that fits"
+        (visibleLine 10 (LineState "abc" 3) == ("abc", 3))
+    , test "Line window scrolls to keep the cursor visible"
+        (visibleLine 5 (LineState "abcdef" 6) == ("cdef", 4))
+    , test "Line window keeps wide characters aligned"
+        (visibleLine 5 (LineState "漢漢漢" 3) == ("漢漢", 4))
+    , test "Line window keeps combining marks attached"
+        (visibleLine 5 (LineState "e\x0301x" 3) == ("e\x0301x", 2))
+    , test "Line window keeps the cursor at the start"
+        (visibleLine 5 (LineState "abcde" 0) == ("abcd", 0))
+    , test "Line window of an empty buffer"
+        (visibleLine 5 (LineState "" 0) == ("", 0))
+    , test "Prompt without an initial value has no buffer"
+        (promptInitial (promptAt 0 0 0) == Nothing)
+    , test "Prompt with an initial value removes non-printable characters"
+        (promptInitial (promptWithInitial 0 0 0 "a\tb\nc") == Just "abc")
     , testIO "Render printer without styling" $ do
         out <- renderPrinter (printerItem (item "plain" (bold red)))
                              (settings [neverColors])
@@ -168,6 +206,17 @@ main = do
               [ printerLeft 0 (blockSimple "first" styleDefault)
               , printerLeft 0 (blockSimple "second" styleDefault) ]]
             prompts = [promptAt 0 0 7, promptAt 0 1 8]
+        (result, _) <- withStdin "Ada\n42\n" $ captureStdout $ do
+          st <- start p (settings [neverColors])
+          (_, formResult) <- readForm p prompts st
+          return formResult
+        return $ result == Right ["Ada", "42"]
+    , testIO "Form ignores initial values when stdin is not a terminal" $ do
+        let p = page [section
+              [ printerLeft 0 (blockSimple "first" styleDefault)
+              , printerLeft 0 (blockSimple "second" styleDefault) ]]
+            prompts = [ promptWithInitial 0 0 7 "old"
+                      , promptWithInitial 0 1 8 "note" ]
         (result, _) <- withStdin "Ada\n42\n" $ captureStdout $ do
           st <- start p (settings [neverColors])
           (_, formResult) <- readForm p prompts st

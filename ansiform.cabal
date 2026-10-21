@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.7.10.4
+version:             0.8.0
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
@@ -45,6 +45,7 @@ library
                      , Ansiform.Content
                      , Ansiform.Draw
                      , Ansiform.Input
+                     , Ansiform.Line
                      , Ansiform.Number
                      , Ansiform.Page
                      , Ansiform.Printer
@@ -60,6 +61,7 @@ library
   other-modules:       Ansiform.Internal
                      , Ansiform.Internal.Content
                      , Ansiform.Internal.Input
+                     , Ansiform.Internal.Line
                      , Ansiform.Internal.Number
                      , Ansiform.Internal.Output
                      , Ansiform.Internal.Page

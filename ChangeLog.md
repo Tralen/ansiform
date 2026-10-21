@@ -4,6 +4,16 @@
 
 ## Functional Versions
 
+### 0.8.0 -- 2026-10-21
+* Added `promptWithInitial` to `Ansiform.Input`, opening a form field with an editable initial value.
+* Added a single-line editor with insertion, Backspace, Delete, arrows, Home, End, Enter to submit and Esc to cancel the whole form.
+* Added `FormCancelled` to `FormError`; code that matches `FormError` exhaustively must handle the new constructor.
+* Added `Ansiform.Line` with the pure `LineState`, `LineKey`, `applyLineKey` and `visibleLine` core.
+* The editor scrolls horizontally and keeps Unicode widths, so wide characters and combining marks stay aligned.
+* Non-terminal input still uses `readLine` and ignores the initial value.
+* The tutorial gained an `E` edit mode that prefills the selected bookmark; its form page now takes the footer instruction as a parameter.
+* Added docs for editable fields and updated the architecture and roadmap.
+
 ### 0.7.10.4 -- 2026-10-21
 * Removed the obsolete URL readability comment from the tutorial example and its documentation snippet.
 

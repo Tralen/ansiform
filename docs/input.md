@@ -14,8 +14,9 @@ readLineAtOn :: Handle -> Number -> Offset -> IO (Maybe String)
 
 data Prompt  -- opaque
 promptAt :: Number -> Number -> Offset -> Prompt
+promptWithInitial :: Number -> Number -> Offset -> String -> Prompt
 
-data FormError = PromptOutsidePage Prompt | FormInputEnded
+data FormError = PromptOutsidePage Prompt | FormInputEnded | FormCancelled
 
 readForm :: Page -> [Prompt] -> State -> IO (State, Either FormError [String])
 readFormOn :: Handle -> Page -> [Prompt] -> State -> IO (State, Either FormError [String])
@@ -97,11 +98,65 @@ ask state = do
     Left _ -> retry state'
 ```
 
-`promptAt section row column` places a prompt on a zero-based section index, a zero-based row inside that section and an absolute column. Section-relative rows stay correct when the other sections change height. Prompts are read in list order, should each occupy a different page line, and the helper moves the cursor up or down between them as needed. Line input is enabled once for the whole form, so callers must not wrap `readForm` in `withLineInput`.
+`promptAt section row column` places a prompt on a zero-based section index, a zero-based row inside that section and an absolute column. Section-relative rows stay correct when the other sections change height. Prompts are read in list order, should each occupy a different page line, and the helper moves the cursor up or down between them as needed. A form without editable fields enables line input once for the whole form. Editable fields switch to immediate input per field and restore the previous mode afterwards. In both cases, callers must not wrap `readForm` in `withLineInput`.
 
-The result is an ADT: `Right values` contains one string per prompt, `Left (PromptOutsidePage p)` reports a prompt that does not fit the drawn page, and `Left FormInputEnded` reports end of input. When a prompt does not fit, no input is read. The returned state is the one produced by drawing the page, so the caller can redraw or amend it.
+The result is an ADT: `Right values` contains one string per prompt, `Left (PromptOutsidePage p)` reports a prompt that does not fit the drawn page, `Left FormInputEnded` reports end of input, and `Left FormCancelled` reports that the user pressed Esc in an editable field. When a prompt does not fit, no input is read. The returned state is the one produced by drawing the page, so the caller can redraw or amend it.
 
 Both helpers assume the typed text does not wrap to another terminal line.
+
+## Editable fields
+
+A field that edits an existing value needs the text to be in the editable buffer when it opens. The terminal's line discipline has no concept of an initial buffer, so `promptWithInitial` opts into a single-line editor owned by Ansiform:
+
+```haskell
+let prompts =
+      [ promptWithInitial 2 0 14 (taskTitle task)
+      , promptWithInitial 3 0 14 (taskContent task)
+      ]
+```
+
+`promptWithInitial section row column initial` places the cursor at the end of `initial`, so the user can backspace, move and insert without retyping the value. Non-printable characters are removed, because the editor is single-line. An empty initial value is still meaningful: it opens the editor with an empty buffer, which lets a form use the same editor for every field.
+
+The editor owns the region from the prompt column to the end of the line. It clears that region and redraws the visible window on every key, scrolling horizontally when the value is wider than the terminal. The window uses `charWidth`, so wide characters and combining marks keep the cursor aligned.
+
+| Key | Action |
+| --- | --- |
+| Printable character | Insert at the cursor. |
+| `Backspace` | Delete the character before the cursor. |
+| `Delete` | Delete the character at the cursor. |
+| `Left` / `Right` | Move the cursor one code point. |
+| `Home` / `End` | Move to the start or end of the buffer. |
+| `Enter` | Submit the field. |
+| `Esc` | Cancel the whole form. |
+
+`Enter` prints a newline after the field, matching the line counts used by `readForm`. `Esc` cancels the whole form and returns `Left FormCancelled`; a partially completed form is rarely useful, and the caller can reopen it. Unknown escape sequences are ignored.
+
+When stdin is not a terminal, as in pipes and CI, `readForm` falls back to `readLine` and ignores the initial value. The editor is a UI affordance; non-interactive consumers should send explicit values.
+
+The form returns the exact edited buffers. It does not apply "empty means keep" semantics; that decision belongs to the caller. Prompts built with `promptAt` keep reading through the terminal's own line discipline, so existing forms behave as before.
+
+The pure editing core lives in `Ansiform.Line`:
+
+```haskell
+data LineState = LineState
+  { lineText :: String
+  , lineCursor :: Int
+  }
+
+data LineKey
+  = LineInsert Char
+  | LineBackspace
+  | LineDelete
+  | LineMoveLeft
+  | LineMoveRight
+  | LineMoveHome
+  | LineMoveEnd
+
+applyLineKey :: LineKey -> LineState -> LineState
+visibleLine :: Int -> LineState -> (String, Int)
+```
+
+`lineCursor` is a code-point index. `applyLineKey` and `visibleLine` are pure and testable without a terminal, while the IO loop only decodes keys, calls them and redraws.
 
 ## Terminal state
 
