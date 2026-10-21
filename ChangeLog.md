@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.10.0 -- 2026-10-21
+* Added docs/tutorial.md, a step-by-step guide to a small bookmarks program.
+* Added the ansiform-tutorial executable in examples/Tutorial.hs.
+
 ### 0.7.9.0 -- 2026-10-21
 * Added readForm and readFormOn to Ansiform.Input, reading several page prompts with the cursor arithmetic handled by the library.
 * Added Prompt, promptAt and FormError as public types for page forms.

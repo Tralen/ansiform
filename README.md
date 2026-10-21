@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.7.9.0**.
+Current version: **0.7.10.0**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -20,6 +20,7 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Immediate single-key input: a key press changes the screen without Enter.
 - Line input for prompts and numeric selection, including prompts printed inside a page and typed in place.
 - Forms that draw a page and read several prompts, with the cursor arithmetic handled by the library.
+- A step-by-step tutorial and a runnable bookmarks example.
 - Unicode-aware display widths for alignment, wrapping, lists and tables.
 - Rendering to any `Handle` or to a `String` for embedding and golden tests.
 - Per-column table alignment, maximum widths and truncation with an ellipsis.
@@ -81,12 +82,16 @@ Pressing `B` or `H` switches pages immediately; `X` exits. There is no prompt an
 cabal build
 cabal test
 cabal run ansiform-demo
+cabal run ansiform-tutorial
 ```
 
 `ansiform-demo` is an interactive gallery. Press the keys shown in the footer; the screen changes immediately, without a prompt or Enter. `B` returns to the menu, `R` redraws the current screen and `X` exits.
 
+`ansiform-tutorial` is the small bookmarks program from the [tutorial](https://github.com/Tralen/ansiform/blob/master/docs/tutorial.md).
+
 ## Documentation
 
+- [Tutorial](https://github.com/Tralen/ansiform/blob/master/docs/tutorial.md): build a small bookmarks program step by step.
 - [Architecture](https://github.com/Tralen/ansiform/blob/master/docs/architecture.md): module layout, invariants and the pure/IO boundary.
 - [Content](https://github.com/Tralen/ansiform/blob/master/docs/content.md): items, blocks, groups, tables, paragraphs and their builders.
 - [Styles](https://github.com/Tralen/ansiform/blob/master/docs/style.md): colors, formats and reusable text styles.

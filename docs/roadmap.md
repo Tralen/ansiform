@@ -26,6 +26,10 @@ Deliberately deferred. The list-based builders and the `State` lifecycle cover t
 
 ## Implemented
 
+### Tutorial
+
+Released in 0.7.10.0. `docs/tutorial.md` builds a small bookmarks program step by step, and `examples/Tutorial.hs` is compiled by `cabal build all`. See [Tutorial](tutorial.md).
+
 ### Page forms
 
 Released in 0.7.9.0. `Ansiform.Input` provides `Prompt`, `promptAt`, `readForm` and `readFormOn`, so a screen can draw a page and read several prompts without counting the lines below each one. Prompt positions are section-relative, and errors are reported as `FormError` values. See [Input](input.md).
