@@ -87,6 +87,9 @@ jobs:
           tar -xzf "$RUNNER_TEMP/hlint.tar.gz" -C "$RUNNER_TEMP"
           install -Dm755 "$RUNNER_TEMP/hlint-3.10/hlint" "$HOME/.local/bin/hlint"
 
+      - name: Add the tool directory to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Check formatting
         run: find src examples test -name '*.hs' -print0 | xargs -0 fourmolu --mode check
 
