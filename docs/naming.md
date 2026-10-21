@@ -4,7 +4,7 @@ The package is named `ansiform`, and the public modules live under the `Ansiform
 
 ## Origin
 
-`ansiform` is a portmanteau of ANSI and form/format. It is not an established term. A Hackage check found no package named `ansiform` or `Ansiform`, so the name appears to be available.
+`ansiform` is a portmanteau of ANSI and form/format. It is not an established term.
 
 ## Why the project was renamed
 
@@ -23,7 +23,7 @@ The exact lowercase `vis` was not listed on Hackage, but names that differ only 
 - The demo executable is now `ansiform-demo` and the test suite is `ansiform-test`.
 - The license changed from GPL-3.0-only to MIT.
 
-There is no compatibility module named `Vis`. The rename is a breaking change for users of the old package.
+There is no compatibility module named `Vis`. The rename is a breaking change for users of the old package, introduced in the 0.4.0 release.
 
 ## Public types
 
