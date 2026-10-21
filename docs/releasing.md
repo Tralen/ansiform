@@ -9,7 +9,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
-- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution with GHC 9.2.8 and GHC 9.14.1.
+- CI: `.github/workflows/ci.yml` builds, tests, checks, documents and creates the source distribution on Linux, macOS and Windows, with GHC 9.2.8 and GHC 9.14.1. macOS runs only GHC 9.14.1, because GHC 9.2.8 has no aarch64-darwin bindist for the arm64 runner.
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.

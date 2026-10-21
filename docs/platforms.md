@@ -61,7 +61,7 @@ GHC uses the console code page for console input and output. Run `chcp 65001` an
 
 ## Testing
 
-The CI matrix runs Linux with GHC 9.2.8 and GHC 9.14.1. macOS and Windows are not exercised by CI yet; the statements above come from the GHC, `ansi-terminal`, `terminal-size` and base documentation and should be confirmed on real terminals before claiming full support.
+The CI matrix builds, tests, checks, documents and packages the library on Linux, macOS and Windows. Linux and Windows use GHC 9.2.8 and GHC 9.14.1; macOS uses GHC 9.14.1, because GHC 9.2.8 has no aarch64-darwin bindist for the arm64 runner. CI still cannot press keys, so the interaction statements above come from the GHC, `ansi-terminal`, `terminal-size` and base documentation and the manual checklist below.
 
 A manual checklist for each platform:
 

@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.9.0.2 -- 2026-10-21
+* Added macOS and Windows jobs to the CI matrix for build, test, package check, Haddock and source distribution.
+* The cache now uses the Cabal store reported by `haskell-actions/setup`, which works on all three operating systems.
+* GHC 9.2.8 is excluded on the arm64 macOS runner, which has no aarch64-darwin bindist; macOS runs GHC 9.14.1.
+* Updated the platform and release notes to describe the new matrix.
+
 ### 0.9.0.1 -- 2026-10-21
 * Automatic colour detection now uses `hSupportsANSI`, so Windows consoles and MinTTY are recognised; `NO_COLOR` still disables styling.
 * Escape-sequence timeouts use `hWaitForInput` instead of an asynchronous timeout around `getChar`, which is portable and does not interrupt a blocked read.

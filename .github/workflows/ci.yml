@@ -7,11 +7,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} / GHC ${{ matrix.ghc-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         ghc-version: ["9.2.8", "9.14.1"]
+        exclude:
+          # GHC 9.2.8 has no aarch64-darwin bindist for the arm64 macOS runner.
+          - os: macos-latest
+            ghc-version: "9.2.8"
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cabal/store
+            ${{ steps.setup.outputs.cabal-store }}
             dist-newstyle
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-${{ hashFiles('**/*.cabal', 'cabal.project') }}
           restore-keys: |
