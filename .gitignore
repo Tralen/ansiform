@@ -1,6 +1,6 @@
 # Zed
-.agents/
 .prompt/
+.handoff/
 PROMPT.md
 TODO.md
 HANDOFF.md

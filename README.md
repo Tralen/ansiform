@@ -14,6 +14,14 @@ Current version: **1.0.0**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
+## Stack
+
+Haskell with Cabal. Stack is not used.
+
+## Versioning
+
+PVP, single-sourced from the `ansiform.cabal` file.
+
 ## Features
 
 - ANSI colors, bold, italic and underline, with automatic suppression on non-TTY output, `NO_COLOR` and `TERM=dumb`.
@@ -121,7 +129,7 @@ cabal run ansiform-tutorial
 3. **Errors as data.** Table builders return `Maybe Table`. There are no exceptions in the public API.
 4. **Immediate interaction.** The standard interaction is a single key press, handled by `Ansiform.Input` without Enter.
 5. **Reusable components.** Screens are assembled from shared builders such as `header`, `footer` and `rule`, keeping behavior and theming consistent.
-6. **Explicit versioning.** The package follows the PVP and every release is recorded in [ChangeLog.md](https://hackage.haskell.org/package/ansiform/changelog).
+6. **Explicit versioning.** The package follows the PVP and every release is recorded in [CHANGELOG.md](https://hackage.haskell.org/package/ansiform/changelog).
 
 ## License
 

@@ -13,7 +13,7 @@ category:            User Interfaces
 homepage:            https://github.com/Tralen/ansiform
 bug-reports:         https://github.com/Tralen/ansiform/issues
 tested-with:         GHC == 9.2.8 || == 9.14.1
-extra-doc-files:     ChangeLog.md
+extra-doc-files:     CHANGELOG.md
                      README.md
                      docs/architecture.md
                      docs/content.md
