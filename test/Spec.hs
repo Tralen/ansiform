@@ -8,7 +8,7 @@ import           GHC.IO.Handle (hDuplicate, hDuplicateTo)
 import           System.Directory (getTemporaryDirectory, removeFile)
 import           System.Exit (exitFailure)
 import           System.IO (hClose, hFlush, hPutStr, hSeek, openTempFile,
-                            SeekMode (AbsoluteSeek), stdin, stdout)
+                            readFile', SeekMode (AbsoluteSeek), stdin, stdout)
 import           Ansiform
 
 main :: IO ()
@@ -278,7 +278,7 @@ captureStdout action = do
   hDuplicateTo original stdout
   hClose original
   hClose handle
-  output <- readFile path
+  output <- readFile' path
   removeFile path
   return (result, output)
 

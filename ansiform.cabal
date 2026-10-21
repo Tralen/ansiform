@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                ansiform
-version:             0.9.0.2
+version:             0.9.0.3
 synopsis:            Display formatting for command line interfaces.
 description:         Basic format DSL for building an ANSI command line interface
                      with colors, alignment, tables, paragraphs and more.
