@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 1.0.0 -- 2026-10-21
+* Forms now draw every prefilled field when they open, so all current values are visible before the first field is focused. The active field redraws the same text and starts with the cursor at the end.
+* Marked the library stable at 1.0.0 after the editable form fields, the shortcut key reader, the line editing core and the multiplatform CI work.
+
 ### 0.9.0.6 -- 2026-10-21
 * Fixed a lone Escape never timing out in `readKeyPress` and the line editor. `waitKey` called `isEOF` before `hWaitForInput`; on a terminal, `isEOF` blocks until the next key, so Esc cancellation and the 50 ms sequence timeout never fired. `waitKey` now relies on `hWaitForInput` and converts only end-of-file exceptions into `KeyEnded`.
 * Verified the Linux terminal checklist in `docs/platforms.md` under a pseudo-terminal: immediate keys, arrow isolation, forms, editor navigation, Esc cancellation, horizontal scrolling, colour detection and resize all pass.

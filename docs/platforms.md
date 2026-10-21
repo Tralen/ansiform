@@ -74,4 +74,4 @@ A manual checklist for each platform:
 5. Confirm that colours appear on a terminal and disappear when output is redirected.
 6. Resize the terminal and confirm that the layout uses the new width.
 
-On 2026-10-21 the checklist was executed on Linux under a pseudo-terminal and all six items passed. That run found the lone-Escape timeout fixed in 0.9.0.6. macOS and Windows still need the same run on real terminals.
+On 2026-10-21 the checklist was executed on Linux under a pseudo-terminal. The first run found the lone-Escape timeout fixed in 0.9.0.6. A second run for 1.0.0 confirmed all six items and that every prefilled field is visible as soon as the edit form opens. macOS and Windows still need the same run on real terminals.

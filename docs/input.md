@@ -120,6 +120,8 @@ let prompts =
 
 `promptWithInitial section row column initial` places the cursor at the end of `initial`, so the user can backspace, move and insert without retyping the value. Non-printable characters are removed, because the editor is single-line. An empty initial value is still meaningful: it opens the editor with an empty buffer, which lets a form use the same editor for every field.
 
+When the form opens, every field with an initial value is drawn in its prompt line, so all current values are visible before the first field is focused. The active field redraws the same text and starts with the cursor at the end. Fields built with `promptAt` keep their page text and receive input through the terminal line discipline.
+
 The editor owns the region from the prompt column to the end of the line. It clears that region and redraws the visible window on every key, scrolling horizontally when the value is wider than the terminal. The window uses `charWidth`, so wide characters and combining marks keep the cursor aligned.
 
 | Key | Action |

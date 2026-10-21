@@ -237,7 +237,7 @@ The edit flow uses `promptWithInitial` instead of `promptAt`:
 promptWithInitial :: Number -> Number -> Offset -> String -> Prompt
 ```
 
-Each field opens with its current value in the editable buffer and the cursor at the end. The user can backspace, insert and move with the arrows, `Home`, `End` and `Delete`, then press Enter to submit. Esc cancels the whole form. The editor scrolls horizontally when a value is wider than the terminal, so a long URL stays editable. The prompt column and row are the same as in the add form, because both use the same page.
+Both fields are visible as soon as the edit form opens, with their current values in place. The title is focused first and its cursor starts at the end. The user can backspace, insert and move with the arrows, `Home`, `End` and `Delete`, then press Enter to submit. Esc cancels the whole form. The editor scrolls horizontally when a value is wider than the terminal, so a long URL stays editable. The prompt column and row are the same as in the add form, because both use the same page.
 
 When stdin is not a terminal, `readForm` reads a line per prompt and ignores the initial value, which keeps the program usable in pipes and tests.
 

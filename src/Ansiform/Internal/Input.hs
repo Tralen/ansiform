@@ -227,10 +227,28 @@ readFormOn h p prompts st = do
             let useEditor = interactive && any (isJust . promptInitial) prompts
                 fields = zip lines' prompts
                 readFields = if useEditor
-                    then readEditorFields h total fields
+                    then do
+                        width <- termWOn h
+                        lastLine <- drawInitialFields h width total fields
+                        moveCursorBy h (total - lastLine) 0
+                        readEditorFields h total fields
                     else withLineInput (readPlainFields h total fields)
             values <- readFields
             return (st', values)
+
+-- Draws the initial window of every editable field before the first field is
+-- read, so a form shows all current values at once. A field without an
+-- initial value is left as the page drew it. Returns the last line drawn.
+drawInitialFields :: Handle -> Int -> Int -> [(Int, Prompt)] -> IO Int
+drawInitialFields _ _ current [] = return current
+drawInitialFields h width current ((line, prompt):rest) =
+    case promptInitial prompt of
+        Nothing -> drawInitialFields h width current rest
+        Just initial -> do
+            moveCursorBy h (line - current) (promptColumn prompt)
+            redrawLine h width (promptColumn prompt)
+                        (LineState initial (length initial))
+            drawInitialFields h width line rest
 
 -- Reads prompts through the terminal line discipline.
 readPlainFields :: Handle -> Int -> [(Int, Prompt)] -> IO (Either FormError [String])
