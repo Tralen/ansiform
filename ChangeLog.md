@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.9.0.6 -- 2026-10-21
+* Fixed a lone Escape never timing out in `readKeyPress` and the line editor. `waitKey` called `isEOF` before `hWaitForInput`; on a terminal, `isEOF` blocks until the next key, so Esc cancellation and the 50 ms sequence timeout never fired. `waitKey` now relies on `hWaitForInput` and converts only end-of-file exceptions into `KeyEnded`.
+* Verified the Linux terminal checklist in `docs/platforms.md` under a pseudo-terminal: immediate keys, arrow isolation, forms, editor navigation, Esc cancellation, horizontal scrolling, colour detection and resize all pass.
+
 ### 0.9.0.5 -- 2026-10-21
 * Pinned the macOS CI job to `macos-15`. The `macos-latest` image ships an SDK that the GHC 9.14.1 linker cannot parse, so the build failed before the tests ran.
 

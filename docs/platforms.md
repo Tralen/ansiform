@@ -73,3 +73,5 @@ A manual checklist for each platform:
 4. Type a value wider than the terminal and confirm that the window scrolls with the cursor.
 5. Confirm that colours appear on a terminal and disappear when output is redirected.
 6. Resize the terminal and confirm that the layout uses the new width.
+
+On 2026-10-21 the checklist was executed on Linux under a pseudo-terminal and all six items passed. That run found the lone-Escape timeout fixed in 0.9.0.6. macOS and Windows still need the same run on real terminals.

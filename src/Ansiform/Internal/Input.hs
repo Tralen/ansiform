@@ -63,19 +63,21 @@ data KeyWait = KeyReady Char | KeyTimeout | KeyEnded
 
 -- | Waits up to the given number of milliseconds for the next key.
 --   Uses 'hWaitForInput', which is portable and avoids interrupting a blocked
---   read with an asynchronous exception. Only an end-of-file exception is
---   turned into data; other I/O errors still propagate.
+--   read with an asynchronous exception. Do not call 'isEOF' first: on a
+--   terminal it blocks until a key arrives and would defeat the timeout.
+--   Only an end-of-file exception is turned into data; other I/O errors still
+--   propagate.
 waitKey :: Int -> IO KeyWait
 waitKey ms = do
-    eof <- isEOF
-    if eof
-        then return KeyEnded
-        else do
-            ready <- tryJust eofOnly (hWaitForInput stdin ms)
-            case ready of
+    ready <- tryJust eofOnly (hWaitForInput stdin ms)
+    case ready of
+        Left _ -> return KeyEnded
+        Right False -> return KeyTimeout
+        Right True -> do
+            value <- tryJust eofOnly getChar
+            case value of
                 Left _ -> return KeyEnded
-                Right False -> return KeyTimeout
-                Right True -> KeyReady <$> getChar
+                Right c -> return (KeyReady c)
   where
     eofOnly e = if isEOFError e then Just e else Nothing
 
