@@ -2,4 +2,4 @@
 module Ansiform.Render (renderPage, renderSection, renderPrinter) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Render
+import Ansiform.Internal.Render

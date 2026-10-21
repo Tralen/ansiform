@@ -1,11 +1,14 @@
 -- | Pure single-line editing state, keys and width-aware windowing.
-module Ansiform.Internal.Line (LineState (..), LineKey (..), applyLineKey,
-                               visibleLine) where
+module Ansiform.Internal.Line
+    ( LineState (..)
+    , LineKey (..)
+    , applyLineKey
+    , visibleLine
+    ) where
 
+import Ansiform.Internal.Width (charWidth, textWidth)
 --------------------------------------------------------------------------------
-import           Data.Char (isPrint)
-import           Ansiform.Internal.Width (charWidth, textWidth)
-
+import Data.Char (isPrint)
 
 -- Line State
 --------------------------------------------------------------------------------
@@ -14,29 +17,29 @@ import           Ansiform.Internal.Width (charWidth, textWidth)
 --   The cursor is a zero-based code-point index.
 data LineState = LineState
     { lineText :: String
-      -- ^ Current contents of the buffer.
+    -- ^ Current contents of the buffer.
     , lineCursor :: Int
-      -- ^ Cursor position as a code-point index into 'lineText'.
-    } deriving (Eq, Show)
+    -- ^ Cursor position as a code-point index into 'lineText'.
+    }
+    deriving (Eq, Show)
 
 -- | Editing keys understood by the line editor.
 data LineKey
-    = LineInsert Char
-      -- ^ Insert a printable character at the cursor.
-    | LineBackspace
-      -- ^ Delete the character before the cursor.
-    | LineDelete
-      -- ^ Delete the character at the cursor.
-    | LineMoveLeft
-      -- ^ Move the cursor one code point to the left.
-    | LineMoveRight
-      -- ^ Move the cursor one code point to the right.
-    | LineMoveHome
-      -- ^ Move the cursor to the start of the buffer.
-    | LineMoveEnd
-      -- ^ Move the cursor to the end of the buffer.
+    = -- | Insert a printable character at the cursor.
+      LineInsert Char
+    | -- | Delete the character before the cursor.
+      LineBackspace
+    | -- | Delete the character at the cursor.
+      LineDelete
+    | -- | Move the cursor one code point to the left.
+      LineMoveLeft
+    | -- | Move the cursor one code point to the right.
+      LineMoveRight
+    | -- | Move the cursor to the start of the buffer.
+      LineMoveHome
+    | -- | Move the cursor to the end of the buffer.
+      LineMoveEnd
     deriving (Eq, Show)
-
 
 -- Pure Editing
 --------------------------------------------------------------------------------
@@ -49,13 +52,13 @@ applyLineKey key (LineState text cursor) = case key of
     LineInsert c
         | isPrint c ->
             let (before, after) = splitAt position text
-            in LineState (before ++ (c : after)) (position + 1)
+             in LineState (before ++ (c : after)) (position + 1)
         | otherwise -> LineState text position
     LineBackspace
         | position <= 0 -> LineState text position
         | otherwise ->
             let (before, after) = splitAt position text
-            in LineState (init before ++ after) (position - 1)
+             in LineState (init before ++ after) (position - 1)
     LineDelete
         | position >= length text -> LineState text position
         | otherwise ->
@@ -91,7 +94,7 @@ windowStart usable = go 0
   where
     go index remaining _
         | remaining <= usable = index
-    go index remaining (c:cs) =
+    go index remaining (c : cs) =
         go (index + 1) (remaining - charWidth c) cs
     go index _ [] = index
 
@@ -100,6 +103,6 @@ takeWindow :: Int -> String -> String
 takeWindow usable = go 0
   where
     go _ [] = []
-    go used (c:cs)
+    go used (c : cs)
         | used + charWidth c > usable = []
         | otherwise = c : go (used + charWidth c) cs

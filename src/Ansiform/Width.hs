@@ -2,4 +2,4 @@
 module Ansiform.Width (charWidth, textWidth) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Width
+import Ansiform.Internal.Width

@@ -1,22 +1,23 @@
 -- | Printer builders for lines, lists, groups, tables and text.
-module Ansiform.Printer ( module Ansiform.Printer 
-                   , Internal.Printer, Internal.runPrinter
-                   , Internal.runPrinterOn
-                   , Internal.runPrinterDefault
-                   , Internal.runPrinterDefaultOn
-                   , Internal.runPrinterDefault'
-                   , Internal.runPrinterDefaultOn'
-                   ) where
+module Ansiform.Printer
+    ( module Ansiform.Printer
+    , Internal.Printer
+    , Internal.runPrinter
+    , Internal.runPrinterOn
+    , Internal.runPrinterDefault
+    , Internal.runPrinterDefaultOn
+    , Internal.runPrinterDefault'
+    , Internal.runPrinterDefaultOn'
+    ) where
 
+import Ansiform.Content
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Content
-import           Ansiform.Internal.Number
-import           Ansiform.Internal.Output (outputConfig)
-import           Ansiform.Internal.Printer as Internal
-import           Ansiform.Internal.Table (Borders, TableFormat, defaultTableFormat)
-import           Ansiform.Content
-import           Ansiform.Style
-
+import Ansiform.Internal.Content
+import Ansiform.Internal.Number
+import Ansiform.Internal.Output (outputConfig)
+import Ansiform.Internal.Printer as Internal
+import Ansiform.Internal.Table (Borders, TableFormat, defaultTableFormat)
+import Ansiform.Style
 
 -- Basic Printing
 --------------------------------------------------------------------------------
@@ -28,7 +29,6 @@ printerEmpty n = formPrinter "Empty" $ \s -> printEmpty s n
 -- | Printer for a single item followed by a newline.
 printerItem :: Item -> Printer
 printerItem i = formPrinter "Item" $ \s -> printSingleItem s i
-
 
 -- Rules & Solid Printing
 --------------------------------------------------------------------------------
@@ -48,7 +48,6 @@ printerSolid c = formPrinter "Solid" $ \s -> printRule 0 (ruleSolid c) s
 -- | Printer for a solid line with an offset on both sides.
 printerSolid' :: Offset -> Color -> Printer
 printerSolid' o c = formPrinter "Solid'" $ \s -> printRule o (ruleSolid c) s
-
 
 -- Line Printing
 --------------------------------------------------------------------------------
@@ -76,7 +75,6 @@ printerLineRight o bs = formPrinter "LineRight" $ \s -> printLineRight o bs s
 -- | Printer for several blocks on a single centered line.
 printerLineCenter :: Offset -> [Block] -> Printer
 printerLineCenter o bs = formPrinter "LineCenter" $ \s -> printLineCenter o bs s
-
 
 -- Solid Text Printing
 --------------------------------------------------------------------------------
@@ -111,7 +109,6 @@ printerSolidLineRight o p c bs = formPrinter "SolidLineRight" $ \s -> printSolid
 printerSolidLineCenter :: Offset -> Padding -> Color -> [Block] -> Printer
 printerSolidLineCenter o p c bs = formPrinter "SolidLineCenter" $ \s -> printSolidLine o p c bs printLineCenter s
 
-
 -- List Printing
 --------------------------------------------------------------------------------
 
@@ -127,7 +124,6 @@ printerList o l bs = formPrinter "List" $ \s -> printList o l bs s
 printerList' :: Offset -> Number -> [Block] -> Printer
 printerList' o l bs = formPrinter "List'" $ \s -> printList' o l bs s
 
-
 -- Group Printing
 --------------------------------------------------------------------------------
 
@@ -137,146 +133,141 @@ printerGroup o g = formPrinter "Group" $ \s -> printGroup s o g
 
 -- | Printer for groups with evenly spaced columns.
 printerGroups :: Offset -> [Group] -> Printer
-printerGroups o gs = formPrinter "Groups" $ \s -> 
-              printGroups defaultTableFormat o 0 0 True False (groupAverage (outputConfig s) gs) s
+printerGroups o gs = formPrinter "Groups" $ \s ->
+    printGroups defaultTableFormat o 0 0 True False (groupAverage (outputConfig s) gs) s
 
 -- | Printer for groups with minimum spaced columns.
 printerGroups' :: Offset -> [Group] -> Printer
-printerGroups' o gs = formPrinter "Groups'" $ \s -> 
-              printGroups defaultTableFormat o 0 0 False False (groupAverage (outputConfig s) gs) s
+printerGroups' o gs = formPrinter "Groups'" $ \s ->
+    printGroups defaultTableFormat o 0 0 False False (groupAverage (outputConfig s) gs) s
 
 -- | Printer for evenly spaced groups, limiting the number of rows.
 printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
-printerGroupsLimited o r gs = formPrinter "GroupsLimited" $ \s -> 
-              printGroups defaultTableFormat o 0 r True False (groupAverage (outputConfig s) gs) s
+printerGroupsLimited o r gs = formPrinter "GroupsLimited" $ \s ->
+    printGroups defaultTableFormat o 0 r True False (groupAverage (outputConfig s) gs) s
 
 -- | Printer for minimum spaced groups, limiting the number of rows.
 printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
-printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s -> 
-              printGroups defaultTableFormat o 0 r False False (groupAverage (outputConfig s) gs) s
+printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s ->
+    printGroups defaultTableFormat o 0 r False False (groupAverage (outputConfig s) gs) s
 
 -- | Printer for a list of Groups inside box borders, with minimum spaced columns.
 printerGroupsBordered :: Borders -> Offset -> Padding -> [Group] -> Printer
 printerGroupsBordered brd o p gs = formPrinter "GroupsBordered" $ \s ->
-              printBorderedGroups brd defaultTableFormat o p 0 False gs s
+    printBorderedGroups brd defaultTableFormat o p 0 False gs s
 
 -- | Printer for a list of Groups inside box borders, with evenly spaced columns.
 printerGroupsBordered' :: Borders -> Offset -> Padding -> [Group] -> Printer
 printerGroupsBordered' brd o p gs = formPrinter "GroupsBordered'" $ \s ->
-              printBorderedGroups brd defaultTableFormat o p 0 True gs s
+    printBorderedGroups brd defaultTableFormat o p 0 True gs s
 
 -- | Printer for Groups inside box borders, limiting the number of rows.
 printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 printerGroupsBorderedLimited brd o p r gs = formPrinter "GroupsBorderedLimited" $ \s ->
-              printBorderedGroups brd defaultTableFormat o p r False gs s
+    printBorderedGroups brd defaultTableFormat o p r False gs s
 
 -- | Printer for evenly spaced Groups inside box borders, limiting the number of rows.
 printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 printerGroupsBorderedLimited' brd o p r gs = formPrinter "GroupsBorderedLimited'" $ \s ->
-              printBorderedGroups brd defaultTableFormat o p r True gs s
-
+    printBorderedGroups brd defaultTableFormat o p r True gs s
 
 -- Table Printing
 --------------------------------------------------------------------------------
 
 -- | Prints a table with a zebra background and minimum spaced columns.
 printerTable :: Offset -> Padding -> Maybe Table -> Printer
-printerTable o p mt = formPrinter "Table" $ \s -> 
-                 printGroups defaultTableFormat o p 0 False True (unMaybeTable mt) s
+printerTable o p mt = formPrinter "Table" $ \s ->
+    printGroups defaultTableFormat o p 0 False True (unMaybeTable mt) s
 
 -- | Prints a table with a zebra background and evenly spaced columns.
 printerTable' :: Offset -> Padding -> Maybe Table -> Printer
-printerTable' o p mt = formPrinter "Table'" $ \s -> 
-                 printGroups defaultTableFormat o p 0 True True (unMaybeTable mt) s
+printerTable' o p mt = formPrinter "Table'" $ \s ->
+    printGroups defaultTableFormat o p 0 True True (unMaybeTable mt) s
 
 -- | Prints a table with a zebra background, limiting the number of rows.
 printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
-printerTableLimited o p r mt = formPrinter "TableLimited" $ \s -> 
-                 printGroups defaultTableFormat o p r False True (unMaybeTable mt) s
+printerTableLimited o p r mt = formPrinter "TableLimited" $ \s ->
+    printGroups defaultTableFormat o p r False True (unMaybeTable mt) s
 
 -- | Prints an evenly spaced table, limiting the number of rows.
 printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
-printerTableLimited' o p r mt = formPrinter "TableLimited'" $ \s -> 
-                 printGroups defaultTableFormat o p r True True (unMaybeTable mt) s
+printerTableLimited' o p r mt = formPrinter "TableLimited'" $ \s ->
+    printGroups defaultTableFormat o p r True True (unMaybeTable mt) s
 
 -- | Prints a formatted Table with alternating background, with minimum spaced columns.
 printerTableFormat :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableFormat fmt o p mt = formPrinter "TableFormat" $ \s ->
-                 printGroups fmt o p 0 False True (unMaybeTable mt) s
+    printGroups fmt o p 0 False True (unMaybeTable mt) s
 
 -- | Prints a formatted Table with alternating background, with evenly spaced columns.
 printerTableFormat' :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableFormat' fmt o p mt = formPrinter "TableFormat'" $ \s ->
-                 printGroups fmt o p 0 True True (unMaybeTable mt) s
+    printGroups fmt o p 0 True True (unMaybeTable mt) s
 
 -- | Prints a formatted Table limiting the number of rows, with minimum spaced columns.
 printerTableLimitedFormat :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat fmt o p r mt = formPrinter "TableLimitedFormat" $ \s ->
-                 printGroups fmt o p r False True (unMaybeTable mt) s
+    printGroups fmt o p r False True (unMaybeTable mt) s
 
 -- | Prints a formatted Table limiting the number of rows, with evenly spaced columns.
 printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat' fmt o p r mt = formPrinter "TableLimitedFormat'" $ \s ->
-                 printGroups fmt o p r True True (unMaybeTable mt) s
+    printGroups fmt o p r True True (unMaybeTable mt) s
 
 -- | Prints a bordered Table with minimum spaced columns.
 printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableBordered brd fmt o p mt = formPrinter "TableBordered" $ \s ->
-                 printBorderedGroups brd fmt o p 0 False (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p 0 False (unMaybeTable mt) s
 
 -- | Prints a bordered Table with evenly spaced columns.
 printerTableBordered' :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableBordered' brd fmt o p mt = formPrinter "TableBordered'" $ \s ->
-                 printBorderedGroups brd fmt o p 0 True (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p 0 True (unMaybeTable mt) s
 
 -- | Prints a bordered Table limiting the number of rows, with minimum spaced columns.
 printerTableBorderedLimited :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableBorderedLimited brd fmt o p r mt = formPrinter "TableBorderedLimited" $ \s ->
-                 printBorderedGroups brd fmt o p r False (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p r False (unMaybeTable mt) s
 
 -- | Prints a bordered Table limiting the number of rows, with evenly spaced columns.
 printerTableBorderedLimited' :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableBorderedLimited' brd fmt o p r mt = formPrinter "TableBorderedLimited'" $ \s ->
-                 printBorderedGroups brd fmt o p r True (unMaybeTable mt) s
-
+    printBorderedGroups brd fmt o p r True (unMaybeTable mt) s
 
 -- Text Printing
 --------------------------------------------------------------------------------
 
 -- | Prints a continuous paragraph made from a list of blocks.
 printerParagraph :: Offset -> Offset -> Paragraph -> Printer
-printerParagraph o o1 vbs = formPrinter "Paragraph" $ \s -> 
-                                printParagraph o o1 0 False vbs s
+printerParagraph o o1 vbs = formPrinter "Paragraph" $ \s ->
+    printParagraph o o1 0 False vbs s
 
 -- | Prints paragraphs separated by a single line.
 printerArticle :: Offset -> Offset -> Article -> Printer
-printerArticle o o1 vbss = formPrinter "Article" $ \s -> 
-                                printSequence o o1 0 False odd vbss s
-
+printerArticle o o1 vbss = formPrinter "Article" $ \s ->
+    printSequence o o1 0 False odd vbss s
 
 -- | Prints paragraphs with alternating backgrounds on odd entries.
 printerSequence :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
-printerSequence o o1 p vbss = formPrinter "Sequence" $ \s -> 
-                                      printSequence o o1 p True odd vbss s
+printerSequence o o1 p vbss = formPrinter "Sequence" $ \s ->
+    printSequence o o1 p True odd vbss s
 
 -- | Version of 'printerSequence' that highlights even entries.
 printerSequence' :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
-printerSequence' o o1 p vbss = formPrinter "Sequence'" $ \s -> 
-                                      printSequence o o1 p True even vbss s
+printerSequence' o o1 p vbss = formPrinter "Sequence'" $ \s ->
+    printSequence o o1 p True even vbss s
 
 -- | Prints paragraphs highlighting one selected index.
 printerSequenceSel :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
-printerSequenceSel o o1 p i vbss = formPrinter "SequenceSel" $ \s -> 
-                                      printSequence o o1 p True (==unn i) vbss s
+printerSequenceSel o o1 p i vbss = formPrinter "SequenceSel" $ \s ->
+    printSequence o o1 p True (== unn i) vbss s
 
 -- | Prints paragraphs highlighting entries at or after an index.
 printerSequenceAfter :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
-printerSequenceAfter o o1 p i vbss = formPrinter "SequenceAfter" $ \s -> 
-                                      printSequence o o1 p True (>=unn i) vbss s
+printerSequenceAfter o o1 p i vbss = formPrinter "SequenceAfter" $ \s ->
+    printSequence o o1 p True (>= unn i) vbss s
 
 -- | Prints paragraphs highlighting entries selected by a predicate.
 printerSequencePred :: Offset -> Offset -> Padding -> (Int -> Bool) -> [Paragraph] -> Printer
-printerSequencePred o o1 p f vbss = formPrinter "SequencePred" $ \s -> 
-                                      printSequence o o1 p True f vbss s
-
-
+printerSequencePred o o1 p f vbss = formPrinter "SequencePred" $ \s ->
+    printSequence o o1 p True f vbss s

@@ -1,22 +1,21 @@
 -- | Capture page, section and printer output as a string.
 module Ansiform.Internal.Render (renderPage, renderSection, renderPrinter) where
 
+import Ansiform.Internal.Page
+import Ansiform.Internal.Printer
+import Ansiform.Internal.Section
+import Ansiform.Internal.Settings
 --------------------------------------------------------------------------------
-import           Control.Exception (bracket)
-import           System.Directory (getTemporaryDirectory, removeFile)
-import           System.IO (Handle, hClose, hFlush, openTempFile)
-import           Ansiform.Internal.Page
-import           Ansiform.Internal.Printer
-import           Ansiform.Internal.Section
-import           Ansiform.Internal.Settings
-
+import Control.Exception (bracket)
+import System.Directory (getTemporaryDirectory, removeFile)
+import System.IO (Handle, hClose, hFlush, openTempFile)
 
 -- Rendering
 --------------------------------------------------------------------------------
 
 -- | Renders a page and returns the captured output.
 renderPage :: Page -> Settings -> IO String
-renderPage p s = snd <$> captureOutput (\h -> renderWithConfig h)
+renderPage p s = snd <$> captureOutput renderWithConfig
   where
     renderWithConfig h = do
         cfg <- runSettingsOn h s
@@ -24,7 +23,7 @@ renderPage p s = snd <$> captureOutput (\h -> renderWithConfig h)
 
 -- | Renders a section and returns the captured output.
 renderSection :: Section -> Settings -> IO String
-renderSection sec s = snd <$> captureOutput (\h -> renderWithConfig h)
+renderSection sec s = snd <$> captureOutput renderWithConfig
   where
     renderWithConfig h = do
         cfg <- runSettingsOn h s
@@ -32,12 +31,11 @@ renderSection sec s = snd <$> captureOutput (\h -> renderWithConfig h)
 
 -- | Renders a single printer and returns the captured output.
 renderPrinter :: Printer -> Settings -> IO String
-renderPrinter pr s = snd <$> captureOutput (\h -> renderWithConfig h)
+renderPrinter pr s = snd <$> captureOutput renderWithConfig
   where
     renderWithConfig h = do
         cfg <- runSettingsOn h s
         runPrinterIOOn h (return cfg) pr
-
 
 -- Support Functions
 --------------------------------------------------------------------------------

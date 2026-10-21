@@ -1,15 +1,14 @@
 -- | Settings and configuration modifiers.
-module Ansiform.Settings (module Ansiform.Settings
-                    , Internal.Config
-                    , Internal.Settings
-                    , Internal.ColorMode(..)
-                    ) where
-
+module Ansiform.Settings
+    ( module Ansiform.Settings
+    , Internal.Config
+    , Internal.Settings
+    , Internal.ColorMode (..)
+    ) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Number
-import           Ansiform.Internal.Settings as Internal
-
+import Ansiform.Internal.Number
+import Ansiform.Internal.Settings as Internal
 
 -- Default Settings
 --------------------------------------------------------------------------------
@@ -21,7 +20,6 @@ settings = formSettings
 -- | The settings that use only the terminal defaults.
 defaultSettings :: Settings
 defaultSettings = formSettings []
-
 
 -- Configuration modifiers
 --------------------------------------------------------------------------------

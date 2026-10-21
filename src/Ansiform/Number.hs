@@ -1,20 +1,26 @@
 -- | Non-negative numbers used for widths, offsets and padding.
-module Ansiform.Number ( Number
-                  , Width
-                  , Padding
-                  , Offset
-                  , formNumber
-                  , unNumber
-                  , addNumber
-                  , subtractNumber
-                  , subtractNumberMaybe
-                  ) where
+module Ansiform.Number
+    ( Number
+    , Width
+    , Padding
+    , Offset
+    , formNumber
+    , unNumber
+    , addNumber
+    , subtractNumber
+    , subtractNumberMaybe
+    ) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Number (Number, Width, Padding, Offset,
-                                           formNum, unn)
+import Ansiform.Internal.Number
+    ( Number
+    , Offset
+    , Padding
+    , Width
+    , formNum
+    , unn
+    )
 import qualified Ansiform.Internal.Number as Internal
-
 
 -- | Builds a 'Number', capping negative values at zero.
 formNumber :: Int -> Number

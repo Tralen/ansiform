@@ -1,9 +1,7 @@
 module Ansiform.Internal.Number where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Sample
-
-
+import Ansiform.Internal.Sample
 
 -- | A non-negative number used for sizes, offsets and counts.
 --
@@ -11,8 +9,7 @@ import           Ansiform.Internal.Sample
 --   Subtraction through '(-)' caps at zero; use subtractNumberMaybe when
 --   a negative result must be distinguished from zero.
 newtype Number = Number Int
-                    deriving (Eq, Ord, Show)
-
+    deriving (Eq, Ord, Show)
 
 -- | Number of terminal columns.
 type Width = Number
@@ -23,7 +20,6 @@ type Padding = Number
 -- | Indentation from the left edge.
 type Offset = Number
 
-
 instance Num Number where
     fromInteger n = formNumber $ fromInteger n
     n + m = formNumber $ unn n + unn m
@@ -31,11 +27,10 @@ instance Num Number where
     n * m = formNumber $ unn n * unn m
     negate _ = 0
     abs n = n
-    signum n | n <= 0 = 0 | otherwise = 1 
+    signum n | n <= 0 = 0 | otherwise = 1
 
 instance Sample Number where
     sampleShow _ (Number n) = show n
-
 
 -- | Adds two numbers.
 addNumber :: Number -> Number -> Number
@@ -65,8 +60,3 @@ unNumber (Number n) = n
 
 unn :: Number -> Int
 unn = unNumber
-
-
-
-
-

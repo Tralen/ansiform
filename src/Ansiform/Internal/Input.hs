@@ -1,30 +1,58 @@
 -- | Immediate single-key input and line input for interactive interfaces.
-module Ansiform.Internal.Input (withImmediateInput, readKey, readKeyPress,
-                                withLineInput, readLine,
-                                readLineAt, readLineAtOn,
-                                Prompt, promptAt, promptWithInitial,
-                                promptSection, promptRow, promptColumn, promptInitial,
-                                FormError(..), readForm, readFormOn) where
+module Ansiform.Internal.Input
+    ( withImmediateInput
+    , readKey
+    , readKeyPress
+    , withLineInput
+    , readLine
+    , readLineAt
+    , readLineAtOn
+    , Prompt
+    , promptAt
+    , promptWithInitial
+    , promptSection
+    , promptRow
+    , promptColumn
+    , promptInitial
+    , FormError (..)
+    , readForm
+    , readFormOn
+    ) where
 
+import Ansiform.Draw (drawOn)
+import Ansiform.Internal.Line
+import Ansiform.Internal.Number
+import Ansiform.Internal.Page
+import Ansiform.Internal.State
+import Ansiform.Internal.Terminal (termWOn)
+import Ansiform.Internal.Utils
 --------------------------------------------------------------------------------
-import           Control.Exception (bracket_, tryJust)
-import           Control.Monad (when)
-import           Data.Char (isPrint)
-import           Data.Maybe (isJust)
-import           System.Console.ANSI (hClearFromCursorToLineEnd, hCursorDown,
-                                      hCursorUp, hSetCursorColumn)
-import           System.IO (BufferMode (..), Handle, hFlush, hGetBuffering,
-                            hGetEcho, hIsTerminalDevice, hPutStr, hSetBuffering,
-                            hSetEcho, hWaitForInput, isEOF, stdin, stdout)
-import           System.IO.Error (isEOFError)
-import           Ansiform.Draw (drawOn)
-import           Ansiform.Internal.Line
-import           Ansiform.Internal.Number
-import           Ansiform.Internal.Page
-import           Ansiform.Internal.State
-import           Ansiform.Internal.Terminal (termWOn)
-import           Ansiform.Internal.Utils
-
+import Control.Exception (bracket_, tryJust)
+import Control.Monad (when)
+import Data.Char (isPrint)
+import Data.Maybe (isJust)
+import System.Console.ANSI
+    ( hClearFromCursorToLineEnd
+    , hCursorDown
+    , hCursorUp
+    , hSetCursorColumn
+    )
+import System.IO
+    ( BufferMode (..)
+    , Handle
+    , hFlush
+    , hGetBuffering
+    , hGetEcho
+    , hIsTerminalDevice
+    , hPutStr
+    , hSetBuffering
+    , hSetEcho
+    , hWaitForInput
+    , isEOF
+    , stdin
+    , stdout
+    )
+import System.IO.Error (isEOFError)
 
 -- Terminal Input
 --------------------------------------------------------------------------------
@@ -38,11 +66,11 @@ withImmediateInput action = do
     oldBuffering <- hGetBuffering stdin
     oldEcho <- if interactive then hGetEcho stdin else return True
     let setup = when interactive $ do
-                    hSetBuffering stdin NoBuffering
-                    hSetEcho stdin False
+            hSetBuffering stdin NoBuffering
+            hSetEcho stdin False
         restore = when interactive $ do
-                    hSetBuffering stdin oldBuffering
-                    hSetEcho stdin oldEcho
+            hSetBuffering stdin oldBuffering
+            hSetEcho stdin oldEcho
     bracket_ setup restore action
 
 -- | Reads one key without waiting for Enter.
@@ -128,11 +156,11 @@ withLineInput action = do
     oldBuffering <- hGetBuffering stdin
     oldEcho <- if interactive then hGetEcho stdin else return True
     let setup = when interactive $ do
-                    hSetBuffering stdin LineBuffering
-                    hSetEcho stdin True
+            hSetBuffering stdin LineBuffering
+            hSetEcho stdin True
         restore = when interactive $ do
-                    hSetBuffering stdin oldBuffering
-                    hSetEcho stdin oldEcho
+            hSetBuffering stdin oldBuffering
+            hSetEcho stdin oldEcho
     bracket_ setup restore action
 
 -- | Reads one line, including the newline consumed by 'getLine'.
@@ -161,21 +189,21 @@ readLineAtOn h up column = do
     moveCursorBy h (negate (unn up)) column
     withLineInput readLine
 
-
 -- Page Forms
 --------------------------------------------------------------------------------
 
 -- | A line prompt placed in a section of a page.
 data Prompt = Prompt
     { promptSection :: Number
-      -- ^ Zero-based section index.
+    -- ^ Zero-based section index.
     , promptRow :: Number
-      -- ^ Zero-based row inside the section.
+    -- ^ Zero-based row inside the section.
     , promptColumn :: Offset
-      -- ^ Absolute column where typing starts.
+    -- ^ Absolute column where typing starts.
     , promptInitial :: Maybe String
-      -- ^ Optional initial value read by the line editor.
-    } deriving (Eq, Show)
+    -- ^ Optional initial value read by the line editor.
+    }
+    deriving (Eq, Show)
 
 -- | Builds a prompt from a zero-based section index, a zero-based row inside
 --   that section and an absolute column. A prompt row is easier to keep
@@ -226,13 +254,14 @@ readFormOn h p prompts st = do
             interactive <- hIsTerminalDevice stdin
             let useEditor = interactive && any (isJust . promptInitial) prompts
                 fields = zip lines' prompts
-                readFields = if useEditor
-                    then do
-                        width <- termWOn h
-                        lastLine <- drawInitialFields h width total fields
-                        moveCursorBy h (total - lastLine) 0
-                        readEditorFields h total fields
-                    else withLineInput (readPlainFields h total fields)
+                readFields =
+                    if useEditor
+                        then do
+                            width <- termWOn h
+                            lastLine <- drawInitialFields h width total fields
+                            moveCursorBy h (total - lastLine) 0
+                            readEditorFields h total fields
+                        else withLineInput (readPlainFields h total fields)
             values <- readFields
             return (st', values)
 
@@ -241,29 +270,32 @@ readFormOn h p prompts st = do
 -- initial value is left as the page drew it. Returns the last line drawn.
 drawInitialFields :: Handle -> Int -> Int -> [(Int, Prompt)] -> IO Int
 drawInitialFields _ _ current [] = return current
-drawInitialFields h width current ((line, prompt):rest) =
+drawInitialFields h width current ((line, prompt) : rest) =
     case promptInitial prompt of
         Nothing -> drawInitialFields h width current rest
         Just initial -> do
             moveCursorBy h (line - current) (promptColumn prompt)
-            redrawLine h width (promptColumn prompt)
-                        (LineState initial (length initial))
+            redrawLine
+                h
+                width
+                (promptColumn prompt)
+                (LineState initial (length initial))
             drawInitialFields h width line rest
 
 -- Reads prompts through the terminal line discipline.
 readPlainFields :: Handle -> Int -> [(Int, Prompt)] -> IO (Either FormError [String])
 readPlainFields _ _ [] = return (Right [])
-readPlainFields h current ((line,prompt):rest) = do
+readPlainFields h current ((line, prompt) : rest) = do
     moveCursorBy h (line - current) (promptColumn prompt)
     value <- readLine
     case value of
         Nothing -> return (Left FormInputEnded)
-        Just v -> fmap (fmap (v:)) (readPlainFields h (line + 1) rest)
+        Just v -> fmap (fmap (v :)) (readPlainFields h (line + 1) rest)
 
 -- Reads prompts in order, choosing the line editor or the line discipline.
 readEditorFields :: Handle -> Int -> [(Int, Prompt)] -> IO (Either FormError [String])
 readEditorFields _ _ [] = return (Right [])
-readEditorFields h current ((line,prompt):rest) = do
+readEditorFields h current ((line, prompt) : rest) = do
     moveCursorBy h (line - current) (promptColumn prompt)
     value <- case promptInitial prompt of
         Nothing -> fmap (maybe (Left FormInputEnded) Right) (withLineInput readLine)
@@ -271,7 +303,7 @@ readEditorFields h current ((line,prompt):rest) = do
             withImmediateInput (readLineEditor h (promptColumn prompt) initial)
     case value of
         Left err -> return (Left err)
-        Right v -> fmap (fmap (v:)) (readEditorFields h (line + 1) rest)
+        Right v -> fmap (fmap (v :)) (readEditorFields h (line + 1) rest)
 
 -- Converts a section and row to an absolute page line.
 promptLine :: [Int] -> Prompt -> Either Prompt Int
@@ -293,7 +325,6 @@ moveCursorBy h delta column = do
         when (delta < 0) $ hCursorUp h (negate delta)
         hSetCursorColumn h (unn column)
         hFlush h
-
 
 -- Line Editor
 --------------------------------------------------------------------------------

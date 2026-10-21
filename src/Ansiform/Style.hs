@@ -1,12 +1,14 @@
 -- | Colors, formats and reusable styles.
-module Ansiform.Style ( module Ansiform.Style
-                 , Internal.Color, Internal.Format, Internal.Style
-                 ) where
+module Ansiform.Style
+    ( module Ansiform.Style
+    , Internal.Color
+    , Internal.Format
+    , Internal.Style
+    ) where
 
+import Ansiform.Internal.Style as Internal
 --------------------------------------------------------------------------------
 import qualified System.Console.ANSI as ANSI
-import           Ansiform.Internal.Style as Internal
-
 
 -- Colors
 --------------------------------------------------------------------------------
@@ -55,7 +57,6 @@ white, white' :: Color
 white = formColor Dull ANSI.White
 white' = formColor Vivid ANSI.White
 
-
 -- Formats
 --------------------------------------------------------------------------------
 
@@ -79,7 +80,6 @@ formatBoldUnderline = formFormat BoldIntensity False SingleUnderline
 formatItalicUnderline, formatBoldItalicUnderline :: Format
 formatItalicUnderline = formFormat NormalIntensity True SingleUnderline
 formatBoldItalicUnderline = formFormat BoldIntensity True SingleUnderline
-
 
 -- Styles
 --------------------------------------------------------------------------------
@@ -110,7 +110,6 @@ solid, solidBold :: Color -> Style
 solid c = formStyle black c formatDefault
 solidBold c = formStyle black c formatBold
 
-
 -- Text Styles
 --------------------------------------------------------------------------------
 
@@ -136,5 +135,5 @@ textBoldItalicUnderline = formStyle colorDefault colorDefault formatBoldItalicUn
 
 -- | Colored text, or colored text on a solid background.
 textColor, textMark :: Color -> Style
-textColor = normal 
+textColor = normal
 textMark = solid

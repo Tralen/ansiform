@@ -1,10 +1,9 @@
 -- | Output target for the printing layer.
 module Ansiform.Internal.Output where
 
+import Ansiform.Internal.Settings
 --------------------------------------------------------------------------------
-import           System.IO (Handle)
-import           Ansiform.Internal.Settings
-
+import System.IO (Handle)
 
 -- Output Type
 --------------------------------------------------------------------------------

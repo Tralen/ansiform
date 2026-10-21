@@ -1,9 +1,9 @@
 -- | Per-column alignment and truncation for tables.
 module Ansiform.Table
-    ( Align(..)
-    , Borders(..)
-    , Ellipsis(..)
-    , ColumnSpec(..)
+    ( Align (..)
+    , Borders (..)
+    , Ellipsis (..)
+    , ColumnSpec (..)
     , TableFormat
     , defaultColumnSpec
     , defaultTableFormat
@@ -11,8 +11,7 @@ module Ansiform.Table
     ) where
 
 --------------------------------------------------------------------------------
-import           Ansiform.Internal.Table
-
+import Ansiform.Internal.Table
 
 -- Builders
 --------------------------------------------------------------------------------

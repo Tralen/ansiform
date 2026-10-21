@@ -1,16 +1,17 @@
 -- | Internal terminal cursor and size helpers.
-module Ansiform.Internal.Terminal 
-                    ( module Ansiform.Internal.Terminal
-                    , ANSI.cursorUp, ANSI.cursorDown
-                    , ANSI.hCursorUp, ANSI.hCursorDown
-                    ) where
-           
---------------------------------------------------------------------------------
-import           System.Console.ANSI as ANSI
-import           System.Console.Terminal.Size
-import           System.IO (Handle, hIsTerminalDevice, stdout)
-import           Ansiform.Internal.Number
+module Ansiform.Internal.Terminal
+    ( module Ansiform.Internal.Terminal
+    , ANSI.cursorUp
+    , ANSI.cursorDown
+    , ANSI.hCursorUp
+    , ANSI.hCursorDown
+    ) where
 
+import Ansiform.Internal.Number
+--------------------------------------------------------------------------------
+import System.Console.ANSI as ANSI
+import System.Console.Terminal.Size
+import System.IO (Handle, hIsTerminalDevice, stdout)
 
 -- Indentation
 --------------------------------------------------------------------------------
@@ -31,7 +32,6 @@ indR = hSetCursorColumn
 indR' :: Handle -> Int -> IO ()
 indR' = hCursorForward
 
-
 -- Clear
 --------------------------------------------------------------------------------
 
@@ -41,7 +41,6 @@ clr h n = hSetCursorPosition h (unn n) 0 >> hClearFromCursorToScreenEnd h
 
 clr0 :: Handle -> IO ()
 clr0 h = clr h 0
-
 
 -- Terminal Size
 --------------------------------------------------------------------------------
