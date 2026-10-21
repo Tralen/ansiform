@@ -1,5 +1,6 @@
 -- | Immediate single-key input and line input for interactive interfaces.
-module Ansiform.Internal.Input (withImmediateInput, readKey, withLineInput, readLine,
+module Ansiform.Internal.Input (withImmediateInput, readKey, readKeyPress,
+                                withLineInput, readLine,
                                 readLineAt, readLineAtOn,
                                 Prompt, promptAt, promptWithInitial,
                                 promptSection, promptRow, promptColumn, promptInitial,
@@ -46,10 +47,55 @@ withImmediateInput action = do
 
 -- | Reads one key without waiting for Enter.
 --   Returns 'Nothing' at end of input.
+--   This is the raw reader: it returns every character, including the parts of
+--   an escape sequence. Use 'readKeyPress' in menus and command loops.
 readKey :: IO (Maybe Char)
 readKey = do
     eof <- isEOF
     if eof then return Nothing else Just <$> getChar
+
+-- | Delay in microseconds used to tell a lone Escape from an escape sequence.
+escapeDelay :: Int
+escapeDelay = 50000
+
+-- | Reads one key press for shortcut handling.
+--   Arrow keys, Home, End, function keys and other escape sequences consume
+--   their whole sequence and are ignored, so they cannot trigger the shortcuts
+--   of a menu. A lone Escape is returned as @Just '\ESC'@.
+--   Returns 'Nothing' at end of input. Use 'readKey' when the raw characters
+--   are needed, such as inside a text editor.
+readKeyPress :: IO (Maybe Char)
+readKeyPress = do
+    key <- readKey
+    case key of
+        Nothing -> return Nothing
+        Just '\ESC' -> do
+            next <- timeout escapeDelay readKey
+            case next of
+                Nothing -> return (Just '\ESC')
+                Just Nothing -> return Nothing
+                Just (Just '[') -> skipControlSequence >> readKeyPress
+                Just (Just 'O') -> skipFinalByte >> readKeyPress
+                Just (Just _) -> readKeyPress
+        Just c -> return (Just c)
+
+-- Skips the rest of a CSI sequence, whose final byte is in 0x40 to 0x7E.
+skipControlSequence :: IO ()
+skipControlSequence = do
+    next <- timeout escapeDelay readKey
+    case next of
+        Nothing -> return ()
+        Just Nothing -> return ()
+        Just (Just c)
+            | c >= '\x40' && c <= '\x7E' -> return ()
+            | otherwise -> skipControlSequence
+
+-- Skips the final byte of an SS3 sequence, such as an arrow in application
+-- cursor mode.
+skipFinalByte :: IO ()
+skipFinalByte = do
+    _ <- timeout escapeDelay readKey
+    return ()
 
 -- | Runs an action with stdin configured for line input with echo.
 --   This is useful for prompts that ask the user to type a value and press Enter.
@@ -213,10 +259,6 @@ moveCursorBy h delta column = do
 
 -- | One decoded key press for the line editor.
 data LineEvent = LineSubmit | LineCancel | LineEdit LineKey | LineIgnore
-
--- | Delay in microseconds used to tell a lone Escape from an escape sequence.
-escapeDelay :: Int
-escapeDelay = 50000
 
 -- | Reads one field with an editable initial value.
 --   When stdin is not a terminal the initial value is ignored and a regular

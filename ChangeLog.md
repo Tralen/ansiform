@@ -4,6 +4,12 @@
 
 ## Functional Versions
 
+### 0.9.0 -- 2026-10-21
+* Added `readKeyPress` to `Ansiform.Input`, a key reader for menus that consumes and ignores terminal escape sequences such as arrow keys.
+* Fixed the tutorial and the demo treating arrow-key sequences as `A` or `D` shortcuts, which opened the add or edit form instead of moving the selection.
+* The tutorial, the demo and the README quick start now use `readKeyPress` in their command loops.
+* Updated the demo version label to follow the package version.
+
 ### 0.8.0 -- 2026-10-21
 * Added `promptWithInitial` to `Ansiform.Input`, opening a form field with an editable initial value.
 * Added a single-line editor with insertion, Backspace, Delete, arrows, Home, End, Enter to submit and Esc to cancel the whole form.

@@ -71,7 +71,7 @@ main = withImmediateInput $ do
 
 loop :: State -> IO ()
 loop state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Just 'n' -> draw secondPage state >>= loop
     Just 'e' -> amend newBody 1 state >>= loop

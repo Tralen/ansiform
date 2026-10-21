@@ -253,7 +253,7 @@ main = withImmediateInput $ do
 
 loop :: Model -> State -> IO ()
 loop model state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Nothing -> pure ()
     Just 'a' -> addFlow model state
@@ -267,7 +267,7 @@ loop model state = do
     open next st = draw (listPage next) st >>= loop next
 ```
 
-Each action returns a new `Model`, draws the next page and continues the loop. The next `readKey` needs no Enter.
+Each action returns a new `Model`, draws the next page and continues the loop. The next `readKeyPress` needs no Enter. It also discards escape sequences, so pressing an arrow key by mistake does not reach the shortcut map as an `A` or `D`.
 
 The add flow combines the form with the model update:
 

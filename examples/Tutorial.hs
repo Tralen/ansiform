@@ -182,7 +182,7 @@ main = withImmediateInput $ do
 
 loop :: Model -> State -> IO ()
 loop model state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Nothing -> pure ()
     Just 'a' -> addFlow model state

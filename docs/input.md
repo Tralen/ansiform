@@ -5,6 +5,7 @@ Ansiform's standard interaction is immediate: pressing a key runs an action with
 ```haskell
 withImmediateInput :: IO a -> IO a
 readKey :: IO (Maybe Char)
+readKeyPress :: IO (Maybe Char)
 
 withLineInput :: IO a -> IO a
 readLine :: IO (Maybe String)
@@ -35,14 +36,14 @@ main = withImmediateInput $ do
 
 ## The standard loop
 
-`readKey` returns one character, or `Nothing` at end of input. Lowercase the key when shortcuts are case-insensitive:
+`readKeyPress` returns one key press, or `Nothing` at end of input. It discards terminal escape sequences, such as the ones sent by arrow keys, Home, End and function keys, so they cannot trigger shortcuts by accident. Lowercase the key when shortcuts are case-insensitive:
 
 ```haskell
 import Data.Char (toLower)
 
 loop :: State -> IO ()
 loop state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Just 'n' -> draw secondPage state >>= loop
     Just 'p' -> draw firstPage state >>= loop
@@ -51,6 +52,8 @@ loop state = do
 ```
 
 Pressing `N` or `P` changes the page immediately. The loop ignores unknown keys and keeps the current state.
+
+`readKey` is the raw reader: it returns the character as typed, including the individual characters of an escape sequence. Use it only when the application interprets those characters itself, such as the line editor behind `readForm`. `readKeyPress` returns a lone Escape as `Just '\ESC'`, because it cannot be part of a longer sequence.
 
 ## Line input
 
@@ -162,12 +165,12 @@ visibleLine :: Int -> LineState -> (String, Int)
 
 `withImmediateInput` changes stdin only when it is a terminal:
 
-- it disables line buffering, so `readKey` does not wait for Enter;
+- it disables line buffering, so `readKey` and `readKeyPress` do not wait for Enter;
 - it disables echo, so typed keys are not shown twice;
 - it restores the original buffering and echo settings with `bracket` when the action ends, including on exceptions.
 
-When stdin is not a terminal, as in pipes and CI, the settings are left untouched. `readKey` still reads one character at a time and returns `Nothing` at end of input.
+When stdin is not a terminal, as in pipes and CI, the settings are left untouched. `readKey` and `readKeyPress` still read one key at a time and return `Nothing` at end of input.
 
 ## Keys
 
-`readKey` returns the character as typed. It does not filter newlines, spaces or control keys; the loop decides which keys are meaningful. This keeps the input layer small and lets every screen define its own shortcuts.
+`readKey` returns the character as typed. `readKeyPress` goes one level up: it consumes complete escape sequences and returns only the keys a shortcut map should see. Neither filters newlines, spaces or control keys; the loop decides which keys are meaningful. This keeps the input layer small and lets every screen define its own shortcuts.

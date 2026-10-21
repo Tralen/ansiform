@@ -26,6 +26,10 @@ Deliberately deferred. The list-based builders and the `State` lifecycle cover t
 
 ## Implemented
 
+### Shortcut key reader
+
+Released in 0.9.0. `readKeyPress` reads one key press and consumes terminal escape sequences, so arrow keys, Home, End and function keys cannot trigger the shortcuts of a menu. `readKey` remains the raw reader used by the line editor. See [Input](input.md).
+
 ### Editable form fields
 
 Released in 0.8.0. `promptWithInitial` opens a form field with an editable initial value. The field supports insertion, Backspace, Delete, arrows, Home, End, Enter to submit and Esc to cancel the form, and it scrolls horizontally with Unicode-aware widths. The pure editing core is public in `Ansiform.Line`. See [Input](input.md).

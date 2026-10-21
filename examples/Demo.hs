@@ -16,7 +16,7 @@ import           Ansiform
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "0.7.10.4"
+demoVersion = "0.9.0"
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -37,7 +37,7 @@ main = withImmediateInput $ do
 
 loop :: Screen -> State -> IO ()
 loop screen state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Nothing -> finish
     Just 'l' -> open List state

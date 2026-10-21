@@ -10,14 +10,14 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.8.0**.
+Current version: **0.9.0**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
 ## Features
 
 - ANSI colors, bold, italic and underline, with automatic suppression on non-TTY output, `NO_COLOR` and `TERM=dumb`.
-- Immediate single-key input: a key press changes the screen without Enter.
+- Immediate single-key input: a key press changes the screen without Enter, and shortcut loops ignore arrow-key escape sequences.
 - Line input for prompts and numeric selection, including prompts printed inside a page and typed in place.
 - Forms that draw a page and read several prompts, with the cursor arithmetic handled by the library.
 - Editable form fields that open with an initial value, with arrows, Home, End, Delete and Esc cancellation.
@@ -54,7 +54,7 @@ main = withImmediateInput $ do
 
 loop :: State -> IO ()
 loop state = do
-  key <- readKey
+  key <- readKeyPress
   case fmap toLower key of
     Just 'b' -> draw bodyPage state >>= loop
     Just 'h' -> draw examplePage state >>= loop

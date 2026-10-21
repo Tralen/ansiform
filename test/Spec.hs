@@ -222,6 +222,21 @@ main = do
           (_, formResult) <- readForm p prompts st
           return formResult
         return $ result == Right ["Ada", "42"]
+    , testIO "Shortcut reader returns a plain key" $ do
+        result <- withStdin "x" readKeyPress
+        return $ result == Just 'x'
+    , testIO "Shortcut reader ignores arrow escape sequences" $ do
+        result <- withStdin "\ESC[Aq" readKeyPress
+        return $ result == Just 'q'
+    , testIO "Shortcut reader ignores application cursor sequences" $ do
+        result <- withStdin "\ESCOBr" readKeyPress
+        return $ result == Just 'r'
+    , testIO "Shortcut reader ignores parameterized sequences" $ do
+        result <- withStdin "\ESC[1;5Bz" readKeyPress
+        return $ result == Just 'z'
+    , testIO "Shortcut reader reports end of input" $ do
+        result <- withStdin "" readKeyPress
+        return $ result == Nothing
     , testIO "Wide text wraps by display width" $ do
         (_, out) <- captureStdout
           $ runPrinter (settings [width 5, neverColors])
