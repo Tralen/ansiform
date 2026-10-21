@@ -5,7 +5,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 ## Current status
 
 - Package: `ansiform`. The name is already registered on Hackage.
-- Version: 0.7.10.4.
+- Version: 0.9.0.5.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -13,9 +13,9 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `0.7.10.4` and its GitHub release are published.
-- Hackage: 0.7.10.4 is published at <https://hackage.haskell.org/package/ansiform-0.7.10.4>, with documentation uploaded.
-- The 0.7.10.4 release removes the obsolete tutorial comment. The 0.7.10.3 release added the tutorial, the bookmarks example, the readable muted theme and the borderless `BordersNone` layout.
+- Tag `0.9.0.5` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/0.9.0.5>.
+- Hackage: 0.9.0.5 is published at <https://hackage.haskell.org/package/ansiform-0.9.0.5>, with documentation uploaded.
+- The 0.9.0.5 release fixes the Windows render crash and the macOS CI toolchain, and marks the first Hackage publication since 0.7.10.4. The 0.8.0 to 0.9.0.4 changes are recorded in `ChangeLog.md`, including editable form fields, `Ansiform.Line`, `readKeyPress` and the platform documentation.
 
 ## Credentials
 
@@ -159,4 +159,4 @@ Publishing cannot be undone easily. Never run `--publish` without explicit appro
 - The public types no longer use the `Vis` prefix, and the internal builders use the `form` prefix.
 - `hie.yaml` is optional editor configuration and is not tracked. Commit it only if the team decides to share it.
 - Commits use the GitHub noreply address; maintainer contact uses `dev@tralen.cc`.
-- The CI workflow targets GHC 9.14.1 and Cabal 3.18.1.0. Extend the matrix once the supported GHC range is validated.
+- The CI workflow runs GHC 9.2.8 and GHC 9.14.1 with Cabal 3.18.1.0 on Ubuntu, Windows and `macos-15`. Keep the macOS pin until a newer GHC supports the `macos-latest` SDK.
