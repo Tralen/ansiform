@@ -373,12 +373,14 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
 --   The table does not split into column bands; it overflows when it does not fit.
 --   Groups with fewer blocks than the tallest group are padded with empty
 --   blocks, so every column reaches the bottom border.
+--   'BordersNone' keeps the same row layout without border characters and
+--   without horizontal separators.
 printBorderedGroups :: Borders -> TableFormat -> Offset -> Padding -> Number
                     -> Bool -> [Group] -> Output -> IO Number
 printBorderedGroups brd fmt o p n bSpace gs out
     | null gs = return 0
     | otherwise = case borderChars brd of
-        Nothing -> printGroups fmt o p n bSpace False gs out
+        Nothing -> printBorderless
         Just bc -> printBordered bc
   where
     h = outputHandle out
@@ -418,10 +420,7 @@ printBorderedGroups brd fmt o p n bSpace gs out
           where
             printCells _ [] = return ()
             printCells i ((w,cell):rest) = do
-                let spec = columnSpecAt fmt i
-                    aligned = formatBlock spec (formNumber w) cell
-                    padded = padBlock (formNumber (w + 2 * p')) AlignCenter aligned
-                printBlock out padded
+                printBlock out (formatCell fmt i w (w + 2 * p') cell)
                 resetStyle h (outputColors out)
                 if null rest
                   then hPutStr h [borderRight bc]
@@ -434,6 +433,35 @@ printBorderedGroups brd fmt o p n bSpace gs out
             hPutStr h (borderLine first middle lastChar cellWidths (borderHorizontal bc))
             hPutStr h "\n"
             return 1
+
+    printBorderless = printRows
+      where
+        printRows = go limitedRows
+          where
+            go [] = return 0
+            go (row:rest) = do
+                printRow row
+                restCount <- go rest
+                return (1 + restCount)
+
+        printRow row = do
+            indR h (unn o)
+            resetStyle h (outputColors out)
+            printCells 0 (zip contentWidths row)
+            hPutStr h "\n"
+          where
+            printCells _ [] = return ()
+            printCells i ((w,cell):rest) = do
+                printBlock out (formatCell fmt i w (w + 2 * p') cell)
+                resetStyle h (outputColors out)
+                if null rest then return () else hPutStr h "  "
+                printCells (i + 1) rest
+
+-- Formats a cell to its content width and then centers it in the padded width.
+formatCell :: TableFormat -> Int -> Int -> Int -> Block -> Block
+formatCell fmt i contentWidth paddedWidth cell =
+    padBlock (formNumber paddedWidth) AlignCenter
+      (formatBlock (columnSpecAt fmt i) (formNumber contentWidth) cell)
 
 -- Pads every group with empty blocks so all groups have the same height.
 padGroups :: [Group] -> [Group]

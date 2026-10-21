@@ -4,6 +4,10 @@
 
 ## Functional Versions
 
+### 0.7.10.3 -- 2026-10-21
+* BordersNone now renders a true borderless table with the same row and column layout as the bordered printers, without border characters, horizontal separators or column bands.
+* Columns in the borderless mode are separated by two spaces.
+
 ### 0.7.10.2 -- 2026-10-21
 * Changed defaultTheme.themeMuted from vivid black to italic white for readability on dark terminals.
 * Kept defaultTheme.themeRule as bold vivid black.

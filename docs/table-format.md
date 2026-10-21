@@ -66,7 +66,7 @@ In this example the first column is capped at 12 columns, the second is left-ali
 data Borders = BordersNone | BordersAscii | BordersLight | BordersHeavy | BordersDouble
 ```
 
-`BordersNone` is the default when no border-specific printer is used. The other constructors select ASCII, light, heavy or double box-drawing characters.
+`BordersNone` is the default when no border-specific printer is used. The other constructors select ASCII, light, heavy or double box-drawing characters. When `BordersNone` is passed to a bordered printer, the result keeps the same row and column layout without border characters and without horizontal separators; columns are separated by two spaces.
 
 ```haskell
 printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
@@ -87,7 +87,7 @@ printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group
 printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 ```
 
-Bordered tables and groups do not split into column bands; they overflow when they are wider than the terminal. They also do not apply the zebra background, leaving the border and cell styles explicit. Unequal groups passed to the bordered group printers are padded with empty blocks to the height of the tallest group, so the border stays rectangular.
+Bordered tables and groups do not split into column bands; they overflow when they are wider than the terminal. They also do not apply the zebra background, leaving the border and cell styles explicit. Unequal groups passed to the bordered group printers are padded with empty blocks to the height of the tallest group, so the border stays rectangular. With `BordersNone` the layout is the same, but no border characters or horizontal separators are printed.
 
 ## Truncation
 

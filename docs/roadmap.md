@@ -26,6 +26,10 @@ Deliberately deferred. The list-based builders and the `State` lifecycle cover t
 
 ## Implemented
 
+### Borderless bordered layout
+
+Released in 0.7.10.3. Passing `BordersNone` to the bordered table and group printers keeps every column on one row without border characters, horizontal separators or column bands, instead of falling back to the column-band layout. Columns are separated by two spaces. See [Table formatting](table-format.md).
+
 ### Tutorial
 
 Released in 0.7.10.0. `docs/tutorial.md` builds a small bookmarks program step by step, and `examples/Tutorial.hs` is compiled by `cabal build all`. See [Tutorial](tutorial.md).

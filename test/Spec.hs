@@ -138,6 +138,23 @@ main = do
               [] -> False
               (firstLine:_) -> all ((== length firstLine) . length) outputLines
         return $ length outputLines == 7 && allSameWidth
+    , testIO "BordersNone keeps tall tables in one borderless block" $ do
+        let long = replicate 10 'A'
+            tall = groupSimple (blockSimple long styleDefault)
+                     [ blockSimple "1" styleDefault
+                     , blockSimple "2" styleDefault ]
+            short = groupSimple (blockSimple "B" styleDefault) []
+        out <- renderPrinter
+          (printerGroupsBordered BordersNone 0 0 [tall, short])
+          (settings [width 15, neverColors])
+        let outputLines = lines out
+            allSameWidth = case outputLines of
+              [] -> False
+              (firstLine:_) -> all ((== length firstLine) . length) outputLines
+        return $ length outputLines == 3
+              && allSameWidth
+              && (long ++ "  B") `isInfixOf` out
+              && not (any (`elem` "+|") out)
     , testIO "Form rejects a prompt outside the page" $ do
         let p = page [section [printerLeft 0 (blockSimple "one" styleDefault)]]
             prompt = promptAt 9 0 0
