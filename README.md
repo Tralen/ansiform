@@ -20,7 +20,7 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Immediate single-key input: a key press changes the screen without Enter, and shortcut loops ignore arrow-key escape sequences.
 - Line input for prompts and numeric selection, including prompts printed inside a page and typed in place.
 - Forms that draw a page and read several prompts, with the cursor arithmetic handled by the library.
-- Editable form fields that open with an initial value, with arrows, Home, End, Delete and Esc cancellation.
+- Editable form fields that open with every initial value already visible, with arrows, Home, End, Delete and Esc cancellation.
 - A pure line-editing core in `Ansiform.Line` that can be tested without a terminal.
 - A step-by-step tutorial and a runnable bookmarks example.
 - Unicode-aware display widths for alignment, wrapping, lists and tables.
@@ -105,6 +105,7 @@ cabal run ansiform-tutorial
 - [Pages and drawing](https://github.com/Tralen/ansiform/blob/master/docs/pages.md): pages, state and the drawing lifecycle.
 - [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, forms, and the standard interaction loop.
 - [Platforms](https://github.com/Tralen/ansiform/blob/master/docs/platforms.md): Linux, macOS and Windows behaviour, terminal requirements and known limitations.
+- [Ports](https://github.com/Tralen/ansiform/blob/master/docs/ports.md): an assessment of porting the library to Rust.
 - [Render](https://github.com/Tralen/ansiform/blob/master/docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
 - [Settings](https://github.com/Tralen/ansiform/blob/master/docs/settings.md): width, spacing and group overflow configuration.
 - [Numbers](https://github.com/Tralen/ansiform/blob/master/docs/number.md): non-negative arithmetic, saturation and checked subtraction.

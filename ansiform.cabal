@@ -23,6 +23,7 @@ extra-doc-files:     ChangeLog.md
                      docs/number.md
                      docs/pages.md
                      docs/platforms.md
+                     docs/ports.md
                      docs/printers.md
                      docs/releasing.md
                      docs/render.md
