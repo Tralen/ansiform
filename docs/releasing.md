@@ -4,8 +4,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 
 ## Current status
 
-- Package: `ansiform`. The name appears to be available on Hackage; check again immediately before uploading.
-- Version: 0.7.8.6.
+- Package: `ansiform`. The name is already registered on Hackage.
+- Version: 0.7.9.0.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, ChangeLog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -13,9 +13,9 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `0.7.8.6` and its GitHub release are published.
-- Hackage: published at <https://hackage.haskell.org/package/ansiform>.
-- The roadmap is complete. GitHub and Hackage publication are done.
+- Tag `0.7.8.6` and its GitHub release are published. Tag `0.7.9.0` marks this release.
+- Hackage: 0.7.8.6 is published at <https://hackage.haskell.org/package/ansiform>; the 0.7.9.0 release follows this checklist.
+- The 0.7.9.0 release adds page forms, automatic padding for bordered groups and explicit non-negative arithmetic.
 
 ## Credentials
 
