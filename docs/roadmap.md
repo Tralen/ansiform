@@ -32,7 +32,7 @@ Released in 0.7.10.3. Passing `BordersNone` to the bordered table and group prin
 
 ### Tutorial
 
-Released in 0.7.10.0. `docs/tutorial.md` builds a small bookmarks program step by step, and `examples/Tutorial.hs` is compiled by `cabal build all`. See [Tutorial](tutorial.md).
+Released in 0.7.10.3. `docs/tutorial.md` builds a small bookmarks program step by step, and `examples/Tutorial.hs` is compiled by `cabal build all`. See [Tutorial](tutorial.md).
 
 ### Page forms
 

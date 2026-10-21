@@ -25,6 +25,7 @@ Repository: <https://github.com/Tralen/ansiform>.
 - Rendering to any `Handle` or to a `String` for embedding and golden tests.
 - Per-column table alignment, maximum widths and truncation with an ellipsis.
 - Optional ASCII, light, heavy or double box borders for tables and groups.
+- A true borderless table mode that keeps aligned columns without border characters or column bands.
 - Automatic padding of unequal groups in bordered layouts, so the border stays rectangular.
 - A reusable `Theme` record for consistent headers, footers, menus and tables.
 - Horizontal rules, solid backgrounds, offsets and padding.
