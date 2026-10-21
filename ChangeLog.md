@@ -4,6 +4,9 @@
 
 ## Functional Versions
 
+### 0.7.8.6 -- 2026-10-21
+* Fixed README links so they resolve on Hackage.
+
 ### 0.7.8.5 -- 2026-10-20
 * Added PVP upper bounds to the directory dependency of the test suite.
 

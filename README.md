@@ -8,9 +8,9 @@ Ansiform is a small Haskell library for building visual command line interfaces.
 
 Builders are pure and produce immutable values. A thin drawing layer writes those values to the terminal and keeps track of how many lines were printed, so a page can be amended, replaced or redrawn in place.
 
-> **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](docs/naming.md).
+> **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **0.7.8.5**.
+Current version: **0.7.8.6**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -84,21 +84,21 @@ cabal run ansiform-demo
 
 ## Documentation
 
-- [Architecture](docs/architecture.md): module layout, invariants and the pure/IO boundary.
-- [Content](docs/content.md): items, blocks, groups, tables, paragraphs and their builders.
-- [Styles](docs/style.md): colors, formats and reusable text styles.
-- [Theme](docs/theme.md): reusable styles for headers, footers, menus and tables.
-- [Printers](docs/printers.md): every printer function and its arguments.
-- [Table formatting](docs/table-format.md): per-column alignment, maximum widths, truncation and borders.
-- [Sections](docs/sections.md): grouping printers and reserving minimum line counts.
-- [Pages and drawing](docs/pages.md): pages, state and the drawing lifecycle.
-- [Input](docs/input.md): immediate and line input, and the standard interaction loop.
-- [Render](docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
-- [Settings](docs/settings.md): width, spacing and group overflow configuration.
-- [Demo](docs/demo.md): what the executable showcases.
-- [Naming](docs/naming.md): name rationale and disambiguation.
-- [Releasing](docs/releasing.md): Hackage and GitHub publication checklist.
-- [Roadmap](docs/roadmap.md): prioritized feature suggestions.
+- [Architecture](https://github.com/Tralen/ansiform/blob/master/docs/architecture.md): module layout, invariants and the pure/IO boundary.
+- [Content](https://github.com/Tralen/ansiform/blob/master/docs/content.md): items, blocks, groups, tables, paragraphs and their builders.
+- [Styles](https://github.com/Tralen/ansiform/blob/master/docs/style.md): colors, formats and reusable text styles.
+- [Theme](https://github.com/Tralen/ansiform/blob/master/docs/theme.md): reusable styles for headers, footers, menus and tables.
+- [Printers](https://github.com/Tralen/ansiform/blob/master/docs/printers.md): every printer function and its arguments.
+- [Table formatting](https://github.com/Tralen/ansiform/blob/master/docs/table-format.md): per-column alignment, maximum widths, truncation and borders.
+- [Sections](https://github.com/Tralen/ansiform/blob/master/docs/sections.md): grouping printers and reserving minimum line counts.
+- [Pages and drawing](https://github.com/Tralen/ansiform/blob/master/docs/pages.md): pages, state and the drawing lifecycle.
+- [Input](https://github.com/Tralen/ansiform/blob/master/docs/input.md): immediate and line input, and the standard interaction loop.
+- [Render](https://github.com/Tralen/ansiform/blob/master/docs/render.md): rendering pages, sections and printers to a `Handle` or a `String`.
+- [Settings](https://github.com/Tralen/ansiform/blob/master/docs/settings.md): width, spacing and group overflow configuration.
+- [Demo](https://github.com/Tralen/ansiform/blob/master/docs/demo.md): what the executable showcases.
+- [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md): name rationale and disambiguation.
+- [Releasing](https://github.com/Tralen/ansiform/blob/master/docs/releasing.md): Hackage and GitHub publication checklist.
+- [Roadmap](https://github.com/Tralen/ansiform/blob/master/docs/roadmap.md): prioritized feature suggestions.
 
 ## Design principles
 
@@ -107,8 +107,8 @@ cabal run ansiform-demo
 3. **Errors as data.** Table builders return `Maybe Table`. There are no exceptions in the public API.
 4. **Immediate interaction.** The standard interaction is a single key press, handled by `Ansiform.Input` without Enter.
 5. **Reusable components.** Screens are assembled from shared builders such as `header`, `footer` and `rule`, keeping behavior and theming consistent.
-6. **Explicit versioning.** The package follows the PVP and every release is recorded in [ChangeLog.md](ChangeLog.md).
+6. **Explicit versioning.** The package follows the PVP and every release is recorded in [ChangeLog.md](https://hackage.haskell.org/package/ansiform/changelog).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](https://github.com/Tralen/ansiform/blob/master/LICENSE).
