@@ -86,7 +86,7 @@ demoTheme :: Theme
 demoTheme = defaultTheme
 
 header :: Section
-header = sectionTopRule 1 ruleHeader
+header = sectionTop 1
   [ printerSolidLineCenter 0 1 (themeBar demoTheme)
       [ blockSimple "Ansiform" (themeHeader demoTheme)
       , blockSimple demoVersion (themeHeader demoTheme) ]
@@ -129,8 +129,7 @@ promptInputColumn = formNumber (unNumber promptOffset + textWidth promptMessage)
 promptRowsUp :: Number
 promptRowsUp = formNumber (length pageCommands + 4)
 
-ruleHeader, ruleBody, ruleFooter, ruleBottom :: Rule
-ruleHeader = rule '=' (themeRule demoTheme)
+ruleBody, ruleFooter, ruleBottom :: Rule
 ruleBody = rule '%' (themeRule demoTheme)
 ruleFooter = rule ':' (themeRule demoTheme)
 ruleBottom = ruleDefault (themeRule demoTheme)
