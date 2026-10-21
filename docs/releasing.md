@@ -127,16 +127,17 @@ Never print the values of the tokens or commit the location of your secrets.
    ```
 
 6. Inspect the candidate page at `https://hackage.haskell.org/package/ansiform/candidates`. Check the rendered documentation, the dependency bounds and the build report. A candidate that fails verification can be deleted from that page.
-7. After the candidate is verified, publish the package and its documentation:
+7. Stop and wait for explicit approval from the maintainer before publishing. The candidate is reversible; publication is not.
+8. After approval, publish the package and its documentation:
 
    ```sh
    cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
    cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/ansiform-<version>-docs.tar.gz
    ```
 
-8. Check the public package page, the documentation links and the dependency bounds.
+9. Check the public package page, the documentation links and the dependency bounds.
 
-Publishing cannot be undone easily. Use the candidate stage to catch metadata, documentation and dependency problems before publishing.
+Publishing cannot be undone easily. Never run `--publish` without explicit approval after the candidate review. Use the candidate stage to catch metadata, documentation and dependency problems before publishing.
 
 ## GitHub release
 
