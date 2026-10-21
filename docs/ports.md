@@ -4,15 +4,7 @@ This page records assessments of porting Ansiform to other languages. It is a de
 
 ## Possible Rust Port
 
-A Rust port is a moderate engineering effort, not a large rewrite. The library has about 3,600 lines of Haskell in `src`, including Haddock comments, and a large part of that is builders and documentation. For an experienced Rust developer who also knows the domain, a realistic estimate is:
-
-| Scope | Time |
-| --- | --- |
-| MVP: styles, content, layout, tables and rendering to `String` | 3 to 4 weeks |
-| Functional parity without forms and interactive input | 4 to 6 weeks |
-| Full parity, including the line editor, forms, examples, documentation and cross-platform CI | 6 to 10 weeks |
-
-For part-time work, multiply by two or three. The main risk is not the language, it is behavioural parity for spacing, Unicode widths, borders, wrapping and cursor arithmetic.
+A Rust port is a moderate engineering effort, not a large rewrite. The library has about 3,600 lines of Haskell in `src`, including Haddock comments, and a large part of that is builders and documentation. The main risk is not the language, it is behavioral parity for spacing, Unicode widths, borders, wrapping and cursor arithmetic.
 
 ### What helps
 
@@ -50,9 +42,9 @@ For part-time work, multiply by two or three. The main risk is not the language,
 
 ### Recommendation
 
-A native Rust version is worthwhile if the goal is to offer the library to Rust users or embed it in a Rust application. The design is small and well separated, and Rust fits the pure core well. A phased plan:
+A native Rust version is worthwhile. The design is small and well separated, and Rust fits the pure core well. A phased plan:
 
-1. Freeze the behavioural specification with golden outputs from Haskell.
+1. Freeze the behavioral specification with golden outputs from Haskell.
 2. Port `Style`, `Width`, `Number` and `Content`, with rendering to `String`.
 3. Port printers, sections, pages and tables.
 4. Add the terminal driver with `crossterm`.
@@ -61,7 +53,3 @@ A native Rust version is worthwhile if the goal is to offer the library to Rust 
 7. Publish as a crate, with an API reviewed for ownership and `Result`.
 
 Avoid building the port on `ratatui`. `ratatui` is immediate and buffer-based, while Ansiform is declarative, with pages, line counts and `amend`/`replace`. Using `crossterm` directly preserves the model and avoids friction.
-
-If the goal is only to use Ansiform from Rust, the alternative is to keep the Haskell library and use `crossterm` with `comfy-table` or `tabled` plus `textwrap` in the Rust project. That produces something similar in a few days, but without the same API, theming and page lifecycle.
-
-In short, the algorithmic complexity is low to medium; engineering and parity are the real cost. Full parity is a realistic 6 to 10 week estimate; a useful MVP is 3 to 4 weeks.
