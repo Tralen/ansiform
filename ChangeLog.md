@@ -4,9 +4,12 @@
 
 ## Functional Versions
 
+### 0.9.0.4 -- 2026-10-21
+* Fixed a Windows crash when rendering to a temporary handle. `termWOn` and `termHOn` now query the terminal size only when the handle is a terminal. The `stty` fallback in `terminal-size` can close a non-console handle on Windows, which broke `renderPage`, `renderSection` and `renderPrinter` on that platform.
+
 ### 0.9.0.3 -- 2026-10-21
 * Fixed the test suite on Windows. `captureStdout` used lazy `readFile` and tried to remove the temporary file before it was closed; Windows cannot delete an open file. It now uses strict `readFile'`.
-* The first Windows CI run exposed this test-only failure; documentation and library code are unchanged.
+* The first Windows CI run exposed this test-only failure.
 
 ### 0.9.0.2 -- 2026-10-21
 * Added macOS and Windows jobs to the CI matrix for build, test, package check, Haddock and source distribution.

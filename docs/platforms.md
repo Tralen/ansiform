@@ -31,6 +31,8 @@ Escape-sequence timeouts use `hWaitForInput`, so a lone Escape or an arrow key n
 
 ANSI output, cursor movement and width queries work through `ansi-terminal` and `terminal-size` in `cmd.exe`, Windows Terminal and applications built with a native console. On Windows 10 and later the console processes ANSI sequences; on older consoles `ansi-terminal` emulates the operations it supports.
 
+The size query runs only when the handle is a terminal. This avoids the `stty` fallback in `terminal-size`, which on Windows can close a non-console handle. As a consequence, MinTTY and MSYS sessions, whose handles look like pipes, use the 80 by 24 default instead of a detected size.
+
 ### Immediate input
 
 Immediate input needs console input that does not wait for Enter. In GHC 9.14.1 the Windows build of the runtime enables the `winio` I/O manager but keeps `mio` as the default for the threaded runtime and `win32-legacy` as the default for the non-threaded runtime. With those defaults, `hSetBuffering stdin NoBuffering` may not take effect and `getChar` can wait for Enter, which is the long-standing behaviour tracked as GHC issue 2189.

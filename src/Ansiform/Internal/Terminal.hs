@@ -8,7 +8,7 @@ module Ansiform.Internal.Terminal
 --------------------------------------------------------------------------------
 import           System.Console.ANSI as ANSI
 import           System.Console.Terminal.Size
-import           System.IO (Handle, stdout)
+import           System.IO (Handle, hIsTerminalDevice, stdout)
 import           Ansiform.Internal.Number
 
 
@@ -45,14 +45,28 @@ clr0 h = clr h 0
 
 -- Terminal Size
 --------------------------------------------------------------------------------
+
 termW :: IO Int
 termW = termWOn stdout
 
+-- | Width of the terminal behind a handle, or 80 when it is not a terminal.
+--   The terminal check keeps size queries away from regular files and pipes.
+--   On Windows, the stty fallback in terminal-size can close a non-console
+--   handle, so it must not run for output captured in a temporary file.
 termWOn :: Handle -> IO Int
-termWOn h = hSize h >>= \mr -> return $ maybe 80 width mr
+termWOn h = do
+    terminal <- hIsTerminalDevice h
+    if terminal
+        then hSize h >>= \mr -> return $ maybe 80 width mr
+        else return 80
 
 termH :: IO Int
 termH = termHOn stdout
 
+-- | Height of the terminal behind a handle, or 24 when it is not a terminal.
 termHOn :: Handle -> IO Int
-termHOn h = hSize h >>= \mr -> return $ maybe 24 height mr
+termHOn h = do
+    terminal <- hIsTerminalDevice h
+    if terminal
+        then hSize h >>= \mr -> return $ maybe 24 height mr
+        else return 24
