@@ -35,6 +35,7 @@ extra-doc-files:     CHANGELOG.md
                      docs/table-format.md
                      docs/theme.md
                      docs/tutorial.md
+extra-source-files:  fourmolu.yaml
 
 common shared
   default-language:    Haskell2010
