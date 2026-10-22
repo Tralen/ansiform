@@ -62,6 +62,37 @@ The repository must be public for the package links and badges to work. Pushes s
 
 Never print the values of the tokens or commit the location of your secrets.
 
+### Signed tags
+
+The `1.0.0.1` tag is annotated and unsigned because no signing key is configured. To sign future tags, choose one key format and configure it once.
+
+SSH signing uses an existing SSH key and works with Git 2.34 or later:
+
+1. Tell Git to use the public key:
+
+   ```sh
+   git config --global gpg.format ssh
+   git config --global user.signingkey <path-to-public-key>
+   git config --global tag.gpgSign true
+   ```
+
+2. Add the same public key to GitHub as a Signing Key under Settings > SSH and GPG keys > New SSH key. The authentication entry is separate and can stay as it is.
+3. For local verification, list the key in an allowed signers file and point Git to it:
+
+   ```sh
+   echo "<github-noreply-email> namespaces=\"git\" $(cat <path-to-public-key>)" > <allowed-signers-file>
+   git config --global gpg.ssh.allowedSignersFile <allowed-signers-file>
+   ```
+
+4. Create and verify a signed tag:
+
+   ```sh
+   git tag -s <version> -m "ansiform <version>"
+   git tag -v <version>
+   ```
+
+For OpenPGP, create a key with `gpg --full-generate-key`, set `user.signingkey` to the long key ID, export the public key with `gpg --armor --export <key-id>` and add it to GitHub as a GPG key. Use `git tag -s` and `git tag -v` in the same way.
+
 ## Automated release
 
 `.github/workflows/release.yml` publishes a version through `workflow_dispatch`. It has two jobs:
