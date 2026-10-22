@@ -13,10 +13,10 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `1.0.0` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0>.
-- Hackage: 1.0.0 is published at <https://hackage.haskell.org/package/ansiform-1.0.0>, with documentation uploaded.
-- The 1.0.0 release marks the library stable and draws every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
-- 1.0.0.1 adds Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow.
+- Tag `1.0.0.1` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0.1>.
+- Hackage: 1.0.0.1 is published at <https://hackage.haskell.org/package/ansiform-1.0.0.1>, with documentation uploaded.
+- The 1.0.0 release marked the library stable and drew every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
+- 1.0.0.1 added Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow. It was published by `.github/workflows/release.yml`.
 
 ## Credentials
 
