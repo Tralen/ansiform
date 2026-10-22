@@ -4,7 +4,7 @@
 
 ## Functional Versions
 
-### Unreleased
+### 1.0.0.1 -- 2026-10-21
 * Added Fourmolu formatting and HLint checks, a gitleaks secret scan and a manual release workflow.
 * Added a macOS Intel CI job for GHC 9.2.8 and updated the GitHub Actions to Node 24 versions.
 * Added `docs/quality.md` and documented the release automation.

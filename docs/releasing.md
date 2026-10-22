@@ -5,7 +5,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 ## Current status
 
 - Package: `ansiform`. The name is already registered on Hackage.
-- Version: 1.0.0.
+- Version: 1.0.0.1.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, changelog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -16,6 +16,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - Tag `1.0.0` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0>.
 - Hackage: 1.0.0 is published at <https://hackage.haskell.org/package/ansiform-1.0.0>, with documentation uploaded.
 - The 1.0.0 release marks the library stable and draws every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
+- 1.0.0.1 adds Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow.
 
 ## Credentials
 
