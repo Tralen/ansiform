@@ -88,6 +88,8 @@ The workflow reads the secret with `secrets.HACKAGE_TOKEN` and exposes it to the
    git push origin <version>
    ```
 
+   If a signing key is configured, use `git tag -s <version> -m "ansiform <version>"` and verify it with `git tag -v <version>`. Without a key, keep the annotated tag.
+
 2. Run the workflow with `publish` disabled and inspect the candidate at `https://hackage.haskell.org/package/ansiform/candidates`. Check the rendered documentation, the dependency bounds and the build report.
 3. Run the workflow again with `publish` enabled. The environment approval is the explicit authorization.
 4. Check the public package page, the documentation links, the GitHub release and the attached artifacts.
@@ -195,6 +197,8 @@ Publishing cannot be undone easily. Never run `--publish` without explicit appro
    git push origin master --tags
    ```
 
+   As in the automated process, use `git tag -s` and `git tag -v <version>` when a signing key is configured.
+
 3. Create a GitHub release from the tag, using the relevant changelog section as the description:
 
    ```sh
@@ -202,7 +206,8 @@ Publishing cannot be undone easily. Never run `--publish` without explicit appro
    ```
 
 4. Attach the source distribution, the documentation tarball and a `SHA256SUMS` file to the release.
-5. The Hackage badge is already present in the README.
+5. Do not add provenance attestations unless the release contains binaries. This project ships source and documentation only.
+6. The Hackage badge is already present in the README.
 
 ### Verification
 
