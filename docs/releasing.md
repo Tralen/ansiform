@@ -17,6 +17,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - Hackage: 1.0.0.1 is published at <https://hackage.haskell.org/package/ansiform-1.0.0.1>, with documentation uploaded.
 - The 1.0.0 release marked the library stable and drew every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
 - 1.0.0.1 added Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow. It was published by `.github/workflows/release.yml`.
+- Future tags are signed with the configured SSH key. The 1.0.0.1 tag remains annotated and unsigned because it was published before the key was configured.
 
 ## Credentials
 
@@ -64,7 +65,7 @@ Never print the values of the tokens or commit the location of your secrets.
 
 ### Signed tags
 
-The `1.0.0.1` tag is annotated and unsigned because no signing key is configured. To sign future tags, choose one key format and configure it once.
+The `1.0.0.1` tag is annotated and unsigned because the key was configured afterwards. Future tags are signed with SSH. To use another key format, configure it once.
 
 SSH signing uses an existing SSH key and works with Git 2.34 or later:
 
