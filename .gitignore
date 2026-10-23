@@ -18,3 +18,5 @@ dist-*/
 *.key
 *.p12
 *.pfx
+LANGUAGE.md
+EDITORIAL.md
