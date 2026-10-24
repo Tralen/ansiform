@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### 1.0.0.3 -- 2026-10-24
+* Added a QuickCheck property suite with a fixed seed for display width, line editing, visible windows, table invariants, Number arithmetic and paragraph wrapping.
+* Added an inline golden corpus for paragraph wrapping, Unicode text, bordered groups and pages; cursor movement sequences are stripped before the comparison.
+* No production code changed.
+
 ### 1.0.0.2 -- 2026-10-24
 * Added the compiler gates to the shared Cabal stanza. The `werror` flag adds `-Werror`; `cabal.project` enables it locally and CI passes `-fwerror`, while the default stays false so `cabal check` and Hackage builds remain valid.
 * Replaced the banned partial functions `init`, `last` and `read` in the line editor, the table truncation and the demo.

@@ -38,6 +38,10 @@ gitleaks dir --redact .
 
 The `--redact` flag prevents a finding from printing the secret itself. A finding blocks the release until the secret is rotated and the history is cleaned.
 
+## Tests
+
+The suite uses QuickCheck 2.14 with a fixed seed for the properties, and an inline golden corpus for paragraph wrapping, Unicode text, bordered groups and pages. `stripCsi` removes the cursor movement sequences before a golden comparison, so the expected output is layout-only and portable.
+
 ## Continuous integration
 
 `.github/workflows/ci.yml` has two jobs:

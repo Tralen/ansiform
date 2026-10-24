@@ -20,6 +20,25 @@ import System.IO
     , stdin
     , stdout
     )
+import Test.QuickCheck
+    ( Args (..)
+    , Gen
+    , Property
+    , arbitrary
+    , choose
+    , elements
+    , forAll
+    , ioProperty
+    , listOf
+    , listOf1
+    , oneof
+    , property
+    , quickCheckWithResult
+    , resize
+    , stdArgs
+    )
+import Test.QuickCheck.Random (mkQCGen)
+import Test.QuickCheck.Test (isSuccess, output)
 
 main :: IO ()
 main = do
@@ -407,7 +426,9 @@ main = do
                         runPrinter (settings [alwaysColors]) (printerItem (item "styled" (bold red)))
                 return $ '\ESC' `elem` out && "styled" `isInfixOf` out
             ]
-    unless (and results) exitFailure
+    propertyResults <- sequence propertyTests
+    goldenResults <- sequence goldenTests
+    unless (and (results ++ propertyResults ++ goldenResults)) exitFailure
     putStrLn "All tests passed."
 
 test :: String -> Bool -> IO Bool
@@ -417,6 +438,223 @@ test name passed = do
 
 testIO :: String -> IO Bool -> IO Bool
 testIO name action = action >>= test name
+
+testQuickCheck :: String -> Property -> IO Bool
+testQuickCheck name prop = do
+    result <- quickCheckWithResult args prop
+    let passed = isSuccess result
+    putStrLn ((if passed then "ok   " else "FAIL ") ++ name)
+    unless passed $ putStr (output result)
+    return passed
+  where
+    args =
+        stdArgs
+            { replay = Just (mkQCGen 42, 0)
+            , maxSuccess = 100
+            , chatty = False
+            }
+
+propertyTests :: [IO Bool]
+propertyTests =
+    [ testQuickCheck
+        "Display width is additive"
+        ( property $ \a b ->
+            textWidth (a ++ b) == textWidth (a :: String) + textWidth b
+        )
+    , testQuickCheck
+        "Display width is non-negative"
+        (property $ \s -> textWidth (s :: String) >= 0)
+    , testQuickCheck
+        "Line editor keeps the cursor in range"
+        ( forAll genLineKey $ \key ->
+            forAll arbitrary $ \text ->
+                forAll arbitrary $ \cursor ->
+                    let next = applyLineKey key (LineState text cursor)
+                     in lineCursor next >= 0
+                            && lineCursor next <= length (lineText next)
+        )
+    , testQuickCheck
+        "Line editor changes at most one character"
+        ( forAll genLineKey $ \key ->
+            forAll arbitrary $ \text ->
+                forAll arbitrary $ \cursor ->
+                    let next = applyLineKey key (LineState text cursor)
+                     in abs (length (lineText next) - length text) <= 1
+        )
+    , testQuickCheck
+        "Line movement leaves the text unchanged"
+        ( forAll (elements [LineMoveLeft, LineMoveRight, LineMoveHome, LineMoveEnd]) $ \key ->
+            forAll arbitrary $ \text ->
+                let next = applyLineKey key (LineState text (length text))
+                 in lineText next == text
+        )
+    , testQuickCheck
+        "Printable insertion adds one character"
+        ( forAll (choose ('a', 'z')) $ \c ->
+            forAll arbitrary $ \text ->
+                let next = applyLineKey (LineInsert c) (LineState text (length text))
+                 in length (lineText next) == length text + 1
+        )
+    , testQuickCheck
+        "Non-printable insertion is ignored"
+        ( forAll (elements ['\t', '\n', '\DEL']) $ \c ->
+            forAll arbitrary $ \text ->
+                let next = applyLineKey (LineInsert c) (LineState text (length text))
+                 in lineText next == text
+        )
+    , testQuickCheck
+        "Visible line fits the available width"
+        ( forAll (choose (1, 40)) $ \availableWidth ->
+            forAll arbitrary $ \text ->
+                forAll arbitrary $ \cursor ->
+                    let (window, offset) = visibleLine availableWidth (LineState text cursor)
+                     in textWidth window <= max 1 (availableWidth - 1)
+                            && offset >= 0
+                            && offset <= textWidth window
+        )
+    , testQuickCheck
+        "Block tables accept exactly balanced rows"
+        ( forAll (listOf genBlock) $ \headerBlocks ->
+            forAll (listOf (listOf genBlock)) $ \rows ->
+                isJust (tableBlocks headerBlocks rows)
+                    == all ((== length headerBlocks) . length) rows
+        )
+    , testQuickCheck
+        "Simple tables accept exactly balanced rows"
+        ( forAll (listOf genBlock) $ \headerBlocks ->
+            forAll (listOf (listOf arbitrary)) $ \rows ->
+                isJust (tableSimple headerBlocks styleDefault rows)
+                    == all ((== length headerBlocks) . length) rows
+        )
+    , testQuickCheck
+        "Group tables accept groups of equal height"
+        ( forAll (listOf1 (choose (0, 5))) $ \heights ->
+            let groups = fmap genGroupOfHeight heights
+             in case heights of
+                    [] -> property False
+                    (firstHeight : rest) ->
+                        property $
+                            isJust (tableGroups groups)
+                                == all (== firstHeight) rest
+        )
+    , testQuickCheck
+        "Number caps negative input"
+        (property $ \n -> unNumber (formNumber n) == max 0 (n :: Int))
+    , testQuickCheck
+        "Checked subtraction is exact"
+        ( forAll (choose (0, 1000)) $ \a ->
+            forAll (choose (0, 1000)) $ \b ->
+                let x = formNumber (a :: Int)
+                    y = formNumber b
+                 in case subtractNumberMaybe x y of
+                        Nothing -> unNumber x < unNumber y
+                        Just d -> unNumber d == unNumber x - unNumber y
+        )
+    , testQuickCheck
+        "Paragraph lines fit the width"
+        ( forAll (choose (10, 40)) $ \lineWidth ->
+            forAll (resize 4 (listOf1 (listOf1 (choose ('a', 'z'))))) $ \wordList ->
+                ioProperty $ do
+                    out <-
+                        renderPrinter
+                            (printerParagraph 0 0 [blockSimple (unwords wordList) styleDefault])
+                            (settings [width (formNumber lineWidth), neverColors])
+                    return $ all (\line -> textWidth line <= lineWidth) (lines (stripCsi out))
+        )
+    ]
+
+genLineKey :: Gen LineKey
+genLineKey =
+    oneof
+        [ LineInsert <$> arbitrary
+        , pure LineBackspace
+        , pure LineDelete
+        , pure LineMoveLeft
+        , pure LineMoveRight
+        , pure LineMoveHome
+        , pure LineMoveEnd
+        ]
+
+genBlock :: Gen Block
+genBlock = blockSimple <$> arbitrary <*> pure styleDefault
+
+genGroupOfHeight :: Int -> Group
+genGroupOfHeight height =
+    groupSimple
+        (blockSimple "header" styleDefault)
+        (replicate height (blockSimple "body" styleDefault))
+
+goldenTests :: [IO Bool]
+goldenTests =
+    [ goldenTest
+        "Paragraph wraps at the width"
+        ( renderPrinter
+            (printerParagraph 0 0 [blockSimple "one two three four five" styleDefault])
+            (settings [width 12, neverColors])
+        )
+        "one two \nthree four \nfive\n"
+    , goldenTest
+        "Unicode paragraph keeps wide and combining characters"
+        ( renderPrinter
+            (printerParagraph 0 0 [blockSimple "漢漢 e\x0301 漢" styleDefault])
+            (settings [width 8, neverColors])
+        )
+        "漢漢 e\x0301 \n漢\n"
+    , goldenTest
+        "Bordered groups pad the shorter column"
+        ( renderPrinter
+            ( printerGroupsBordered
+                BordersAscii
+                0
+                0
+                [ groupSimple
+                    (blockSimple "A" styleDefault)
+                    [ blockSimple "1" styleDefault
+                    , blockSimple "2" styleDefault
+                    ]
+                , groupSimple (blockSimple "B" styleDefault) []
+                ]
+            )
+            (settings [width 32, neverColors])
+        )
+        "+-+-+\n|A|B|\n+-+-+\n|1| |\n+-+-+\n|2| |\n+-+-+\n"
+    , goldenTest
+        "Page renders a rule and a body line"
+        ( renderPage
+            ( page
+                [ section [printerRule (rule '-' styleDefault)]
+                , section [printerLeft 0 (blockSimple "body" styleDefault)]
+                ]
+            )
+            (settings [width 20, neverColors])
+        )
+        "--------------------\nbody\n"
+    ]
+
+goldenTest :: String -> IO String -> String -> IO Bool
+goldenTest name render expected = do
+    actual <- render
+    let normalized = stripCsi actual
+        passed = normalized == expected
+    putStrLn ((if passed then "ok   " else "FAIL ") ++ "Golden: " ++ name)
+    unless passed $ do
+        putStrLn "--- expected"
+        putStr expected
+        putStrLn "--- actual"
+        putStr normalized
+    return passed
+
+-- Removes the cursor movement sequences that the drawing layer emits even
+-- when styling is disabled, so a golden output compares only the layout.
+stripCsi :: String -> String
+stripCsi [] = []
+stripCsi ('\ESC' : '[' : rest) = stripCsi (dropFinal rest)
+  where
+    dropFinal [] = []
+    dropFinal (c : cs)
+        | c >= '@' && c <= '~' = cs
+        | otherwise = dropFinal cs
+stripCsi (c : cs) = c : stripCsi cs
 
 -- Runs an action with stdout redirected to a temporary file and returns
 -- the captured output.
@@ -434,8 +672,8 @@ captureStdout action = do
             )
                 `finally` (hDuplicateTo original stdout >> hClose original)
         hClose handle
-        output <- readFile' path
-        return (result, output)
+        captured <- readFile' path
+        return (result, captured)
   where
     cleanup (path, handle) = do
         hClose handle
