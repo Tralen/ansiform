@@ -5,10 +5,12 @@ PROMPT.md
 TODO.md
 HANDOFF.md
 REGRESSION.md
+COMPLIANCE.md
 
 # Haskell
 dist-newstyle/
 dist-*/
+hie.yaml
 
 # Secrets
 .env
