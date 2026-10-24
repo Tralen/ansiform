@@ -5,8 +5,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 ## Current status
 
 - Package: `ansiform`. The name is already registered on Hackage.
-- Version: 1.0.0.1.
-- The source tree is at 1.1.0.0, the `Eq` removal patch. This checklist still describes the published 1.0.0.1 release; update the version, tag and links when 1.1.0.0 is published.
+- Version: 1.1.0.0, the release that removes the unlawful `Eq` instances and adds `printerName`.
+- The previous published release is 1.0.0.1. The 1.1.0.0 candidate is built from the signed tag and reviewed before publication.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, changelog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -17,8 +17,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - Tag `1.0.0.1` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0.1>.
 - Hackage: 1.0.0.1 is published at <https://hackage.haskell.org/package/ansiform-1.0.0.1>, with documentation uploaded.
 - The 1.0.0 release marked the library stable and drew every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
-- 1.0.0.1 added Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow. It was published by `.github/workflows/release.yml`.
-- Future tags are signed with the configured SSH key. The 1.0.0.1 tag remains annotated and unsigned because it was published before the key was configured.
+- 1.0.0.1 added Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow. 1.0.0.2 applied the non-breaking compliance patch, and 1.0.0.3 added the QuickCheck and golden tests.
+- 1.1.0.0 removes the unlawful `Eq` instances from `Printer`, `Section` and `Page` and adds `printerName`. It is the first release whose tag is signed with the configured SSH key; the 1.0.0.1 tag remains annotated and unsigned because it was published before the key was configured.
 
 ## Credentials
 
@@ -26,19 +26,27 @@ Publishing needs two credentials. Local builds, tests, Haddock, formatting, lint
 
 ### Hackage
 
-Export `HACKAGE_TOKEN` with your own secret manager before running a local command. Use the token directly on the command line so it is not stored:
+Store the token in the global Cabal configuration, outside any `repository` stanza, and restrict the file:
 
 ```sh
-cabal upload --token "$HACKAGE_TOKEN" dist-newstyle/sdist/ansiform-<version>.tar.gz
+chmod 600 ~/.cabal/config
 ```
 
-For documentation:
+Add the line `token: <value>` to `~/.cabal/config`. Cabal sends it as `Authorization: X-ApiKey`, so the value never enters `argv` or the environment. Verify only the entry count and the mode, never the value:
 
 ```sh
-cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
+grep -c '^token:' ~/.cabal/config
+stat -c '%a' ~/.cabal/config
 ```
 
-The automated release stores the token as an environment secret named `HACKAGE_TOKEN` in the GitHub environment `release`. Do not add the token or the location of your secret manager to the repository. If a persistent local configuration is ever needed, Cabal reads the global `token` key from `~/.cabal/config` or `~/.config/cabal/config`, outside the `repository` stanza. For this project, use the command-line form.
+Then upload without a token argument:
+
+```sh
+cabal upload dist-newstyle/sdist/ansiform-<version>.tar.gz
+cabal upload --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
+```
+
+The automated release stores the token as an environment secret named `HACKAGE_TOKEN` in the GitHub environment `release` and exposes it to the upload step as an environment variable. Do not add the token or the location of the secret manager to the repository.
 
 New Hackage accounts must be added to the uploaders group before the first upload. Ask two confirmed uploaders to endorse the account through the link in the account email, or email `hackage-trustees@haskell.org` with the Hackage username and a link to the repository. Uploads return HTTP 403 until the account is approved.
 
@@ -66,7 +74,7 @@ Never print the values of the tokens or commit the location of your secrets.
 
 ### Signed tags
 
-The `1.0.0.1` tag is annotated and unsigned because the key was configured afterwards. Future tags are signed with SSH. To use another key format, configure it once.
+The `1.0.0.1` tag is annotated and unsigned because the key was configured afterwards. The `1.1.0.0` tag is the first one signed with SSH. To use another key format, configure it once.
 
 SSH signing uses an existing SSH key and works with Git 2.34 or later:
 
@@ -185,7 +193,7 @@ The workflow is the preferred path because it builds from the tag and keeps the 
 `cabal upload` uploads a package candidate by default. A candidate is not visible as a normal package version, so it can be inspected and even deleted before publication.
 
 1. Create a Hackage account and obtain an upload token.
-2. Reference the token through the environment variable, as shown above. Do not paste the token value into the command or store it in the repository.
+2. Add the token to `~/.cabal/config` as described above. Do not paste the token value into a command or store it in the repository.
 3. Build the documentation tarball:
 
    ```sh
@@ -197,13 +205,13 @@ The workflow is the preferred path because it builds from the tag and keeps the 
 4. Upload the source distribution as a candidate:
 
    ```sh
-   cabal upload --token "$HACKAGE_TOKEN" dist-newstyle/sdist/ansiform-<version>.tar.gz
+   cabal upload dist-newstyle/sdist/ansiform-<version>.tar.gz
    ```
 
 5. Upload the documentation candidate:
 
    ```sh
-   cabal upload --token "$HACKAGE_TOKEN" --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
+   cabal upload --documentation dist-newstyle/ansiform-<version>-docs.tar.gz
    ```
 
 6. Inspect the candidate page at `https://hackage.haskell.org/package/ansiform/candidates`. Check the rendered documentation, the dependency bounds and the build report. A candidate that fails verification can be deleted from that page.
@@ -211,8 +219,8 @@ The workflow is the preferred path because it builds from the tag and keeps the 
 8. After approval, publish the package and its documentation:
 
    ```sh
-   cabal upload --token "$HACKAGE_TOKEN" --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
-   cabal upload --token "$HACKAGE_TOKEN" --documentation --publish dist-newstyle/ansiform-<version>-docs.tar.gz
+   cabal upload --publish dist-newstyle/sdist/ansiform-<version>.tar.gz
+   cabal upload --documentation --publish dist-newstyle/ansiform-<version>-docs.tar.gz
    ```
 
 9. Check the public package page, the documentation links and the dependency bounds.

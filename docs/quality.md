@@ -55,10 +55,11 @@ The tool versions are pinned in the workflow. Update the version, the release UR
 
 ## Local setup
 
-Fourmolu has release binaries for Linux and macOS, and HLint also ships a Windows binary. Both can be installed with Cabal:
+Fourmolu has release binaries for Linux and macOS, and HLint also ships a Windows binary. Both can be installed with Cabal, one at a time, because their `ghc-lib-parser` bounds do not resolve together:
 
 ```sh
-cabal install --installdir="$HOME/.local/bin" --overwrite-policy=always fourmolu-0.21.0.0 hlint-3.10
+cabal install --installdir="$HOME/.local/bin" --overwrite-policy=always fourmolu-0.21.0.0
+cabal install --installdir="$HOME/.local/bin" --overwrite-policy=always hlint-3.10
 ```
 
 Gitleaks is distributed as a single binary from its GitHub releases. The release workflow does not need any of these tools; it uses the Hackage and GitHub tokens described in `docs/releasing.md`.
