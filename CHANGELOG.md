@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### 1.1.0.0 -- 2026-10-24
+* `Printer` is now an opaque diagnostic label plus a function-free description, with a lawful structural `Eq`. `Section` and `Page` inherit that equality, and `printerName` exposes the label.
+* Replaced `printerSequencePred` with `printerSequenceSelect` and the `Selection` ADT (`SelectNone`, `SelectAll`, `SelectOdd`, `SelectEven`, `SelectAt`, `SelectFrom`). An arbitrary predicate cannot be compared structurally; replace it with the closest `Selection` value.
+* Rendering output is unchanged; the property suite and the golden corpus pass.
+
 ### 1.0.0.3 -- 2026-10-24
 * Added a QuickCheck property suite with a fixed seed for display width, line editing, visible windows, table invariants, Number arithmetic and paragraph wrapping.
 * Added an inline golden corpus for paragraph wrapping, Unicode text, bordered groups and pages; cursor movement sequences are stripped before the comparison.

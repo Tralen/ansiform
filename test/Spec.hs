@@ -133,6 +133,31 @@ main = do
                         && "<Center>" `isInfixOf` out
                 )
             , test
+                "Printer equality compares the description"
+                ( printerLeft 0 (blockSimple "a" styleDefault)
+                    == printerLeft 0 (blockSimple "a" styleDefault)
+                    && printerLeft 0 (blockSimple "a" styleDefault)
+                        /= printerLeft 0 (blockSimple "b" styleDefault)
+                )
+            , test
+                "Printer exposes its diagnostic name"
+                (printerName (printerLeft 0 (blockSimple "a" styleDefault)) == "Left")
+            , test
+                "Section equality compares printer descriptions"
+                ( section [printerLeft 0 (blockSimple "a" styleDefault)]
+                    /= section [printerLeft 0 (blockSimple "b" styleDefault)]
+                )
+            , testIO "Sequence selection renders the paragraphs" $ do
+                let paragraphs =
+                        [ [blockSimple "first" styleDefault]
+                        , [blockSimple "second" styleDefault]
+                        ]
+                out <-
+                    renderPrinter
+                        (printerSequenceSelect 0 0 0 (SelectAt 1) paragraphs)
+                        (settings [width 20, neverColors])
+                return $ "first" `isInfixOf` out && "second" `isInfixOf` out
+            , test
                 "Display width of ASCII text"
                 (charWidth 'a' == 1 && textWidth "abc" == 3)
             , test

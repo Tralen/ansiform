@@ -150,11 +150,27 @@ printerSequence :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
 printerSequence' :: Offset -> Offset -> Padding -> [Paragraph] -> Printer
 printerSequenceSel :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
 printerSequenceAfter :: Offset -> Offset -> Padding -> Number -> [Paragraph] -> Printer
-printerSequencePred :: Offset -> Offset -> Padding -> (Int -> Bool) -> [Paragraph] -> Printer
+printerSequenceSelect :: Offset -> Offset -> Padding -> Selection -> [Paragraph] -> Printer
+
+data Selection
+    = SelectNone
+    | SelectAll
+    | SelectOdd
+    | SelectEven
+    | SelectAt Number
+    | SelectFrom Number
 ```
 
 The first offset indents the whole paragraph. The second offset indents only the first line.
 
 - `printerParagraph` wraps the blocks at the terminal width.
 - `printerArticle` prints paragraphs separated by a blank line.
-- The `printerSequence` variants add a solid background to selected paragraphs: `printerSequence` selects odd indices, `printerSequence'` selects even indices, `printerSequenceSel` selects one index, `printerSequenceAfter` selects indices greater than or equal to a value, and `printerSequencePred` accepts any predicate.
+- The `printerSequence` variants add a solid background to selected paragraphs: `printerSequence` selects odd indices, `printerSequence'` selects even indices, `printerSequenceSel` selects one index, `printerSequenceAfter` selects indices greater than or equal to a value, and `printerSequenceSelect` accepts a `Selection`. `printerSequencePred` was removed in 1.1.0.0 because an arbitrary predicate cannot be compared structurally; replace it with the closest `Selection` value.
+
+## Inspection
+
+```haskell
+printerName :: Printer -> String
+```
+
+`Show` prints `Printer <label>`, and `printerName` returns the label. `Eq` compares the function-free description, so two printers with the same label but different arguments are different, while two builders that describe the same output are equal even if they use different labels.

@@ -18,26 +18,119 @@ import System.IO (Handle, hPutStr, hPutStrLn, stdout)
 -- Printer Type
 --------------------------------------------------------------------------------
 
--- | A printer is a function from the output target to the number of lines printed.
---   The printer name is used for inspection and equality.
-newtype Printer = Printer (String, Output -> IO Number)
+-- | A single block or a line of blocks.
+data LineContent = LineOne Block | LineMany [Block]
+    deriving (Eq, Show)
+
+-- | Whether a list fills rows or columns.
+data ListMode = ListRows | ListColumns
+    deriving (Eq, Show)
+
+-- | Which entries of a sequence receive a solid background.
+data Selection
+    = -- | Select no paragraph.
+      SelectNone
+    | -- | Select every paragraph.
+      SelectAll
+    | -- | Select odd indices.
+      SelectOdd
+    | -- | Select even indices.
+      SelectEven
+    | -- | Select one zero-based index.
+      SelectAt Number
+    | -- | Select every index at or after a zero-based index.
+      SelectFrom Number
+    deriving (Eq, Show)
+
+-- | Where the groups of a group printer come from.
+data GroupSource
+    = GroupSourceRaw [Group]
+    | GroupSourceAveraged [Group]
+    | GroupSourceTable (Maybe Table)
+    deriving (Eq, Show)
+
+-- | Every argument of the group and table printers.
+data GroupPrinter = GroupPrinter
+    { groupOffset :: Offset
+    , groupPadding :: Padding
+    , groupLimit :: Number
+    , groupSpacing :: Spacing
+    , groupMode :: GroupMode
+    , groupBorders :: Maybe Borders
+    , groupFormat :: TableFormat
+    , groupSource :: GroupSource
+    }
+    deriving (Eq, Show)
+
+-- | The function-free description of a printer.
+data PrinterBody
+    = BodyEmpty Number
+    | BodyItem Item
+    | BodyRule Offset Rule
+    | BodySolid Offset Color
+    | BodyLine Offset LineContent Align
+    | BodySolidLine Offset Padding Color LineContent Align
+    | BodyColumn Offset [Block]
+    | BodyList Offset Number ListMode [Block]
+    | BodyGroup Offset Group
+    | BodyGroups GroupPrinter
+    | BodyParagraph Offset Offset Paragraph
+    | BodySequence Offset Offset Padding Bool Selection [Paragraph]
+    deriving (Eq, Show)
+
+-- | A printer is a diagnostic label and a function-free description.
+--   Equality compares the description; the label is only used by 'Show'.
+data Printer = Printer
+    { printerLabel :: String
+    , printerBody :: PrinterBody
+    }
 
 instance Eq Printer where
-    Printer (n1, _) == Printer (n2, _) = n1 == n2
+    Printer _ b == Printer _ c = b == c
 
 instance Show Printer where
-    show (Printer (nm, _)) = "Printer <" ++ nm ++ ">"
+    show p = "Printer <" ++ printerLabel p ++ ">"
 
 instance Sample Printer where
     sampleShow _ = show
 
+-- | The diagnostic name of a printer.
+printerName :: Printer -> String
+printerName = printerLabel
+
 -- Wrapper
-formPrinter :: String -> (Output -> IO Number) -> Printer
-formPrinter nm fio = Printer (nm, fio)
+formPrinter :: String -> PrinterBody -> Printer
+formPrinter = Printer
+
+-- | Builds a group or table printer from its full description.
+formGroupPrinter ::
+    String ->
+    Offset ->
+    Padding ->
+    Number ->
+    Spacing ->
+    GroupMode ->
+    Maybe Borders ->
+    TableFormat ->
+    GroupSource ->
+    Printer
+formGroupPrinter label o p n spacing mode borders fmt source =
+    formPrinter label $
+        BodyGroups
+            GroupPrinter
+                { groupOffset = o
+                , groupPadding = p
+                , groupLimit = n
+                , groupSpacing = spacing
+                , groupMode = mode
+                , groupBorders = borders
+                , groupFormat = fmt
+                , groupSource = source
+                }
 
 -- | Printer for a number of empty lines.
 emptyPrinter :: Number -> Printer
-emptyPrinter n = formPrinter "Empty" $ \s -> printEmpty s n
+emptyPrinter n = formPrinter "Empty" (BodyEmpty n)
 
 -- | Runs a printer on stdout with the given settings.
 runPrinter :: Settings -> Printer -> IO Number
@@ -45,7 +138,7 @@ runPrinter = runPrinterOn stdout
 
 -- | Runs a printer on a given handle.
 runPrinterOn :: Handle -> Settings -> Printer -> IO Number
-runPrinterOn h s (Printer (_, fio)) = runSettingsOn h s >>= \cfg -> fio (formOutput h cfg)
+runPrinterOn h s p = runSettingsOn h s >>= \cfg -> runPrinterBody (printerBody p) (formOutput h cfg)
 
 -- | Runs a printer with a configuration resolved in IO, on stdout.
 runPrinterIO :: IO Config -> Printer -> IO Number
@@ -53,7 +146,7 @@ runPrinterIO = runPrinterIOOn stdout
 
 -- | Runs a printer with a configuration resolved in IO, on a given handle.
 runPrinterIOOn :: Handle -> IO Config -> Printer -> IO Number
-runPrinterIOOn h cfg (Printer (_, fio)) = cfg >>= \c -> fio (formOutput h c)
+runPrinterIOOn h cfg p = cfg >>= \c -> runPrinterBody (printerBody p) (formOutput h c)
 
 -- | Runs a printer on stdout with the default settings.
 runPrinterDefault :: Printer -> IO Number
@@ -61,7 +154,7 @@ runPrinterDefault = runPrinterDefaultOn stdout
 
 -- | Runs a printer on a given handle with the default settings.
 runPrinterDefaultOn :: Handle -> Printer -> IO Number
-runPrinterDefaultOn h (Printer (_, fio)) = initialConfigOn h >>= \cfg -> fio (formOutput h cfg)
+runPrinterDefaultOn h p = initialConfigOn h >>= \cfg -> runPrinterBody (printerBody p) (formOutput h cfg)
 
 -- | Runs a printer on stdout with the default settings and explicit width and spacing.
 runPrinterDefault' :: Width -> Width -> Printer -> IO Number
@@ -69,8 +162,94 @@ runPrinterDefault' = runPrinterDefaultOn' stdout
 
 -- | Runs a printer on a given handle with the default settings and explicit width and spacing.
 runPrinterDefaultOn' :: Handle -> Width -> Width -> Printer -> IO Number
-runPrinterDefaultOn' h w m (Printer (_, fio)) =
-    initialConfigOn h >>= \dft -> fio (formOutput h (setWidth w $ setMinSpace m dft))
+runPrinterDefaultOn' h w m p =
+    initialConfigOn h >>= \dft ->
+        runPrinterBody (printerBody p) (formOutput h (setWidth w $ setMinSpace m dft))
+
+-- Interprets a printer description against the resolved output.
+runPrinterBody :: PrinterBody -> Output -> IO Number
+runPrinterBody body out = case body of
+    BodyEmpty n -> printEmpty out n
+    BodyItem i -> printSingleItem out i
+    BodyRule o r -> printRule o r out
+    BodySolid o c -> printSolid o c out
+    BodyLine o content align -> runLine o content align out
+    BodySolidLine o p c content align -> runSolidLine o p c content align out
+    BodyColumn o bs -> printColumn out o bs
+    BodyList o l mode bs -> case mode of
+        ListRows -> printList o l bs out
+        ListColumns -> printList' o l bs out
+    BodyGroup o g -> printGroup out o g
+    BodyGroups gp -> runGroups gp out
+    BodyParagraph o o1 vbs -> printParagraph o o1 0 False vbs out
+    BodySequence o o1 p zebra selection vbss ->
+        printSequence o o1 p zebra (matchesSelection selection) vbss out
+
+-- Runs a single line or a line of blocks with the requested alignment.
+runLine :: Offset -> LineContent -> Align -> Output -> IO Number
+runLine o content align out = case content of
+    LineOne b -> case align of
+        AlignLeft -> printLeft out o b
+        AlignRight -> printLineRight o [b] out
+        AlignCenter -> printLineCenter o [b] out
+    LineMany bs -> case align of
+        AlignLeft -> printLineLeft o bs out
+        AlignRight -> printLineRight o bs out
+        AlignCenter -> printLineCenter o bs out
+
+-- Runs a solid line with the requested alignment.
+runSolidLine :: Offset -> Padding -> Color -> LineContent -> Align -> Output -> IO Number
+runSolidLine o p c content align =
+    printSolidLine o p c (lineBlocks content) (lineFunction align)
+
+lineBlocks :: LineContent -> [Block]
+lineBlocks content = case content of
+    LineOne b -> [b]
+    LineMany bs -> bs
+
+lineFunction :: Align -> LineFunction
+lineFunction align = case align of
+    AlignLeft -> printLineLeft
+    AlignRight -> printLineRight
+    AlignCenter -> printLineCenter
+
+-- Resolves the group source and dispatches to the bordered or plain printer.
+runGroups :: GroupPrinter -> Output -> IO Number
+runGroups gp out = case groupBorders gp of
+    Just brd ->
+        printBorderedGroups
+            brd
+            (groupFormat gp)
+            (groupOffset gp)
+            (groupPadding gp)
+            (groupLimit gp)
+            (groupSpacing gp)
+            groups
+            out
+    Nothing ->
+        printGroups
+            (groupFormat gp)
+            (groupOffset gp)
+            (groupPadding gp)
+            (groupLimit gp)
+            (groupSpacing gp)
+            (groupMode gp)
+            groups
+            out
+  where
+    groups = case groupSource gp of
+        GroupSourceRaw gs -> gs
+        GroupSourceAveraged gs -> groupAverage (outputConfig out) gs
+        GroupSourceTable mt -> unMaybeTable mt
+
+matchesSelection :: Selection -> Int -> Bool
+matchesSelection selection index = case selection of
+    SelectNone -> False
+    SelectAll -> True
+    SelectOdd -> odd index
+    SelectEven -> even index
+    SelectAt n -> index == unn n
+    SelectFrom n -> index >= unn n
 
 -- Basic Printing
 --------------------------------------------------------------------------------
