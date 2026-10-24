@@ -10,6 +10,7 @@
 * Rendering output is unchanged; the property suite and the golden corpus pass.
 * Updated the release checklist for 1.1.0.0 and documented that the Hackage token belongs in `~/.cabal/config` with mode `600`, so it never enters the command line.
 * Documented that Fourmolu and HLint must be installed one at a time because their `ghc-lib-parser` bounds do not resolve together.
+* Recorded the published Hackage and GitHub release links in the release checklist.
 
 ### 1.0.0.3 -- 2026-10-24
 * Added a QuickCheck property suite with a fixed seed for display width, line editing, visible windows, table invariants, Number arithmetic and paragraph wrapping.

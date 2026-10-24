@@ -6,7 +6,8 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 
 - Package: `ansiform`. The name is already registered on Hackage.
 - Version: 1.1.0.0, the release that removes the unlawful `Eq` instances and adds `printerName`.
-- The previous published release is 1.0.0.1. The 1.1.0.0 candidate is built from the signed tag and reviewed before publication.
+- 1.1.0.0 is published on Hackage at <https://hackage.haskell.org/package/ansiform-1.1.0.0>, with documentation uploaded, and on GitHub at <https://github.com/Tralen/ansiform/releases/tag/1.1.0.0>, with the source distribution, the documentation tarball and `SHA256SUMS`.
+- The previous published release is 1.0.0.1.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, changelog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.
@@ -14,8 +15,9 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 - GitHub: public at <https://github.com/Tralen/ansiform>; the local remote is `git@github.com:Tralen/ansiform.git`.
 - `source-repository`, `homepage` and `bug-reports` are set to the GitHub URL.
 - The history has been rewritten and contains no personal paths.
-- Tag `1.0.0.1` and its GitHub release are published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0.1>.
-- Hackage: 1.0.0.1 is published at <https://hackage.haskell.org/package/ansiform-1.0.0.1>, with documentation uploaded.
+- Tag `1.1.0.0` is signed with the SSH key and its GitHub release carries the source distribution, the documentation tarball and `SHA256SUMS`. The source asset hash matches the tarball served by Hackage.
+- The previous release, `1.0.0.1`, is published at <https://github.com/Tralen/ansiform/releases/tag/1.0.0.1>.
+- Hackage: 1.0.0.1 is the previous release, published at <https://hackage.haskell.org/package/ansiform-1.0.0.1>, with documentation uploaded.
 - The 1.0.0 release marked the library stable and drew every prefilled field when a form opens. It includes the editable form fields, `Ansiform.Line`, `readKeyPress`, the lone-Escape fix and the platform documentation from 0.8.0 through 0.9.0.6.
 - 1.0.0.1 added Fourmolu, HLint, gitleaks, the Intel macOS CI job and the manual release workflow. 1.0.0.2 applied the non-breaking compliance patch, and 1.0.0.3 added the QuickCheck and golden tests.
 - 1.1.0.0 removes the unlawful `Eq` instances from `Printer`, `Section` and `Page` and adds `printerName`. It is the first release whose tag is signed with the configured SSH key; the 1.0.0.1 tag remains annotated and unsigned because it was published before the key was configured.
