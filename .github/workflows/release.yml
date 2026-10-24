@@ -51,8 +51,8 @@ jobs:
 
       - name: Build and test
         run: |
-          cabal build all
-          cabal test all
+          cabal build all -fwerror
+          cabal test all -fwerror
           cabal check
 
       - name: Build release artifacts

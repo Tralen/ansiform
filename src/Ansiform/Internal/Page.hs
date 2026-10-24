@@ -24,6 +24,22 @@ formPage = Page
 unPage :: Page -> [Section]
 unPage (Page ss) = ss
 
+-- Page Builders
+--------------------------------------------------------------------------------
+
+-- | Replaces one section at the given index.
+amendPage :: Page -> Section -> Number -> Page
+amendPage p s = amendPage' p [s]
+
+-- | Replaces the sections from the given index onwards.
+amendPage' :: Page -> [Section] -> Number -> Page
+amendPage' p ss n = formPage $ starter ++ remainder
+  where
+    p' = unPage p
+    n' = unn n
+    remainder = ss ++ drop (n' + length ss) p'
+    starter = take n' p'
+
 -- Page Runners
 --------------------------------------------------------------------------------
 -- Functions to print the page with the user settings.

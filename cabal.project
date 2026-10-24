@@ -1,2 +1,6 @@
 packages: .
+
+package ansiform
+  flags: +werror
+
 tests: True

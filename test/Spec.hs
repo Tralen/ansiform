@@ -2,6 +2,7 @@
 module Main where
 
 import Ansiform
+import Control.Exception (bracket, finally)
 import Control.Monad (unless)
 import Data.List (isInfixOf)
 import Data.Maybe (isJust, isNothing)
@@ -238,6 +239,47 @@ main = do
                         (printerTableFormat fmt 0 0 tbl)
                         (settings [width 20, neverColors])
                 return $ " ab " `isInfixOf` out
+            , testIO "Truncated table styles the ellipsis like the last item" $ do
+                let cell =
+                        block
+                            [ item "AB" (bold red)
+                            , item "C" (italic blue)
+                            ]
+                    tbl =
+                        tableBlocks
+                            [blockSimple "H" styleDefault]
+                            [[cell]]
+                    fmt =
+                        tableFormat
+                            [ defaultColumnSpec
+                                { columnMaxWidth = Just 2
+                                , columnEllipsis = EllipsisChar '.'
+                                }
+                            ]
+                out <-
+                    renderPrinter
+                        (printerTableFormat fmt 0 0 tbl)
+                        (settings [width 20, alwaysColors])
+                return $ "." `isInfixOf` out && ";3;" `isInfixOf` out
+            , testIO "Evenly spaced tables render" $ do
+                let tbl =
+                        tableSimple
+                            [ blockSimple "A" styleDefault
+                            , blockSimple "B" styleDefault
+                            ]
+                            styleDefault
+                            [["1", "2"]]
+                out <-
+                    renderPrinter
+                        (printerTable' 0 0 tbl)
+                        (settings [width 30, neverColors])
+                return $ all (`isInfixOf` out) ["A", "B", "1", "2"]
+            , testIO "Render preserves non-ASCII text" $ do
+                out <-
+                    renderPrinter
+                        (printerItem (item "ação 漢" styleDefault))
+                        (settings [neverColors])
+                return $ "ação 漢" `isInfixOf` out
             , testIO "Bordered table draws a box" $ do
                 let tbl =
                         tableSimple
@@ -381,34 +423,39 @@ testIO name action = action >>= test name
 captureStdout :: IO a -> IO (a, String)
 captureStdout action = do
     tmp <- getTemporaryDirectory
-    (path, handle) <- openTempFile tmp "ansiform-test-output"
-    original <- hDuplicate stdout
-    hDuplicateTo handle stdout
-    result <- action
-    hFlush stdout
-    hDuplicateTo original stdout
-    hClose original
-    hClose handle
-    output <- readFile' path
-    removeFile path
-    return (result, output)
+    bracket (openTempFile tmp "ansiform-test-output") cleanup $ \(path, handle) -> do
+        original <- hDuplicate stdout
+        result <-
+            ( do
+                hDuplicateTo handle stdout
+                value <- action
+                hFlush stdout
+                return value
+            )
+                `finally` (hDuplicateTo original stdout >> hClose original)
+        hClose handle
+        output <- readFile' path
+        return (result, output)
+  where
+    cleanup (path, handle) = do
+        hClose handle
+        removeFile path
 
 -- Runs an action with stdin replaced by a temporary file containing the input.
 withStdin :: String -> IO a -> IO a
 withStdin input action = do
     tmp <- getTemporaryDirectory
-    (path, handle) <- openTempFile tmp "ansiform-test-input"
-    hPutStr handle input
-    hFlush handle
-    hSeek handle AbsoluteSeek 0
-    original <- hDuplicate stdin
-    hDuplicateTo handle stdin
-    result <- action
-    hDuplicateTo original stdin
-    hClose original
-    hClose handle
-    removeFile path
-    return result
+    bracket (openTempFile tmp "ansiform-test-input") cleanup $ \(_path, handle) -> do
+        hPutStr handle input
+        hFlush handle
+        hSeek handle AbsoluteSeek 0
+        original <- hDuplicate stdin
+        hDuplicateTo handle stdin
+        action `finally` (hDuplicateTo original stdin >> hClose original)
+  where
+    cleanup (path, handle) = do
+        hClose handle
+        removeFile path
 
 --------------------------------------------------------------------------------
 -- Fixtures

@@ -17,12 +17,13 @@ newtype State = State (Settings, Page, [Number])
 formState :: Settings -> Page -> [Number] -> State
 formState s p ns = State (s, p, ns)
 
-unStateSettings :: State -> IO Config
-unStateSettings (State (s, _, _)) = runSettings s
+-- Resolves the state settings for stdout.
+resolveStateSettings :: State -> IO Config
+resolveStateSettings (State (s, _, _)) = runSettings s
 
 -- Resolves the state settings for a given output handle.
-unStateSettingsOn :: Handle -> State -> IO Config
-unStateSettingsOn h (State (s, _, _)) = runSettingsOn h s
+resolveStateSettingsOn :: Handle -> State -> IO Config
+resolveStateSettingsOn h (State (s, _, _)) = runSettingsOn h s
 
 unStatePage :: State -> Page
 unStatePage (State (_, p, _)) = p

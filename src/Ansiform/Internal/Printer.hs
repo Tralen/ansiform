@@ -1,6 +1,5 @@
 module Ansiform.Internal.Printer where
 
-import Ansiform.Content
 import Ansiform.Internal.Content
 import Ansiform.Internal.Number
 import Ansiform.Internal.Output
@@ -10,7 +9,6 @@ import Ansiform.Internal.Style
 import Ansiform.Internal.Table
 import Ansiform.Internal.Terminal
 import Ansiform.Internal.Utils
-import Ansiform.Style
 --------------------------------------------------------------------------------
 import Control.Monad
 import Data.List (transpose, zipWith4)
@@ -36,6 +34,10 @@ instance Sample Printer where
 -- Wrapper
 formPrinter :: String -> (Output -> IO Number) -> Printer
 formPrinter nm fio = Printer (nm, fio)
+
+-- | Printer for a number of empty lines.
+emptyPrinter :: Number -> Printer
+emptyPrinter n = formPrinter "Empty" $ \s -> printEmpty s n
 
 -- | Runs a printer on stdout with the given settings.
 runPrinter :: Settings -> Printer -> IO Number
@@ -120,7 +122,7 @@ printRule o r out = ind h o >> printItem out (formRuleItem r (subtractNumber w (
 
 -- Prints a line filled with spaces with the background color given.
 printSolid :: Offset -> Color -> Output -> IO Number
-printSolid o c = printRule o (ruleSolid c)
+printSolid o c = printRule o (formRule ' ' (solidStyle c))
 
 -- Line Printing
 --------------------------------------------------------------------------------
@@ -272,24 +274,32 @@ printList' o l bs out = printList o desiredLines bs out
 printGroup :: Output -> Offset -> Group -> IO Number
 printGroup out o g = printColumn out o (unGroup g)
 
+-- | How groups use the available width.
+data Spacing = SpacingMinimum | SpacingEven
+    deriving (Eq, Show)
+
+-- | Whether rows use a zebra background and a repeating index column.
+data GroupMode = GroupPlain | GroupZebra
+    deriving (Eq, Show)
+
 -- Main function for printing groups and tables, used by the specialized versions.
 --    Configured by the arguments:
 --       Offset -> Offset from both sides.
 --       Padding -> Padding between text and background.
 --       Number -> Sets the number of rows printed, rest is discarded, 0 is max.
---       Bool -> Sets the alignment to be evenly spaced if True, or max per row.
---       Bool -> Table mode: zebra background and repeating index column.
+--       Spacing -> Sets the alignment to be evenly spaced or max per row.
+--       GroupMode -> Table mode: zebra background and repeating index column.
 printGroups ::
     TableFormat ->
     Offset ->
     Padding ->
     Number ->
-    Bool ->
-    Bool ->
+    Spacing ->
+    GroupMode ->
     [Group] ->
     Output ->
     IO Number
-printGroups fmt o p n bSpace bTable gs out = mainPrinter
+printGroups fmt o p n spacing mode gs out = mainPrinter
   where
     cfg = outputConfig out
     h = outputHandle out
@@ -306,7 +316,9 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
     widthList = fmap (+ m') cappedWidths
     maxWidth = maximum' 0 widthList
     evenList = replicate (length gs) maxWidth
-    chosenWidthList | bSpace = evenList | otherwise = widthList
+    chosenWidthList = case spacing of
+        SpacingEven -> evenList
+        SpacingMinimum -> widthList
     formattedGroups = zipWith4 formatOne specs cappedWidths chosenWidthList gs
 
     formatOne :: ColumnSpec -> Int -> Int -> Group -> Group
@@ -329,18 +341,20 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
             restartLoop = printLoop finalRemGroups finalRemWidths (ri + 1) (addNumber nls (formNumber rowLength))
 
             executePrint :: IO ()
-            executePrint
-                | bTable =
+            executePrint = case mode of
+                GroupZebra ->
                     printZebraBG o rowLength out
                         >> hCursorUp h rowLength
                         >> printContent
-                | otherwise = printContent
+                GroupPlain -> printContent
               where
                 printContent =
                     mapM_ printEach (zip3 (fst splitGroups) curOffsets [0 ..])
 
             lastRow = null remWidths
-            validIndex = bTable && not lastRow
+            validIndex = case mode of
+                GroupZebra -> not lastRow
+                GroupPlain -> False
             rowColumns = length curWidths
             rowLength = maximum' 0 $ fmap (length . unGroup) curGroups
 
@@ -379,14 +393,14 @@ printGroups fmt o p n bSpace bTable gs out = mainPrinter
                     | otherwise = printEmpty out 1 >> return_
 
                 setBG :: Group -> Group
-                setBG g'
-                    | bTable = formGroup' $ changeBlocks <$> zip (unGroup g') [0 ..]
-                    | otherwise = g'
+                setBG g' = case mode of
+                    GroupZebra -> formGroup' $ changeBlocks <$> zip (unGroup g') [0 ..]
+                    GroupPlain -> g'
                   where
                     changeBlocks :: (Block, Int) -> Block
                     changeBlocks (b, ib)
                         | even ib = b
-                        | otherwise = blockSetBG black b
+                        | otherwise = blockSetBG blackDull b
 
 -- Bordered Groups & Tables
 --------------------------------------------------------------------------------
@@ -403,11 +417,11 @@ printBorderedGroups ::
     Offset ->
     Padding ->
     Number ->
-    Bool ->
+    Spacing ->
     [Group] ->
     Output ->
     IO Number
-printBorderedGroups brd fmt o p n bSpace gs out
+printBorderedGroups brd fmt o p n spacing gs out
     | null gs = return 0
     | otherwise = maybe printBorderless printBordered (borderChars brd)
   where
@@ -416,7 +430,9 @@ printBorderedGroups brd fmt o p n bSpace gs out
     specs = fmap (columnSpecAt fmt) [0 .. length gs - 1]
     cappedWidths = zipWith cappedWidth specs gs
     maxWidth = maximum' 0 cappedWidths
-    contentWidths = if bSpace then replicate (length gs) maxWidth else cappedWidths
+    contentWidths = case spacing of
+        SpacingEven -> replicate (length gs) maxWidth
+        SpacingMinimum -> cappedWidths
     cellWidths = fmap (+ (2 * p')) contentWidths
     rows = transpose (fmap unGroup (padGroups gs))
     n' = unn n
@@ -542,9 +558,9 @@ printParagraph o o1 p bZebra vbs out =
     offset = formNumber offset'
     printEachBlock vb
         | bZebra =
-            printSolid o black out
+            printSolid o blackDull out
                 >> hCursorUp h 1
-                >> printLeft' (blockSetBG black blockPretty)
+                >> printLeft' (blockSetBG blackDull blockPretty)
         | otherwise = printLeft' blockPretty
       where
         printLeft' = printLeft out offset
@@ -575,7 +591,7 @@ printSequence o o1 p bZebra fInt vbss out = printCounter printEach (zip vbss [0 
         predZebra = bZebra && fInt i
         printParagraph' bZebra' = printParagraph o o1 p bZebra' vbs out
         printSeparation
-            | predZebra = printSolid o black out
+            | predZebra = printSolid o blackDull out
             | otherwise = printEmpty out 1
 
 -- Background Printing
@@ -583,7 +599,7 @@ printSequence o o1 p bZebra fInt vbss out = printCounter printEach (zip vbss [0 
 -- Prints a series of alternating lines, black and grey, for usage with tables.
 --   The offset and number of lines are given as parameters.
 printZebraBG :: Offset -> Int -> Output -> IO ()
-printZebraBG o n out = sequence_ $ take n $ cycle [printEmpty out 1, printSolid o black out]
+printZebraBG o n out = sequence_ $ take n $ cycle [printEmpty out 1, printSolid o blackDull out]
 
 -- Prints a solid background of several lines of the same color.
 printSolidBG :: Offset -> Int -> Color -> Output -> IO ()

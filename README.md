@@ -10,7 +10,7 @@ Builders are pure and produce immutable values. A thin drawing layer writes thos
 
 > **Formerly known as Vis.** Ansiform is a terminal formatting library, unrelated to the JavaScript `vis-network` graph visualization library or to the Hackage package [`Vis`](https://hackage.haskell.org/package/Vis) (3D graphics). See [Naming](https://github.com/Tralen/ansiform/blob/master/docs/naming.md).
 
-Current version: **1.0.0.1**.
+Current version: **1.0.0.2**.
 
 Repository: <https://github.com/Tralen/ansiform>.
 
@@ -50,7 +50,7 @@ PVP, single-sourced from the `ansiform.cabal` file.
 - Multi-section pages with amend, replace and redraw support.
 - Errors as data: malformed tables return `Nothing` instead of throwing.
 - Explicit saturating and checked subtraction for non-negative `Number` values.
-- Small dependency footprint: `ansi-terminal`, `terminal-size`, `split`, `transformers` and `directory`.
+- Small dependency footprint: `ansi-terminal`, `terminal-size`, `split`, `text`, `transformers` and `directory`.
 
 ## Quick start
 

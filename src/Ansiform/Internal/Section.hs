@@ -4,7 +4,6 @@ import Ansiform.Internal.Number
 import Ansiform.Internal.Printer
 import Ansiform.Internal.Sample
 import Ansiform.Internal.Settings
-import Ansiform.Printer
 --------------------------------------------------------------------------------
 import Control.Monad
 import System.IO (Handle, stdout)
@@ -77,5 +76,5 @@ calcSection f vs = foldM runCalc 0 (unSectionPrinters vs) >>= enforceMin
     runCalc acc p = f p >>= \n -> return (acc + n)
     minNumber = unSectionNumber vs
     enforceMin n
-        | n < minNumber = f (printerEmpty (minNumber - n)) >> return minNumber
+        | n < minNumber = f (emptyPrinter (minNumber - n)) >> return minNumber
         | otherwise = return n

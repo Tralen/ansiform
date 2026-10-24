@@ -15,7 +15,7 @@ module Ansiform.Content
 import Ansiform.Internal.Content as Internal
 import Ansiform.Style
 --------------------------------------------------------------------------------
-import Data.List
+import Data.List (intersperse)
 
 -- Basic builders
 --------------------------------------------------------------------------------

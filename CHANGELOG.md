@@ -4,6 +4,16 @@
 
 ## Functional Versions
 
+### 1.0.0.2 -- 2026-10-24
+* Added the compiler gates to the shared Cabal stanza. The `werror` flag adds `-Werror`; `cabal.project` enables it locally and CI passes `-fwerror`, while the default stays false so `cabal check` and Hackage builds remain valid.
+* Replaced the banned partial functions `init`, `last` and `read` in the line editor, the table truncation and the demo.
+* The demo version now comes from `Paths_ansiform`, so it follows the package version.
+* The render capture reads the temporary handle as strict UTF-8, so non-ASCII output round-trips.
+* Replaced the Boolean modes in the group printer with `Spacing` and `GroupMode`, and the italic flag in `Format` with `Italic`.
+* Moved the drawing implementation to `Ansiform.Internal.Draw`; `Ansiform.Draw` is now a facade and internal modules no longer import public facades.
+* Declared the `directory` bound once in a common stanza and removed unused helpers from `Ansiform.Internal.Utils`.
+* The test harness restores stdin and stdout with `bracket` and `finally`.
+
 ### 1.0.0.1 -- 2026-10-21
 * Added Fourmolu formatting and HLint checks, a gitleaks secret scan and a manual release workflow.
 * Added a macOS Intel CI job for GHC 9.2.8 and updated the GitHub Actions to Node 24 versions.

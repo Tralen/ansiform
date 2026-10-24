@@ -66,20 +66,20 @@ formatDefault = defaultFormat
 
 -- | Regular, bold, italic and underline formats.
 formatRegular, formatBold, formatItalic, formatUnderline :: Format
-formatRegular = formFormat NormalIntensity False NoUnderline
-formatBold = formFormat BoldIntensity False NoUnderline
-formatItalic = formFormat NormalIntensity True NoUnderline
-formatUnderline = formFormat NormalIntensity False SingleUnderline
+formatRegular = formFormat NormalIntensity ItalicOff NoUnderline
+formatBold = formFormat BoldIntensity ItalicOff NoUnderline
+formatItalic = formFormat NormalIntensity ItalicOn NoUnderline
+formatUnderline = formFormat NormalIntensity ItalicOff SingleUnderline
 
 -- | Bold italic and bold underline formats.
 formatBoldItalic, formatBoldUnderline :: Format
-formatBoldItalic = formFormat BoldIntensity True NoUnderline
-formatBoldUnderline = formFormat BoldIntensity False SingleUnderline
+formatBoldItalic = formFormat BoldIntensity ItalicOn NoUnderline
+formatBoldUnderline = formFormat BoldIntensity ItalicOff SingleUnderline
 
 -- | Italic underline and bold italic underline formats.
 formatItalicUnderline, formatBoldItalicUnderline :: Format
-formatItalicUnderline = formFormat NormalIntensity True SingleUnderline
-formatBoldItalicUnderline = formFormat BoldIntensity True SingleUnderline
+formatItalicUnderline = formFormat NormalIntensity ItalicOn SingleUnderline
+formatBoldItalicUnderline = formFormat BoldIntensity ItalicOn SingleUnderline
 
 -- Styles
 --------------------------------------------------------------------------------

@@ -9,6 +9,9 @@ import Ansiform
 import Data.Char (isSpace, toLower)
 import Data.List (elemIndex)
 import Data.Maybe (listToMaybe)
+import Data.Version (showVersion)
+import Paths_ansiform (version)
+import Text.Read (readMaybe)
 
 --------------------------------------------------------------------------------
 -- Application
@@ -16,7 +19,7 @@ import Data.Maybe (listToMaybe)
 
 -- Version of this demo, following the package version.
 demoVersion :: String
-demoVersion = "1.0.0"
+demoVersion = showVersion version
 
 -- The philosophers shown in the Groups screen.
 data Philosopher
@@ -345,9 +348,9 @@ pad2 n
     | otherwise = show n
 
 philosopherByNumber :: String -> Maybe Philosopher
-philosopherByNumber s = case reads s :: [(Int, String)] of
-    [(n, "")] -> lookup n [(read (philosopherNumber p) :: Int, p) | p <- philosophers]
-    _ -> Nothing
+philosopherByNumber s = readMaybe s >>= \n -> lookup n numbered
+  where
+    numbered = zip [1 :: Int ..] philosophers
 
 trim :: String -> String
 trim = f . f

@@ -7,8 +7,19 @@ import Ansiform.Internal.Section
 import Ansiform.Internal.Settings
 --------------------------------------------------------------------------------
 import Control.Exception (bracket)
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import System.Directory (getTemporaryDirectory, removeFile)
-import System.IO (Handle, hClose, hFlush, openTempFile)
+import System.IO
+    ( Handle
+    , SeekMode (AbsoluteSeek)
+    , hClose
+    , hFlush
+    , hSeek
+    , hSetEncoding
+    , openTempFile
+    , utf8
+    )
 
 -- Rendering
 --------------------------------------------------------------------------------
@@ -44,12 +55,13 @@ renderPrinter pr s = snd <$> captureOutput renderWithConfig
 captureOutput :: (Handle -> IO a) -> IO (a, String)
 captureOutput action = do
     tmp <- getTemporaryDirectory
-    bracket (openTempFile tmp "ansiform-render") cleanup $ \(path, h) -> do
+    bracket (openTempFile tmp "ansiform-render") cleanup $ \(_path, h) -> do
+        hSetEncoding h utf8
         result <- action h
         hFlush h
-        hClose h
-        output <- readFile path
-        length output `seq` return (result, output)
+        hSeek h AbsoluteSeek 0
+        output <- TIO.hGetContents h
+        return (result, T.unpack output)
   where
     cleanup (path, h) = do
         hClose h

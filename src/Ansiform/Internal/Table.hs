@@ -6,6 +6,7 @@ import Ansiform.Internal.Content
 import Ansiform.Internal.Number
 import Ansiform.Internal.Sample
 import Ansiform.Internal.Style
+import Ansiform.Internal.Utils (lastMaybe)
 import Ansiform.Internal.Width
 
 -- Table Format Types
@@ -210,9 +211,7 @@ truncateBlock w ell b
              in if cw <= w'
                     then (w' - cw, [formItem [c] ellipsisStyle])
                     else (w', [])
-    ellipsisStyle = case unBlock b of
-        [] -> defaultStyle
-        items -> unItemStyle (last items)
+    ellipsisStyle = maybe defaultStyle unItemStyle (lastMaybe (unBlock b))
 
 -- Keeps items while their display width fits.
 takeItems :: Int -> [Item] -> [Item]

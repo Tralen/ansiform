@@ -24,7 +24,7 @@ import Ansiform.Style
 
 -- | Printer for a number of empty lines.
 printerEmpty :: Number -> Printer
-printerEmpty n = formPrinter "Empty" $ \s -> printEmpty s n
+printerEmpty = Internal.emptyPrinter
 
 -- | Printer for a single item followed by a newline.
 printerItem :: Item -> Printer
@@ -134,42 +134,42 @@ printerGroup o g = formPrinter "Group" $ \s -> printGroup s o g
 -- | Printer for groups with evenly spaced columns.
 printerGroups :: Offset -> [Group] -> Printer
 printerGroups o gs = formPrinter "Groups" $ \s ->
-    printGroups defaultTableFormat o 0 0 True False (groupAverage (outputConfig s) gs) s
+    printGroups defaultTableFormat o 0 0 SpacingEven GroupPlain (groupAverage (outputConfig s) gs) s
 
 -- | Printer for groups with minimum spaced columns.
 printerGroups' :: Offset -> [Group] -> Printer
 printerGroups' o gs = formPrinter "Groups'" $ \s ->
-    printGroups defaultTableFormat o 0 0 False False (groupAverage (outputConfig s) gs) s
+    printGroups defaultTableFormat o 0 0 SpacingMinimum GroupPlain (groupAverage (outputConfig s) gs) s
 
 -- | Printer for evenly spaced groups, limiting the number of rows.
 printerGroupsLimited :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited o r gs = formPrinter "GroupsLimited" $ \s ->
-    printGroups defaultTableFormat o 0 r True False (groupAverage (outputConfig s) gs) s
+    printGroups defaultTableFormat o 0 r SpacingEven GroupPlain (groupAverage (outputConfig s) gs) s
 
 -- | Printer for minimum spaced groups, limiting the number of rows.
 printerGroupsLimited' :: Offset -> Number -> [Group] -> Printer
 printerGroupsLimited' o r gs = formPrinter "GroupsLimited'" $ \s ->
-    printGroups defaultTableFormat o 0 r False False (groupAverage (outputConfig s) gs) s
+    printGroups defaultTableFormat o 0 r SpacingMinimum GroupPlain (groupAverage (outputConfig s) gs) s
 
 -- | Printer for a list of Groups inside box borders, with minimum spaced columns.
 printerGroupsBordered :: Borders -> Offset -> Padding -> [Group] -> Printer
 printerGroupsBordered brd o p gs = formPrinter "GroupsBordered" $ \s ->
-    printBorderedGroups brd defaultTableFormat o p 0 False gs s
+    printBorderedGroups brd defaultTableFormat o p 0 SpacingMinimum gs s
 
 -- | Printer for a list of Groups inside box borders, with evenly spaced columns.
 printerGroupsBordered' :: Borders -> Offset -> Padding -> [Group] -> Printer
 printerGroupsBordered' brd o p gs = formPrinter "GroupsBordered'" $ \s ->
-    printBorderedGroups brd defaultTableFormat o p 0 True gs s
+    printBorderedGroups brd defaultTableFormat o p 0 SpacingEven gs s
 
 -- | Printer for Groups inside box borders, limiting the number of rows.
 printerGroupsBorderedLimited :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 printerGroupsBorderedLimited brd o p r gs = formPrinter "GroupsBorderedLimited" $ \s ->
-    printBorderedGroups brd defaultTableFormat o p r False gs s
+    printBorderedGroups brd defaultTableFormat o p r SpacingMinimum gs s
 
 -- | Printer for evenly spaced Groups inside box borders, limiting the number of rows.
 printerGroupsBorderedLimited' :: Borders -> Offset -> Padding -> Number -> [Group] -> Printer
 printerGroupsBorderedLimited' brd o p r gs = formPrinter "GroupsBorderedLimited'" $ \s ->
-    printBorderedGroups brd defaultTableFormat o p r True gs s
+    printBorderedGroups brd defaultTableFormat o p r SpacingEven gs s
 
 -- Table Printing
 --------------------------------------------------------------------------------
@@ -177,62 +177,62 @@ printerGroupsBorderedLimited' brd o p r gs = formPrinter "GroupsBorderedLimited'
 -- | Prints a table with a zebra background and minimum spaced columns.
 printerTable :: Offset -> Padding -> Maybe Table -> Printer
 printerTable o p mt = formPrinter "Table" $ \s ->
-    printGroups defaultTableFormat o p 0 False True (unMaybeTable mt) s
+    printGroups defaultTableFormat o p 0 SpacingMinimum GroupZebra (unMaybeTable mt) s
 
 -- | Prints a table with a zebra background and evenly spaced columns.
 printerTable' :: Offset -> Padding -> Maybe Table -> Printer
 printerTable' o p mt = formPrinter "Table'" $ \s ->
-    printGroups defaultTableFormat o p 0 True True (unMaybeTable mt) s
+    printGroups defaultTableFormat o p 0 SpacingEven GroupZebra (unMaybeTable mt) s
 
 -- | Prints a table with a zebra background, limiting the number of rows.
 printerTableLimited :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited o p r mt = formPrinter "TableLimited" $ \s ->
-    printGroups defaultTableFormat o p r False True (unMaybeTable mt) s
+    printGroups defaultTableFormat o p r SpacingMinimum GroupZebra (unMaybeTable mt) s
 
 -- | Prints an evenly spaced table, limiting the number of rows.
 printerTableLimited' :: Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimited' o p r mt = formPrinter "TableLimited'" $ \s ->
-    printGroups defaultTableFormat o p r True True (unMaybeTable mt) s
+    printGroups defaultTableFormat o p r SpacingEven GroupZebra (unMaybeTable mt) s
 
 -- | Prints a formatted Table with alternating background, with minimum spaced columns.
 printerTableFormat :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableFormat fmt o p mt = formPrinter "TableFormat" $ \s ->
-    printGroups fmt o p 0 False True (unMaybeTable mt) s
+    printGroups fmt o p 0 SpacingMinimum GroupZebra (unMaybeTable mt) s
 
 -- | Prints a formatted Table with alternating background, with evenly spaced columns.
 printerTableFormat' :: TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableFormat' fmt o p mt = formPrinter "TableFormat'" $ \s ->
-    printGroups fmt o p 0 True True (unMaybeTable mt) s
+    printGroups fmt o p 0 SpacingEven GroupZebra (unMaybeTable mt) s
 
 -- | Prints a formatted Table limiting the number of rows, with minimum spaced columns.
 printerTableLimitedFormat :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat fmt o p r mt = formPrinter "TableLimitedFormat" $ \s ->
-    printGroups fmt o p r False True (unMaybeTable mt) s
+    printGroups fmt o p r SpacingMinimum GroupZebra (unMaybeTable mt) s
 
 -- | Prints a formatted Table limiting the number of rows, with evenly spaced columns.
 printerTableLimitedFormat' :: TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableLimitedFormat' fmt o p r mt = formPrinter "TableLimitedFormat'" $ \s ->
-    printGroups fmt o p r True True (unMaybeTable mt) s
+    printGroups fmt o p r SpacingEven GroupZebra (unMaybeTable mt) s
 
 -- | Prints a bordered Table with minimum spaced columns.
 printerTableBordered :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableBordered brd fmt o p mt = formPrinter "TableBordered" $ \s ->
-    printBorderedGroups brd fmt o p 0 False (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p 0 SpacingMinimum (unMaybeTable mt) s
 
 -- | Prints a bordered Table with evenly spaced columns.
 printerTableBordered' :: Borders -> TableFormat -> Offset -> Padding -> Maybe Table -> Printer
 printerTableBordered' brd fmt o p mt = formPrinter "TableBordered'" $ \s ->
-    printBorderedGroups brd fmt o p 0 True (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p 0 SpacingEven (unMaybeTable mt) s
 
 -- | Prints a bordered Table limiting the number of rows, with minimum spaced columns.
 printerTableBorderedLimited :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableBorderedLimited brd fmt o p r mt = formPrinter "TableBorderedLimited" $ \s ->
-    printBorderedGroups brd fmt o p r False (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p r SpacingMinimum (unMaybeTable mt) s
 
 -- | Prints a bordered Table limiting the number of rows, with evenly spaced columns.
 printerTableBorderedLimited' :: Borders -> TableFormat -> Offset -> Padding -> Number -> Maybe Table -> Printer
 printerTableBorderedLimited' brd fmt o p r mt = formPrinter "TableBorderedLimited'" $ \s ->
-    printBorderedGroups brd fmt o p r True (unMaybeTable mt) s
+    printBorderedGroups brd fmt o p r SpacingEven (unMaybeTable mt) s
 
 -- Text Printing
 --------------------------------------------------------------------------------

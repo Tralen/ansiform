@@ -19,7 +19,7 @@ module Ansiform.Internal.Input
     , readFormOn
     ) where
 
-import Ansiform.Draw (drawOn)
+import Ansiform.Internal.Draw (drawOn)
 import Ansiform.Internal.Line
 import Ansiform.Internal.Number
 import Ansiform.Internal.Page

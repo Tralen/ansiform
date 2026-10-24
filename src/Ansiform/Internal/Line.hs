@@ -57,8 +57,8 @@ applyLineKey key (LineState text cursor) = case key of
     LineBackspace
         | position <= 0 -> LineState text position
         | otherwise ->
-            let (before, after) = splitAt position text
-             in LineState (init before ++ after) (position - 1)
+            let after = drop position text
+             in LineState (take (position - 1) text ++ after) (position - 1)
     LineDelete
         | position >= length text -> LineState text position
         | otherwise ->

@@ -52,10 +52,10 @@ jobs:
         run: cabal update
 
       - name: Build
-        run: cabal build all
+        run: cabal build all -fwerror
 
       - name: Test
-        run: cabal test all
+        run: cabal test all -fwerror
 
       - name: Check package
         run: cabal check

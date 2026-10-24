@@ -13,6 +13,10 @@ fourmolu --mode inplace $(find src examples test -name '*.hs')
 
 The first command reports files that would change and fails when any file is not formatted. The second rewrites them.
 
+## Compiler gates
+
+The shared Cabal stanza declares `-Wall -Wcompat -Wincomplete-patterns` and `-Wincomplete-uni-patterns`. The `werror` Cabal flag adds `-Werror`; `cabal.project` enables it for local builds and CI passes `-fwerror`. The flag defaults to false so `cabal check` and Hackage builds stay valid, while local and CI builds still enforce `-Werror`.
+
 ## Linting
 
 HLint 3.10 checks the same three directories:

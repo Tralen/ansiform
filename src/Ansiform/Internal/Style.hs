@@ -77,23 +77,27 @@ isColorDefault vc = case vc of ColorDefault -> True; _ -> False
 --------------------------------------------------------------------------------
 --                                            Bold             Italic Underline
 
+-- | Whether italic is enabled in a format.
+data Italic = ItalicOff | ItalicOn
+    deriving (Eq, Show)
+
 -- | Bold, italic and underline attributes.
-data Format = FormatDefault | Format ConsoleIntensity Bool Underlining
+data Format = FormatDefault | Format ConsoleIntensity Italic Underlining
     deriving (Eq, Show)
 
 instance Sample Format where
     sampleShow _ FormatDefault = "FormatDefault"
-    sampleShow _ (Format BoldIntensity False NoUnderline) = "Bold"
-    sampleShow _ (Format NormalIntensity True NoUnderline) = "Italic"
-    sampleShow _ (Format NormalIntensity False SingleUnderline) = "Underline"
-    sampleShow _ (Format BoldIntensity True NoUnderline) = "BoldItalic"
-    sampleShow _ (Format BoldIntensity False SingleUnderline) = "BoldUnderline"
-    sampleShow _ (Format NormalIntensity True SingleUnderline) = "ItalicUnderline"
-    sampleShow _ (Format BoldIntensity True SingleUnderline) = "BoldItalicUnderline"
+    sampleShow _ (Format BoldIntensity ItalicOff NoUnderline) = "Bold"
+    sampleShow _ (Format NormalIntensity ItalicOn NoUnderline) = "Italic"
+    sampleShow _ (Format NormalIntensity ItalicOff SingleUnderline) = "Underline"
+    sampleShow _ (Format BoldIntensity ItalicOn NoUnderline) = "BoldItalic"
+    sampleShow _ (Format BoldIntensity ItalicOff SingleUnderline) = "BoldUnderline"
+    sampleShow _ (Format NormalIntensity ItalicOn SingleUnderline) = "ItalicUnderline"
+    sampleShow _ (Format BoldIntensity ItalicOn SingleUnderline) = "BoldItalicUnderline"
     sampleShow _ _ = "Regular"
 
 -- Wrapper and Default
-formFormat :: ConsoleIntensity -> Bool -> Underlining -> Format
+formFormat :: ConsoleIntensity -> Italic -> Underlining -> Format
 formFormat = Format
 
 defaultFormat :: Format
@@ -105,9 +109,9 @@ unBold vf = case vf of
     FormatDefault -> NormalIntensity
     Format b _ _ -> b
 
-unItalic :: Format -> Bool
+unItalic :: Format -> Italic
 unItalic vf = case vf of
-    FormatDefault -> False
+    FormatDefault -> ItalicOff
     Format _ i _ -> i
 
 unUnderline :: Format -> Underlining
@@ -123,7 +127,7 @@ isBold :: Format -> Bool
 isBold vf = case unBold vf of BoldIntensity -> True; _ -> False
 
 isItalic :: Format -> Bool
-isItalic = unItalic
+isItalic vf = case unItalic vf of ItalicOn -> True; ItalicOff -> False
 
 isUnderline :: Format -> Bool
 isUnderline vf = case unUnderline vf of SingleUnderline -> True; _ -> False
@@ -173,7 +177,7 @@ formatCommands f
     | isFormatDefault f = []
     | otherwise =
         [ SetConsoleIntensity (unBold f)
-        , SetItalicized (unItalic f)
+        , SetItalicized (isItalic f)
         , SetUnderlining (unUnderline f)
         ]
 
@@ -183,6 +187,14 @@ formStyle = Style
 
 defaultStyle :: Style
 defaultStyle = formStyle defaultColor defaultColor defaultFormat
+
+-- | Dull black, used by solid backgrounds and zebra tables.
+blackDull :: Color
+blackDull = formColor Dull ANSI.Black
+
+-- | Style with dull black text on the given background.
+solidStyle :: Color -> Style
+solidStyle c = formStyle blackDull c defaultFormat
 
 -- Unwrappers
 unStyleForeground :: Style -> Color

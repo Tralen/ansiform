@@ -9,7 +9,7 @@ import Ansiform.Internal.Width
 --------------------------------------------------------------------------------
 import Data.Bifunctor (bimap)
 import Data.Char
-import Data.List
+import Data.List (transpose)
 import Data.List.Split
 import Data.Maybe
 
