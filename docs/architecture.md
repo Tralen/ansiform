@@ -43,7 +43,7 @@ The `Ansiform.Internal.*` modules are implementation details. They are not expos
 +--------------------------------------------------------------+
 ```
 
-`Printer` stores a function `Output -> IO Number`. `Output` combines the target `Handle` with the `Config` resolved for it. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor.
+`Printer` stores a function `Output -> IO Number`. `Output` combines the target `Handle` with the `Config` resolved for it. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor. It has no `Eq` instance because functions cannot be compared structurally; `printerName` returns only the diagnostic label.
 
 The default runners write to stdout. The `On` variants accept any handle, and `Ansiform.Render` captures the same output in a `String` through a temporary handle.
 

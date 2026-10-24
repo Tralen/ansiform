@@ -13,7 +13,7 @@ import System.IO (Handle, stdout)
 
 -- | A list of printers and a minimum number of lines.
 newtype Section = Section (Number, [Printer])
-    deriving (Eq, Show)
+    deriving (Show)
 
 instance Sample Section where
     sampleShow n (Section (m, ps)) = "Section (minimum lines: " ++ sampleShow 0 m ++ ")\n" ++ sampleShow n ps

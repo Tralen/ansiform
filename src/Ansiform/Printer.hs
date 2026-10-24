@@ -271,3 +271,7 @@ printerSequenceAfter o o1 p i vbss = formPrinter "SequenceAfter" $ \s ->
 printerSequencePred :: Offset -> Offset -> Padding -> (Int -> Bool) -> [Paragraph] -> Printer
 printerSequencePred o o1 p f vbss = formPrinter "SequencePred" $ \s ->
     printSequence o o1 p True f vbss s
+
+-- | The diagnostic name of a printer.
+printerName :: Printer -> String
+printerName = Internal.printerName

@@ -12,7 +12,7 @@ import System.IO (Handle, stdout)
 
 -- | An ordered list of sections.
 newtype Page = Page [Section]
-    deriving (Eq, Show)
+    deriving (Show)
 
 instance Sample Page where
     sampleShow n (Page sns) = sampleFormat "Page" n sns

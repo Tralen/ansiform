@@ -19,17 +19,19 @@ import System.IO (Handle, hPutStr, hPutStrLn, stdout)
 --------------------------------------------------------------------------------
 
 -- | A printer is a function from the output target to the number of lines printed.
---   The printer name is used for inspection and equality.
+--   The printer name is used for inspection; there is no 'Eq' instance because
+--   two different functions cannot be compared structurally.
 newtype Printer = Printer (String, Output -> IO Number)
-
-instance Eq Printer where
-    Printer (n1, _) == Printer (n2, _) = n1 == n2
 
 instance Show Printer where
     show (Printer (nm, _)) = "Printer <" ++ nm ++ ">"
 
 instance Sample Printer where
     sampleShow _ = show
+
+-- | The diagnostic name of a printer.
+printerName :: Printer -> String
+printerName (Printer (nm, _)) = nm
 
 -- Wrapper
 formPrinter :: String -> (Output -> IO Number) -> Printer

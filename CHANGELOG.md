@@ -4,6 +4,11 @@
 
 ## Functional Versions
 
+### 1.1.0.0 -- 2026-10-24
+* Removed the unlawful `Eq` instances from `Printer`, `Section` and `Page`. The old `Eq Printer` compared only the diagnostic label, so two different printers could be equal; `Section` and `Page` cannot keep `Eq` because they contain printers.
+* Added `printerName :: Printer -> String` for diagnostics. `printerSequencePred` and the function-based `Printer` are unchanged.
+* Rendering output is unchanged; the property suite and the golden corpus pass.
+
 ### 1.0.0.3 -- 2026-10-24
 * Added a QuickCheck property suite with a fixed seed for display width, line editing, visible windows, table invariants, Number arithmetic and paragraph wrapping.
 * Added an inline golden corpus for paragraph wrapping, Unicode text, bordered groups and pages; cursor movement sequences are stripped before the comparison.

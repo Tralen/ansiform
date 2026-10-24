@@ -133,6 +133,19 @@ main = do
                         && "<Center>" `isInfixOf` out
                 )
             , test
+                "Printer exposes its diagnostic name"
+                (printerName (printerLeft 0 (blockSimple "a" styleDefault)) == "Left")
+            , testIO "Sequence predicate renders the paragraphs" $ do
+                let paragraphs =
+                        [ [blockSimple "first" styleDefault]
+                        , [blockSimple "second" styleDefault]
+                        ]
+                out <-
+                    renderPrinter
+                        (printerSequencePred 0 0 0 (== 1) paragraphs)
+                        (settings [width 20, neverColors])
+                return $ "first" `isInfixOf` out && "second" `isInfixOf` out
+            , test
                 "Display width of ASCII text"
                 (charWidth 'a' == 1 && textWidth "abc" == 3)
             , test

@@ -158,3 +158,11 @@ The first offset indents the whole paragraph. The second offset indents only the
 - `printerParagraph` wraps the blocks at the terminal width.
 - `printerArticle` prints paragraphs separated by a blank line.
 - The `printerSequence` variants add a solid background to selected paragraphs: `printerSequence` selects odd indices, `printerSequence'` selects even indices, `printerSequenceSel` selects one index, `printerSequenceAfter` selects indices greater than or equal to a value, and `printerSequencePred` accepts any predicate.
+
+## Inspection
+
+```haskell
+printerName :: Printer -> String
+```
+
+`Printer` has no `Eq` instance because it is a function; the old label-only equality was removed in 1.1.0.0. `printerName` returns the diagnostic label printed by `Show`; compare rendered output when the actual result matters.
