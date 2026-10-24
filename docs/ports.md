@@ -20,7 +20,7 @@ A Rust port is a moderate engineering effort, not a large rewrite. The library h
 ### What complicates
 
 - **Ownership and lifetimes:** choosing between `&str`, `String`, `Cow<'static, str>` and `Arc<str>` in builders and styles. Haskell has no such friction; the Rust API must be designed to avoid unnecessary clones.
-- **Representing `Printer`:** in Haskell, `Printer` stores a diagnostic label and a function-free description interpreted by the drawing layer. In Rust, an enum that represents the printing AST plus an interpreter mirrors the current design and keeps structural equality; a trait or boxed closure is the alternative when extensibility matters more than inspection.
+- **Representing `Printer`:** in Haskell, `Printer` stores a function. In Rust there are two options: an enum that represents the printing AST plus an interpreter, or `Box<dyn Fn(&mut dyn Write, &Config) -> io::Result<usize>>`. An enum tends to be better for tests and composition; a trait is better for extensibility. This choice defines the API.
 - **The `State` lifecycle:** pages, line counts, `amend`, `replace` and `redraw` are simple, but must be reproduced carefully. A `struct State` with `Vec<usize>` and functions that accept `&mut impl Write` works well.
 - **Raw mode and restoration:** Haskell uses `bracket`. In Rust, use a guard with `Drop` to disable raw mode, show the cursor and restore the screen even after an error or panic. This is a sensitive area because a failure can leave the terminal unusable.
 - **Unicode:** cursor indices. Haskell uses code-point indices; Rust must choose between `Vec<char>`, byte indices with `char_indices`, or a string plus graphemes. The behaviour must be documented, as in the current library, where grapheme movement is a non-goal.

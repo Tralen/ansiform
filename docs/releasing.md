@@ -6,7 +6,7 @@ This checklist covers the Hackage and GitHub release of Ansiform. Update it as t
 
 - Package: `ansiform`. The name is already registered on Hackage.
 - Version: 1.0.0.1.
-- The source tree is at 1.1.0.0, the `Printer` ADT patch. This checklist still describes the published 1.0.0.1 release; update the version, tag and links when 1.1.0.0 is published.
+- The source tree is at 1.0.0.3, the property and golden test patch. This checklist still describes the published 1.0.0.1 release; update the version, tag and links when 1.0.0.3 is published.
 - License: MIT.
 - `cabal sdist` produces a complete source distribution with sources, docs, examples, tests, README, changelog and LICENSE.
 - Haddock builds with 100% coverage for the public functions and types. The remaining warnings are only about module re-exports.

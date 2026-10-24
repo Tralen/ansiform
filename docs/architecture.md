@@ -43,7 +43,7 @@ The `Ansiform.Internal.*` modules are implementation details. They are not expos
 +--------------------------------------------------------------+
 ```
 
-`Printer` stores a diagnostic label and a function-free description (`PrinterBody`). `Output` combines the target `Handle` with the `Config` resolved for it. The description is created by a pure builder and interpreted only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor, and gives `Printer` a lawful structural `Eq`.
+`Printer` stores a function `Output -> IO Number`. `Output` combines the target `Handle` with the `Config` resolved for it. The function is created by a pure builder, but it runs only when a section or page is drawn. This keeps the description of a screen pure while allowing the drawing layer to query the terminal width and move the cursor.
 
 The default runners write to stdout. The `On` variants accept any handle, and `Ansiform.Render` captures the same output in a `String` through a temporary handle.
 
